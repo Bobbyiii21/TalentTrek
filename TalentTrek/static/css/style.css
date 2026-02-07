@@ -12,19 +12,19 @@
 }
 
 .navbar a.nav-link {
-  color: #FFFEF6 !important;
+  color: var(--background) !important;
 }
 
 .bg-dark {
-  background-color: #2E2E2E !important;
+  background-color: var(--primary) !important;
 }
 
 .ms-footer {
-  background-color: #202020;
+  background-color: var(--secondary);
 }
 
 .ms-footer p {
-  color: #7F7F7F;
+  color: var(--primary);
   font-size: 13px;
 }
 
