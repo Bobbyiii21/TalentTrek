@@ -7,5 +7,7 @@ Username: admin
 Password: adminpassword
 
 Standard User sign-in - 
+
 Username: testuser
+
 Password: testuserpassword
