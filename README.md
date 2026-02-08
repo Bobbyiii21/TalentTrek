@@ -1,9 +1,11 @@
 Update this file with any extraneous info
 
-Current admin sign-in:
-Username - admin
-Password - adminpassword
+Current admin sign-in -
 
-Standard User sign-i:
-Username - testuser
-Password - testuserpassword
+Username: admin 
+
+Password: adminpassword
+
+Standard User sign-in - 
+Username: testuser
+Password: testuserpassword
