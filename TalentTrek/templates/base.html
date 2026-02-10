@@ -25,7 +25,13 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav ms-auto navbar-ml">
             <a class="nav-link" href="{% url 'home.about' %}">About</a>
-            <a class="nav-link" href="{% url 'movies.index' %}">Movies</a>
+            <div class="vr bg-white mx-2 d-none d-lg-block"></div>
+            {% if user.is_authenticated %}
+            <a class="nav-link" href="{% url 'accounts.logout' %}">Logout ({{ user.username }})</a>
+            {% else %}
+            <a class="nav-link" href="{% url 'accounts.login' %}">Login</a>
+            <a class="nav-link" href="{% url 'accounts.register' %}">Register</a>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -42,11 +48,9 @@
       <div class="container">
         <div class="row mt-3 text-white">
           <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mb-4">
-            <b>MOVIES STORE</b>
+            <b>Talent Trek</b>
             <hr />
-            <p>Welcome to Movies Store, your premier online destination for a cinematic 
-              adventure like no other! Dive into the world of movies from the comfort of your own home with our user-friendly 
-              and immersive online movie store.</p>
+            <p>Welcome to Talent Trek, [insert some description]</p>
           </div>
           <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
             <b>LINKS</b>
@@ -57,7 +61,7 @@
             <b>CONTACT</b>
             <hr />
             <p><i class="fas fa-home me-2"></i> 150-2345 Tokyo-to, Japan</p>
-            <p><i class="fas fa-envelope me-2"></i> info@moviesstore.com</p>
+            <p><i class="fas fa-envelope me-2"></i> info@talenttrek.com</p>
             <p><i class="fas fa-phone me-2"></i> +81 03-3333-3333</p>
           </div>
         </div>
@@ -66,12 +70,10 @@
     <section class="p-3 ms-footer-bottom bg-dark">
       <div class="container d-flex justify-content-between">
         <div class="me-5 text-white">
-          <span>DESIGNED BY <a href="https://www.x.com/danielgarax" target="_blank">DANIEL CORREA</a> & 
-            <a href="https://www.x.com/greglim81" target="_blank">GREG LIM</a>
-          </span>
+          <span>Designed by Xavier Evans, Luke Ferguson, Ellie Fiftal, Alex Smith, & Bobby Stephens III</span>
         </div>
         <div class="text-white">
-          <span>© Copyright - 2024</span>
+          <span>© Copyright - 2026</span>
         </div>
       </div>
     </section>
