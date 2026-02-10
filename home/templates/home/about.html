@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-6 mx-auto mb-3">
+        <h2>About</h2>
+        <hr />
+        <p>We got jobs</p>
+      </div>
+      <div class="col-md-6 mx-auto mb-3 text-center">
+        <img src="{% static 'img/about.png' %}" class="max-width-100" alt="about" />
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{# <!DOCTYPE html>
+<html>
+<head>
+    <title>About page</title>
+</head>
+<body>
+    <h1>About me:</h1>
+    <p>I am a career-driven, independent thinker who is looking for new solutions. I often find myself pondering how to improve what exists and innovate into the future. I am open to working hard and forging a new path.</p>
+</body>
+</html> #}
