@@ -17,7 +17,7 @@ class DegreeType(models.TextChoices):
 class Education(models.Model):
     grad_year = models.PositiveIntegerField(length=4) #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
-    degree_type = models.TextChoices("degree_type", "HIGHSCHOOL CERTIFICATE ASSOCIATES BACHELORS MASTERS DOCTORATE") #hopefully this is the way to implement a list of choices???
+        degree = models.CharField(choices=DegreeType.choices, max_length=15)
     degree = models.CharField(choices=degree_type, max_length=15)
 
 #builds a summary of a job experience
