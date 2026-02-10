@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<button class="primary-hover-btn onboarding-btn">Start</button>
+
+<div class="onboarding-overlay active"></div>
+
+<div class="onboarding-container">
+    <div class="content">
+        <a class="hollow-btn onboarding-skip-btn" href="#">Skip</a>
+    
+        <div class="onboarding-dots">
+            <div class="onboarding-dot"></div>
+            <div class="onboarding-dot"></div>
+            <div class="onboarding-dot"></div>
+        </div>
+
+        <div class="onboarding-steps">
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/recruiter.png' %}" alt="Recruiter" />
+                </div>
+                <h3>Step 1</h3>
+                <p>Are you a job seeker or a recruiter?</p>
+                <table>
+                    <td>
+                        <label class="radio-container" for="job_seeker">
+                            <input type="radio" id="job_seeker" name="user_type" value="Job_Seeker">
+                            <span class="onboarding-label"></span>
+                            Job Seeker
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio-container" for="recruiter">
+                            <input type="radio" id="recruiter" name="user_type" value="Recruiter">
+                            <span class="onboarding-label"></span>
+                            Recruiter
+                        </label>
+                    </td>
+                </table>
+
+               
+            </div>
+
+
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/job_seeker.png' %}" alt="Job Seeker" />
+                </div>
+                <h3>Step 2</h3>
+                <p>What skills do you have?</p>
+            </div>
+        </div>
+    
+        <button class="onboarding-next-btn">Next</button>
+    
+    </div>
+</div>
+
+
+
+<script src="{% static 'css/onboard.js' %} "></script>
+{% endblock content %}
