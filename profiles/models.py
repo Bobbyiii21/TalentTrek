@@ -19,7 +19,6 @@ class Education(models.Model):
     grad_year = models.PositiveIntegerField(length=4) #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
-    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
 
 #builds a summary of a job experience
 class Experience(models.Model):
@@ -38,6 +37,8 @@ class User(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=63)
     email = models.CharField(max_length=127)
+    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    headline = models.TextField(max_length=1023)
 
 #children of User model for different account types below
 
@@ -46,7 +47,6 @@ class User(models.Model):
 #TODO: verify if country and city works properly
 #TODO: use html/css to make "links" into hyperlinks
 class JobSeeker(User):
-    headline = models.TextField(max_length=1023)
     education = models.ManyToManyField(Education) #list of education objects
     #skills = models.CharField(blank=True, choices=CHOICES, max_length=31) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
     experience = models.ManyToManyField(Experience) #job experience objects
