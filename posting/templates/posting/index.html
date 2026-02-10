@@ -1,4 +1,29 @@
 {% extends 'base.html' %}
-{ block content }
-<p>Job Posting Listing Page</p>
-{ endblock content }
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3">
+        <h2>Job Postings</h2>
+        <hr />
+      </div>
+    </div>
+    <div class="row">
+      {% for post in template_data.postings %}
+      <div class="col-md-4 col-lg-3 mb-2">
+        <div class="p-2 card align-items-center pt-4">
+          <img src="{% static 'img/about.jpg' %}"
+            class="card-img-top rounded">
+          <div class="card-body text-center">
+            <a href="{% url 'posting.post' id=post.id %}" class="btn bg-dark text-white">
+              {{ post.name }}
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}
