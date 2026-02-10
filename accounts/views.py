@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 def logout(request):
     auth_logout(request)
     return redirect('home.index')
+
 def login(request):
     template_data = {}
     template_data['title'] = 'Login'
@@ -33,7 +34,11 @@ def register(request):
         form = CustomUserCreationForm(request.POST, error_class=CustomErrorList)
         if form.is_valid():
             form.save()
-            return redirect('accounts.login')
+            return redirect('accounts.onboard')
         else:
             template_data['form'] = form
             return render(request, 'accounts/register.html', {'template_data': template_data})
+        
+def onboard(request):
+    template_data = {}
+    return render(request, 'accounts/onboard.html', {'template_data': template_data})
