@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'home',
     'posting',
     'profiles',
+    'cities_light',
 ]
 
 MIDDLEWARE = [
