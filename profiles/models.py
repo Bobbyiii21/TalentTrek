@@ -7,6 +7,13 @@ from datetime import date
 
 #builds an education summary that will be displayed as one unified part of the profile
 #TODO: test if degree type selection works properly when creating an education model
+class DegreeType(models.TextChoices):
+    HIGHSCHOOL = "HIGHSCHOOL", "High School"
+    CERTIFICATE = "CERTIFICATE", "Certificate"
+    ASSOCIATES = "ASSOCIATES", "Associate's"
+    BACHELORS = "BACHELORS", "Bachelor's"
+    MASTERS = "MASTERS", "Master's"
+    DOCTORATE = "DOCTORATE", "Doctorate"
 class Education(models.Model):
     grad_year = models.PositiveIntegerField(length=4) #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
