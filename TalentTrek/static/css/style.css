@@ -9,6 +9,13 @@
   --accent-light: #afc7e4;
   --accent-dark: #5b6e86;
 }
+:root {
+  --text: #ffffff;
+  --background: #010104;
+  --primary: #548060;
+  --secondary: #0f1d0c;
+  --accent: #6c92c0;
+}
 
 .bg-index{
   background: url("/static/img/background.jpg") no-repeat fixed;
