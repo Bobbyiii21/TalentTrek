@@ -12,21 +12,15 @@
             <form method="POST">
               {% csrf_token %}
               {{ template_data.form.as_p }}
-              <button type="submit"
-                class="secondary-hover-btn">Sign Up
-              </button>
+              <div class="d-flex justify-content-between align-items-center">
+                <button type="submit"
+                  class="secondary-hover-btn">Sign Up
+                </button>
+                <a class="primary-hover-btn" href="{% url 'accounts.login' %}">Existing User?</a>
+              </div>
             </form>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="p-3 mt-4">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <a class="primary-hover-btn" href="{% url 'accounts.login' %}">Existing User?</a>
       </div>
     </div>
   </div>
