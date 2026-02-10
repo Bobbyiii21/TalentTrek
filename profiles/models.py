@@ -44,7 +44,7 @@ class JobSeeker(User):
     education = models.ForeignKey([Education], on_delete=models.CASCADE) #list of education objects; this might need to be changed later, idrk how i should be implementing it as a list
     #skills = models.CharField(blank=True, choices=CHOICES, max_length=31) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
     experience = models.ForeignKey([Experience], on_delete=models.CASCADE) #list of job experience objects; might need to be changed with education
-    links = [models.TextField(max_length=127)] #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
     country = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True) #UNTESTED
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True) #UNTESTED
 
