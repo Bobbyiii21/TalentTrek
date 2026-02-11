@@ -16,3 +16,6 @@ Password: testuserpassword
 
 
 Setup Wizard - Visually works, next step is to have branch next steps for job seeker/recruiter and also work as a form
+
+
+Note - Use 'pip install django-cities-light' for location-based data

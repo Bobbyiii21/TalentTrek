@@ -9,13 +9,7 @@
   --accent-light: #afc7e4;
   --accent-dark: #5b6e86;
 }
-:root {
-  --text: #ffffff;
-  --background: #010104;
-  --primary: #548060;
-  --secondary: #0f1d0c;
-  --accent: #6c92c0;
-}
+
 
 .bg-index{
   background: url("/static/img/background.jpg") no-repeat fixed;
@@ -245,32 +239,38 @@
   transition: all 400ms ease;
 }
 
-.onboarding-dot active {
+.onboarding-dot.active {
   background: dimgray;
 }
 
 
-.container input {
+.radio-container input {
   position: absolute;
   opacity: 0;
-  cursor: pointer;
   height: 25px;
   width: 25px;
 }
 
-.container span.onboarding-label {
-  position: absolute;
-  height: 25px;
-  width: 25px;
+.radio-container:hover {
+  cursor: pointer;
+}
+
+.radio-container .onboarding-label {
+  position: relative;
+  top: -20px;
+  left: 0;
+  height: 20px;
+  width: 20px;
   background-color: #ccc;
   border-radius: 50%;
+  padding: 0px 0px 25px 25px;
 }
 
-.container:hover input ~ .onboarding-label {
-  background-color: #999;
+.radio-container:hover input ~ .onboarding-label {
+  background-color: #666;
 }
 
-.container input:checked ~ .onboarding-label {
+.radio-container input:checked ~ .onboarding-label {
   background-color: var(--primary);
 }
 
@@ -280,11 +280,11 @@
   display: none;
 }
 
-.container input:checked ~ .onboarding-label:after {
+.radio-container input:checked ~ .onboarding-label:after {
   display: block;
 }
 
-.container .onboarding-label:after {
+.radio-container .onboarding-label:after {
   left: 9px;
   top: 5px;
   width: 5px;

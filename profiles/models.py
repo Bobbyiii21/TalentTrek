@@ -1,20 +1,54 @@
 from django.db import models
 from cities_light.models import City, Region, Country #look up cities_light documentation if this isn't working, it hasn't been tested yet
 from datetime import date
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, User
+from django.utils import timezone
+from django.utils.text import slugify
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
 #NOTE: make sure to verify that we are using the same method of implementation for things such as locations, fix conflicts immediately
 
+#might just create 2 separate user classes? depends on whether its easier to implement a parent class or have 2 independent user classes.
+#parent class defines a User with an ID, username, email
+'''class TTUser(AbstractBaseUser):
+    id = models.AutoField(primary_key=True)
+    first_name = models.CharField("first name", max_length=31, blank=True)
+    last_name = models.CharField("last_name", max_length=31, blank=True)
+    email = models.EmailField("email address", max_length=127, unique=True)
+    link = models.SlugField(max_length=127, unique=True)
+    pfp = models.ImageField(upload_to=None, height_field=None, width_field=None)
+    country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
+    region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
+    city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED 
+    date_joined = models.DateTimeField("date joined", default=timezone.now)
+    # Check that the above image loads and figure out where to store user-uploaded images
+    is_staff = models.BooleanField(
+        "staff status",
+        default=False,
+        help_text="Designates whether the user can log into this admin site.",
+    )
+    is_active = models.BooleanField(
+        "active",
+        default=True,
+        help_text=
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
+        ,
+    )
+
+
+    USERNAME_FIELD = "email"
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = ["email", "first_name", "last_name"]
+
+    class Meta:
+        verbose_name = "Talent Trek User"
+        verbose_name_plural = "Talent Trek Users"
+
+    def slugify_link(self):
+        return slugify(f"{self.first_name}-{self.last_name}-{str(self.id)}")
+'''
 #children of User model for different account types below
-
-
-#model for a recruiter
-#TODO: build the model? if it needs anything
-class Recruiter(User):
-    #tbh idk if this needs any unique variables, just unique permissions, so im not sure if i need to actually put anything here since its essential properties are in its parent
-    pass
-
 
 #model for a job seeker
 #TODO: verify if lists of objects are implemented correctly and fix issues if not
@@ -28,6 +62,21 @@ class JobSeeker(User):
     region = models.ForeignKey(Region, on_delete=models.CASCADE, blank=True) #UNTESTED
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True) #UNTESTED
 
+#class JobSeeker(TTUser):
+#    headline = models.TextField(max_length=1023)
+    #skills = models.CharField(blank=True, choices=CHOICES, max_length=31) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
+#    links = [models.URLField(max_length=127)] #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+
+#model for a recruiter
+#TODO: build the model? if it needs anything
+class Recruiter(User):
+    #tbh idk if this needs any unique variables, just unique permissions, so im not sure if i need to actually put anything here since its essential properties are in its parent
+    pass
+
+
+
+#builds an education summary that will be displayed as one unified part of the profile
+#TODO: test if degree type selection works properly when creating an education model
 class Education(models.Model):
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)

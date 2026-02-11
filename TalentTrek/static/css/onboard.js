@@ -1,11 +1,11 @@
 const onboardingBtn = document.querySelector(".primary-hover-btn");
 const onboardingContainer = document.querySelector(".onboarding-container");
 const onboardingOverlay = document.querySelector(".onboarding-overlay");
-const skipBtn = document.querySelector(".onboarding-container .onboarding-skip-btn");
-const steps = document.querySelectorAll(".onboarding-container .onboarding-step");
-const stepsContainer = document.querySelector(".onboarding-container .onboarding-steps");
-const nextBtn = document.querySelector(".onboarding-container .onboarding-next-btn");
-const dots = document.querySelectorAll(".onboarding-container .onboaring-dot");
+const skipBtn = document.querySelector(".onboarding-skip-btn");
+const steps = document.querySelectorAll(".onboarding-step");
+const stepsContainer = document.querySelector(".onboarding-steps");
+const nextBtn = document.querySelector(".onboarding-next-btn");
+const dots = document.querySelectorAll(".onboarding-dot");
 
 let stepPosition = 0;
 let currentStep = 0;
@@ -17,7 +17,7 @@ const init = () => {
   currentStep = 0;
   stepPosition = 0;
   stepsContainer.style.transform = `translateX(-${stepPosition}px)`;
-
+  
   dots.forEach((d) => {
     d.classList.remove("active");
   });
@@ -56,8 +56,9 @@ nextBtn.addEventListener("click", () => {
   });
 
   dots[currentStep].classList.add("active");
+ // dots[currentStep - 1].classList.remove("active");
 
-  if (currentStep == steps.length - 1) {
+  if (currentStep == (steps.length - 1)) {
     nextBtn.innerHTML = "Finish";
   }
 });
