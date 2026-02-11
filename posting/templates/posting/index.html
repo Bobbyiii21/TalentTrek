@@ -7,23 +7,51 @@
       <div class="col mx-auto mb-3">
         <h2>Job Postings</h2>
         <hr />
+        <p class="card-text">
+          <form method="GET">
+            <div class="row">
+              <div class="col-auto">
+                <div class="input-group col-auto">
+                  <div class="input-group-text">
+                    Search</div>
+                  <input type="text" class="form-control" name="search">
+                </div>
+              </div>
+              <div class="col-auto">
+                <button class="btn bg-dark text-white" type="submit">Search</button>
+              </div>
+            </div>
+          </form>
+        </p>
       </div>
     </div>
     <div class="row">
-      {% for post in template_data.postings %}
-      <div class="col-md-4 col-lg-3 mb-2">
-        <div class="p-2 card align-items-center pt-4">
-          <img src="{% static 'img/about.jpg' %}"
-            class="card-img-top rounded">
-          <div class="card-body text-center">
-            <a href="{% url 'posting.post' id=post.id %}" class="btn bg-dark text-white">
-              {{ post.name }}
-            </a>
-          </div>
+  {% for post in template_data.postings %}
+  <div class="col-12 mb-3">
+    <div class="card p-3">
+      <div class="row g-0 align-items-center">
+        <div class="col-auto">
+          <img src="{{ post.image.url }}"
+               class="img-fluid rounded"
+               style="width: 100px; height: auto;">
         </div>
+        <div class="col ps-3">
+          <h5 class="mb-1">
+            <a href="{% url 'posting.post' id=post.id %}" class="text-dark text-decoration-none">
+              {{ post.company_name }} – {{ post.job_title }}
+            </a>
+          </h5>
+          <p class="mb-0 text-muted">
+            {{ post.description }}
+          </p>
+        </div>
+
       </div>
-      {% endfor %}
     </div>
+  </div>
+  {% endfor %}
+</div>
+
   </div>
 </div>
 {% endblock content %}

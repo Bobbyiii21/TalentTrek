@@ -5,16 +5,14 @@
   <div class="container">
     <div class="row mt-3">
       <div class="col-md-6 mx-auto mb-3">
-        <h2>{{ template_data.post.name }}</h2>
+        <h2>{{ template_data.post.company_name }}</h2>
         <hr />
-        <p><b>Description:</b> {{
-          template_data.post.description }}</p>
-        <p><b>Price:</b> ${{
-          template_data.post.price }}</p>
+        <p><b>Job Title:</b> {{ template_data.post.job_title }}</p>
+        <p><b>Description:</b> {{ template_data.post.description }}</p>
       </div>
       <div class="col-md-6 mx-auto mb-3 text-center">
-        <img src="{% static 'img/about.jpg' %}"
-          class="rounded" />
+        <img src="{{ template_data.post.image.url }}"
+          class="rounded img-card-400" />
       </div>
     </div>
   </div>
