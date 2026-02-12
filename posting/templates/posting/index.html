@@ -25,7 +25,7 @@
         </p>
       </div>
     </div>
-    <div class="row">
+  <div class="row">
   {% for post in template_data.postings %}
   <div class="col-12 mb-3">
     <div class="card p-3">
@@ -37,13 +37,30 @@
         </div>
         <div class="col ps-3">
           <h5 class="mb-1">
-            <a href="{% url 'posting.post' id=post.id %}" class="text-dark text-decoration-none">
+            <a href="{% url 'posting.post' id=post.id %}" class="job-title text-dark text-decoration-none">
               {{ post.company_name }} – {{ post.job_title }}
             </a>
           </h5>
-          <p class="mb-0 text-muted">
-            {{ post.description }}
+          <p class="mb-1 text-muted short-desc" id="short-{{ post.id }}">
+            {{ post.description|truncatechars:150 }}
           </p>
+
+           <div class="collapse" id="desc-{{ post.id }}">
+            <p class="text-muted mb-1">
+              {{ post.description }}
+            </p>
+          </div>
+
+          <a
+            class="small text-primary"
+            data-bs-toggle="collapse"
+            href="#desc-{{ post.id }}"
+            role="button"
+            aria-expanded="false"
+            aria-controls="desc-{{ post.id }}"
+            id="show-toggle">
+            Show more
+          </a>
         </div>
 
       </div>
