@@ -1,6 +1,7 @@
 from django.db import models
 from cities_light.models import City, Country #look up cities_light documentation if this isn't working, it hasn't been tested yet
 from datetime import date
+from django.contrib.auth.models import User
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
 #NOTE: make sure to verify that we are using the same method of implementation for things such as locations, fix conflicts immediately
@@ -30,15 +31,6 @@ class Experience(models.Model):
     position_title = models.CharField(max_length=31)
     job_description = models.TextField(max_length=511)
 
-#might just create 2 separate user classes? depends on whether its easier to implement a parent class or have 2 independent user classes.
-
-#parent class defines a User with an ID, username, email
-class User(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=63)
-    email = models.CharField(max_length=127)
-    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    headline = models.TextField(max_length=1023)
 
 #children of User model for different account types below
 
@@ -52,10 +44,14 @@ class JobSeeker(User):
     experience = models.ManyToManyField(Experience) #job experience objects
     country = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True) #UNTESTED
     city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True) #UNTESTED
+    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    headline = models.TextField(max_length=1023)
 
 #model for a recruiter
 #TODO: build the model? if it needs anything
 class Recruiter(User):
     company = models.TextField(max_length=63)
+    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    headline = models.TextField(max_length=1023)
 
 
