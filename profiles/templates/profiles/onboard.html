@@ -13,6 +13,7 @@
             <div class="onboarding-dot active"></div>
             <div class="onboarding-dot"></div>
             <div class="onboarding-dot"></div>
+            <div class="onboarding-dot"></div>
         </div>
 
         <div class="onboarding-steps">
@@ -25,15 +26,15 @@
                 <table>
                     <td>
                         <label class="radio-container" for="job_seeker">
-                            <input type="radio" id="job_seeker" name="user_type" value="Job_Seeker">
-                            <button class="onboarding-label"></button>
+                            <input type="radio" id="job_seeker" name="user_type" value="job_seeker">
+                            <span class="onboarding-label"></span>
                             Job Seeker
                         </label>
                     </td>
                     <td>
                         <label class="radio-container" for="recruiter">
-                            <input type="radio" id="recruiter" name="user_type" value="Recruiter">
-                            <button class="onboarding-label"></button>
+                            <input type="radio" id="recruiter" name="user_type" value="recruiter">
+                            <span class="onboarding-label"></span>
                             Recruiter
                         </label>
                     </td>
@@ -49,29 +50,15 @@
                 </div>
                 <h3>Step 2</h3>
                 <p>What skills do you have?</p>
-                <table>
-                    <td>
-                        <label class="radio-container" for="1">
-                            <input type="radio" id="1" name="user_type" value="1">
-                            <button class="onboarding-label"></button>
-                            Bartending
-                        </label>
-                    </td>
-                    <td>
-                        <label class="radio-container" for="2">
-                            <input type="radio" id="2" name="user_type" value="2">
-                            <button class="onboarding-label"></button>
-                            Django
-                        </label>
-                    </td>
-                    <td>
-                        <label class="radio-container" for="3">
-                            <input type="radio" id="3" name="user_type" value="3">
-                            <button class="onboarding-label"></button>
-                            Linear Algebra
-                        </label>
-                    </td>
-                </table>
+                {% csrf_token %}
+                <p>
+                    <label for="first-name">First Name:</label>
+                    <textarea name="first-name" required class="form-control" id="first-name" maxlength="31"></textarea>
+                </p>
+                <p>
+                    <label for="last-name">Last Name:</label>
+                    <textarea name="last-name" required class="form-control" id="last-name" maxlength="31"></textarea>
+                </p>
             </div>
 
             <div class="onboarding-step">
@@ -80,6 +67,30 @@
                 </div>
                 <h3>Step 3</h3>
                 <p>What's your education level?</p>
+                {% csrf_token %}
+                <form action="/onboard.js" method="post" enctype="multipart/form-data">
+                    <label for="resume-upload">Upload Resume:</label>
+                    <input type="file"  id="resume-upload" name="resume" accept=".doc,.docx,.pdf">
+                    <button type="primary-hover-btn resume-submit">Browse...</button>
+                </form>
+            </div>
+
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/default_pfp.png' %}" alt="Profile Picture" />
+                </div>
+                <h3>Step 4</h3>
+                <p>Upload your profile picture.</p>
+                {% csrf_token %}
+                <form method="post" enctype="multipart/form-data" class="profile_pic_submission">
+                    <div>
+                        <label for="profile_pic">Choose file to upload</label>
+                        <input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png" />
+                    </div>
+                    <div>
+                        <button>Submit</button>
+                    </div>
+                </form>
             </div>
         </div>
     
@@ -89,6 +100,6 @@
 </div>
 
 
-
-<script src="{% static 'css/onboard.js' %} "></script>
+<link rel="stylesheet" href="{% static 'css/onboard.css' %}">
+<script src="{% static 'js/onboard.js' %} "></script>
 {% endblock content %}
