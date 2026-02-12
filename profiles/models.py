@@ -16,7 +16,7 @@ class DegreeType(models.TextChoices):
     DOCTORATE = "DOCTORATE", "Doctorate"
 
 class Education(models.Model):
-    grad_year = models.PositiveIntegerField(length=4) #if current student, they should put in projected grad date
+    grad_year = models.PositiveIntegerField(max_length=4) #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
 
