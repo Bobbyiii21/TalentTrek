@@ -1,9 +1,11 @@
-from django.db import models
-from cities_light.models import City, Region, Country #look up cities_light documentation if this isn't working, it hasn't been tested yet
-from datetime import date
-from django.contrib.auth.models import AbstractBaseUser, User
-from django.utils import timezone
-from django.utils.text import slugify
+#OLD FILE FROM setup_wizard BRANCH
+
+#from django.db import models
+#from cities_light.models import City, Region, Country #look up cities_light documentation if this isn't working, it hasn't been tested yet
+#from datetime import date
+#from django.contrib.auth.models import AbstractBaseUser, User
+#from django.utils import timezone
+#from django.utils.text import slugify
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
 #NOTE: make sure to verify that we are using the same method of implementation for things such as locations, fix conflicts immediately
@@ -47,6 +49,7 @@ from django.utils.text import slugify
 
     def slugify_link(self):
         return slugify(f"{self.first_name}-{self.last_name}-{str(self.id)}")
+'''
 '''
 #children of User model for different account types below
 
@@ -98,4 +101,4 @@ class Experience(models.Model):
 
 class Link(models.Model):
     url = models.URLField(max_length=127)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)'''
