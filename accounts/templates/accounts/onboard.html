@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<button class="primary-hover-btn onboarding-btn">Start</button>
+
+<div class="onboarding-overlay"></div>
+
+<div class="onboarding-container">
+    <div class="content">
+        <a class="hollow-btn onboarding-skip-btn" href="#">Skip</a>
+    
+        <div class="onboarding-dots">
+            <div class="onboarding-dot active"></div>
+            <div class="onboarding-dot"></div>
+            <div class="onboarding-dot"></div>
+            <div class="onboarding-dot"></div>
+        </div>
+
+        <div class="onboarding-steps">
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/recruiter.png' %}" alt="Recruiter" />
+                </div>
+                <h3>Step 1</h3>
+                <p>Are you a job seeker or a recruiter?</p>
+                <table>
+                    <td>
+                        <label class="radio-container" for="job_seeker">
+                            <input type="radio" id="job_seeker" name="user_type" value="job_seeker">
+                            <span class="onboarding-label"></span>
+                            Job Seeker
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio-container" for="recruiter">
+                            <input type="radio" id="recruiter" name="user_type" value="recruiter">
+                            <span class="onboarding-label"></span>
+                            Recruiter
+                        </label>
+                    </td>
+                </table>
+
+               
+            </div>
+
+
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/job_seeker.png' %}" alt="Job Seeker" />
+                </div>
+                <h3>Step 2</h3>
+                <p>What skills do you have?</p>
+                {% csrf_token %}
+                <p>
+                    <label for="first-name">First Name:</label>
+                    <textarea name="first-name" required class="form-control" id="first-name" maxlength="31"></textarea>
+                </p>
+                <p>
+                    <label for="last-name">Last Name:</label>
+                    <textarea name="last-name" required class="form-control" id="last-name" maxlength="31"></textarea>
+                </p>
+            </div>
+
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/job_seeker.png' %}" alt="Job Seeker" />
+                </div>
+                <h3>Step 3</h3>
+                <p>What's your education level?</p>
+                {% csrf_token %}
+                <form action="/onboard.js" method="post" enctype="multipart/form-data">
+                    <label for="resume-upload">Upload Resume:</label>
+                    <input type="file"  id="resume-upload" name="resume" accept=".doc,.docx,.pdf">
+                    <button type="primary-hover-btn resume-submit">Browse...</button>
+                </form>
+            </div>
+
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/default_pfp.png' %}" alt="Profile Picture" />
+                </div>
+                <h3>Step 4</h3>
+                <p>Upload your profile picture.</p>
+                {% csrf_token %}
+                <form method="post" enctype="multipart/form-data" class="profile_pic_submission">
+                    <div>
+                        <label for="profile_pic">Choose file to upload</label>
+                        <input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png" />
+                    </div>
+                    <div>
+                        <button>Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
+        <button class="onboarding-next-btn">Next</button>
+    
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="{% static 'css/onboard.css' %}">
+<script src="{% static 'js/onboard.js' %} "></script>
+{% endblock content %}

@@ -3,18 +3,19 @@ from django.contrib.auth import login as auth_login, authenticate, logout as aut
 from .forms import CustomUserCreationForm, CustomErrorList
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
 @login_required
 def logout(request):
     auth_logout(request)
     return redirect('home.index')
+
 def login(request):
     template_data = {}
     template_data['title'] = 'Login'
     if request.method == 'GET':
         return render(request, 'accounts/login.html', {'template_data': template_data})
     elif request.method == 'POST':
-        user = authenticate(request, username = request.POST['username'],
+        user = authenticate(request, username = request.POST['email'],
                           password = request.POST['password'])
         if user is None:
             template_data['error'] = 'The username or password is incorrect.'
@@ -33,7 +34,19 @@ def register(request):
         form = CustomUserCreationForm(request.POST, error_class=CustomErrorList)
         if form.is_valid():
             form.save()
-            return redirect('accounts.login')
+            return redirect('accounts.onboard')
         else:
             template_data['form'] = form
             return render(request, 'accounts/register.html', {'template_data': template_data})
+        
+def onboard(request):
+    template_data = {}
+    return render(request, 'accounts/onboard.html', {'template_data': template_data})
+
+# Create your views here.
+def index(request):
+    template_data = {}
+    template_data['title'] = 'Accounts'
+    return render(request, 'accounts/index.html', {'template_data': template_data})
+# Create your views here.
+
