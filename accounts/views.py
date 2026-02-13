@@ -3,7 +3,6 @@ from django.contrib.auth import login as auth_login, authenticate, logout as aut
 from .forms import CustomUserCreationForm, CustomErrorList
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 @login_required
 def logout(request):
     auth_logout(request)
@@ -15,7 +14,7 @@ def login(request):
     if request.method == 'GET':
         return render(request, 'accounts/login.html', {'template_data': template_data})
     elif request.method == 'POST':
-        user = authenticate(request, username = request.POST['username'],
+        user = authenticate(request, username = request.POST['email'],
                           password = request.POST['password'])
         if user is None:
             template_data['error'] = 'The username or password is incorrect.'

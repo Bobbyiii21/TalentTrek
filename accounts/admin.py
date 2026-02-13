@@ -10,6 +10,7 @@ class RecruiterAdmin(admin.ModelAdmin):
 class TTUserAdmin(admin.ModelAdmin):
     ordering = ['id', 'email', 'first_name']
     search_fields = ['email', 'first_name']
+    model = TTUser
     
 # Register your models here.
 admin.site.register(TTUser, TTUserAdmin)

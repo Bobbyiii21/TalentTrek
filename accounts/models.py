@@ -4,9 +4,23 @@ from datetime import date
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django.utils.text import slugify
+import os
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
 #NOTE: make sure to verify that we are using the same method of implementation for things such as locations, fix conflicts immediately
+
+#File Upload naming schemes
+def get_pfp_path(user, filename):
+    filetype = filename.split('.')[-1]
+    new_name = user.slugify_name() + '.' + filetype
+    return os.path.join('pfps', new_name)
+
+def get_resume_path(user, filename):
+    filetype = filename.split('.')[-1]
+    new_name = user.slugify_name() + '.' + filetype
+    return os.path.join('resumes', new_name)
+
+
 
 #might just create 2 separate user classes? depends on whether its easier to implement a parent class or have 2 independent user classes.
 #parent class defines a User with an ID, username, email
@@ -36,11 +50,11 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField("first name", max_length=31)
     last_name = models.CharField("last_name", max_length=31)
     email = models.EmailField("email address", max_length=127, unique=True)
-    link = models.SlugField(max_length=127, unique=True, null=True)
-    pfp = models.ImageField(upload_to='pfps/', height_field=None, width_field=None)
-    country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, null=True) #UNTESTED
-    region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, null=True) #UNTESTED
-    city = models.ForeignKey(City, on_delete=models.DO_NOTHING, null=True) #UNTESTED 
+    link = models.SlugField(max_length=127, blank=True)
+    pfp = models.ImageField(upload_to=get_pfp_path, height_field=None, width_field=None, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
+    region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
+    city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED 
     date_joined = models.DateTimeField("date joined", default=timezone.now)
     headline = models.TextField(max_length=1023, blank=True)
     # Check that the above image loads and figure out where to store user-uploaded images
@@ -65,17 +79,19 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomAccountManager()
 
     class Meta:
+        db_table = 'auth_user'
         verbose_name = "Talent Trek User"
         verbose_name_plural = "Talent Trek Users"
 
-    def slugify_link(self):
+    def slugify_name(self):
         return f"{slugify(self.first_name)}-{slugify(self.last_name)}-{str(self.id)}"
 
     def natural_key(self):
         return self.email
 
+
     def __str__(self):
-        return self.slugify_link(self)
+        return self.slugify_name()
 
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
