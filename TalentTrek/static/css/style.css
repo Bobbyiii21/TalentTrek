@@ -10,7 +10,6 @@
   --accent-dark: #5b6e86;
 }
 
-<<<<<<< HEAD
 html, body {
   min-height: 100vh;
   display: flex;
@@ -21,10 +20,6 @@ html, body {
 }
 
 .bg-index {
-=======
-
-.bg-index{
->>>>>>> main
   background: url("/static/img/background.jpg") no-repeat fixed;
   background-size: 100% auto;
   background-color: var(--primary);
@@ -147,7 +142,6 @@ html, body {
   display: inline-block;
   font-size: 1rem;
   cursor: default;
-<<<<<<< HEAD
 }
 
 .profile-picture {
@@ -157,18 +151,5 @@ html, body {
     width: 30px;
     height: 30px;
     border-radius: 50%;
+    object-fit: cover;
 }
-=======
-<<<<<<< HEAD
-}
-=======
-}
-
-
-
-
-
-
-
->>>>>>> setup_wizard
->>>>>>> main

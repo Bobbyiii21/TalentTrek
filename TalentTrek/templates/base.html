@@ -24,26 +24,30 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav ms-auto navbar-ml">
+            <a class="nav-link" href="{% url 'home.index' %}">Home</a>
+            {% if not user.is_authenticated %}
+            <a class="nav-link" href="{% url 'home.about' %}">About</a>
+            {% else %}
+            <div class="vr bg-white mx-2 d-none d-lg-block"></div>
+            {% endif %}
+
             {% if user.is_authenticated %}
             <a class="nav-link" href="{% url 'posting.explore' %}">Jobs</a>
             <a class="nav-link" href="{% url 'profiles.index' %}">Profiles</a>
-            {% else %}
-            <a class="nav-link" href="{% url 'home.about' %}">About</a>
             {% endif %}
-            <a class="nav-link" href="{% url 'home.index' %}">Home</a>
-
+            
             <div class="vr bg-white mx-2 d-none d-lg-block"></div>
 
             {% if user.is_authenticated %}
               <a class="navbar-brand" href="{% url 'profiles.index' %}">
-                {% if user.pfp is None %}
+                {% if not user.pfp %}
                   <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
                 {% else %}
-                  <img class="profile-picture" src="{{ user.pfp }}" alt="Profile Picture"/>
+                  <img class="profile-picture" src="media/{{ user.pfp }}" alt="Profile Picture"/>
                 {% endif %}
               </a>
               <div class="btn-group align-items-center">
-                <a type="button" class="btn profile-btn" href="{% url 'profiles.index' %}">{{ user.username }}</a>
+                <a type="button" class="btn profile-btn" href="{% url 'profiles.index' %}">{{ user.first_name }}</a>
                 <button type="button" class="btn profile-btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                   <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
