@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from django.db import models
 from cities_light.models import City, Country #look up cities_light documentation if this isn't working, it hasn't been tested yet
 from datetime import date
@@ -162,3 +163,5 @@ class Link(models.Model):
     url = models.URLField(max_length=127)
     user = models.ForeignKey(User, on_delete=models.CASCADE)'''
 >>>>>>> setup_wizard
+=======
+>>>>>>> 2ddd258bfa8bdc12b9487bedf9d7e22d52873642
