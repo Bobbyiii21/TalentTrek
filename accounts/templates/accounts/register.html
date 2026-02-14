@@ -12,9 +12,12 @@
             <form method="POST">
               {% csrf_token %}
               {{ template_data.form.as_p }}
-              <button type="submit"
-                class="secondary-hover-btn">Sign Up
-              </button>
+              <div class="d-flex justify-content-between align-items-center">
+                <button type="submit"
+                  class="secondary-hover-btn">Sign Up
+                </button>
+                <a class="primary-hover-btn" href="{% url 'accounts.login' %}">Existing User?</a>
+              </div>
             </form>
           </div>
         </div>
@@ -27,6 +30,10 @@
     <div class="row justify-content-center">
       <div class="col-md-8">
         <a class="primary-hover-btn" href="{% url 'accounts.login' %}">Existing User?</a>
+<<<<<<< HEAD
+=======
+        <a class="hollow-btn" href="{% url 'accounts.onboard' %}">Onboard Test Button</a>
+>>>>>>> main
       </div>
     </div>
   </div>

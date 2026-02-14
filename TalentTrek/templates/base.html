@@ -36,7 +36,11 @@
 
             {% if user.is_authenticated %}
               <a class="navbar-brand" href="{% url 'profiles.index' %}">
-                <img class="profile-picture" src="{% static 'img/about.png' %}" alt="Profile Picture"/>
+                {% if user.pfp is None %}
+                  <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
+                {% else %}
+                  <img class="profile-picture" src="{{ user.pfp }}" alt="Profile Picture"/>
+                {% endif %}
               </a>
               <div class="btn-group align-items-center">
                 <a type="button" class="btn profile-btn" href="{% url 'profiles.index' %}">{{ user.username }}</a>
@@ -84,9 +88,9 @@
           <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
             <b>CONTACT</b>
             <hr />
-            <p><i class="fas fa-home me-2"></i> 150-2345 Tokyo-to, Japan</p>
+            <p><i class="fas fa-home me-2"></i> 123 Bobby Dodd Way, Atlanta, GA</p>
             <p><i class="fas fa-envelope me-2"></i> info@talenttrek.com</p>
-            <p><i class="fas fa-phone me-2"></i> +81 03-3333-3333</p>
+            <p><i class="fas fa-phone me-2"></i> +1 404-470-678</p>
           </div>
         </div>
       </div>
@@ -97,7 +101,7 @@
           <span>Designed by Xavier Evans, Luke Ferguson, Ellie Fiftal, Alex Smith, & Bobby Stephens III</span>
         </div>
         <div class="text-white">
-          <span>© Copyright - 2026</span>
+          <span>© Us (duh) - 2026</span>
         </div>
       </div>
     </section>

@@ -16,10 +16,10 @@
             <form method="POST">
               {% csrf_token %}
               <p>
-                <label for="username">Username</label>
-                <input id="username" type="text"
-                       name="username" required
-                       autocomplete="username"
+                <label for="email">Email</label>
+                <input id="email" type="text"
+                       name="email" required
+                       autocomplete="email"
                        class="form-control">
               </p>
               <p>
@@ -33,6 +33,7 @@
                 <button type="submit"
                   class="secondary-hover-btn">Login
                 </button>
+                <a class="primary-hover-btn" href="{% url 'accounts.register' %}">New User?</a>
               </div>
             </form>
           </div>
