@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
+<div class="chat-container">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Chats</h2>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-item">
+                <div class="sidebar-item-content">
+                    <img src="{% static 'img/default_pfp.png' %}" alt="Profile Picture" class="profile-picture"/>
+                    <div class="sidebar-item-content-text">
+                        <h3>Chat 1</h3>
+                        <div class="sidebar-item-content-text-time">
+                            <p>2w ago</p>
+                            <p>Yo Twin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+            <div class="sidebar-item">
+                <h3>Chat 2</h3>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="main-header">
+            <h2>Conversation</h2>
+        </div>
+        <div class="main-chat">
+            <div class="message-list">
+                <div class="message-item">
+                    <div class="message-item-sender"> 
+                        <h3>From You</h3>
+                    </div>
+                    <div class="message-item-recipient">
+                        <h3>Not From You</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="message-input">
+                <input type="text" placeholder="Message" />
+                <button class="primary-hover-btn">Send</button>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock content %}
