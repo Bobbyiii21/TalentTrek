@@ -96,9 +96,9 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
 #NOTE: make sure to verify that we are using the same method of implementation for things such as locations, fix conflicts immediately
+#NOTE: hidden properties should be shown on the users own profile page with a flag showing they are hidden, and hide them from all other users.
 
 #builds an education summary that will be displayed as one unified part of the profile
-#TODO: test if degree type selection works properly when creating an education model
 class DegreeType(models.TextChoices):
     HIGHSCHOOL = "HIGHSCHOOL", "High School"
     CERTIFICATE = "CERTIFICATE", "Certificate"
@@ -111,6 +111,7 @@ class Education(models.Model):
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
+    is_hidden = models.BooleanField(default=False) #hides this individual education instance
 
 #builds a summary of a job experience
 class Experience(models.Model):
@@ -121,6 +122,7 @@ class Experience(models.Model):
     company_name = models.CharField(max_length=31)
     position_title = models.CharField(max_length=31)
     job_description = models.TextField(max_length=511)
+    is_hidden = models.BooleanField(default=False) #hides this individual experience experience
 
 
 #children of User model for different account types below
@@ -131,16 +133,19 @@ class Experience(models.Model):
 #TODO: use html/css to make "links" into hyperlinks
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
-    education = models.ManyToManyField(Education) #list of education objects
-    #skills = models.CharField(blank=True, choices=CHOICES, max_length=31) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
-    experience = models.ManyToManyField(Experience) #job experience objects
+    education = models.ManyToManyField(Education, blank=True) #list of education objects
+    #skills = models.CharField(blank=True, choices=CHOICES, max_length=31, blank=True) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
+    experience = models.ManyToManyField(Experience, blank=True) #job experience objects
     #country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True) #UNTESTED
     #region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True) #UNTESTED
     #city = models.ForeignKey(City, on_delete=models.CASCADE, null=True) #UNTESTED
-    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    #headline = models.TextField(max_length=1023)
+    #location_is_hidden = models.BooleanField(default=False) #hides all aspects of location
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links_is_hidden = models.BooleanField(default=False) #hides entire links field
     #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
-    resume = models.FileField(upload_to='resumes/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
+    resume = models.FileField(upload_to='resumes/', blank=True) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
+    #resume_is_hidden = models.BooleanField(default=False)
+    account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on
     
     #def __str__(self):
     #    return {self.user.id} + ' - ' + {self.user.get_full_name()}
@@ -150,12 +155,10 @@ class JobSeeker(models.Model):
         verbose_name = "Job Seeker"
 
 #model for a recruiter
-#TODO: build the model? if it needs anything
 class Recruiter(models.Model):
     user = models.OneToOneField(TTUser, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
     links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    #headline = models.TextField(max_length=1023)
     #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
 
     class Meta:

@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
+
+from .models import TTUser, JobSeeker, Recruiter
 from .forms import CustomUserCreationForm, CustomErrorList
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -50,3 +52,26 @@ def index(request):
     return render(request, 'accounts/index.html', {'template_data': template_data})
 # Create your views here.
 
+def profiles(request, id):
+    is_seeker = True
+    user = TTUser.objects.get(id=id) 
+    template_data = {}
+    template_data['title'] = 'Profiles'
+    template_data['user'] = user
+    template_data['id'] = id
+    print("other print")
+    try:
+        seeker_user = JobSeeker.objects.get(user_id=id)
+        template_data["seeker_user"] = seeker_user
+        template_data['education'] = seeker_user.education.all()
+        #template_data['skills'] = seeker_user.education.all()
+        template_data['experience'] = seeker_user.experience.all()
+        #find some way to put links
+        #find some way to put resume
+        
+    except Exception:
+        is_seeker = False
+        recruiter_user = Recruiter.objects.get(user_id=id)
+        #something abt links
+    template_data['is_seeker'] = is_seeker
+    return render(request, 'accounts/profiles.html', {'template_data': template_data})

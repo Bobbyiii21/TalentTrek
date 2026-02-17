@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!--this should really be cleaned up and formatted lol-->
+<div class="p-3 mt-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <h2>Profiles Page</h2>
+        <div>
+            <img src="{{ template_data.user.pfp }}">
+            <h4>{{ template_data.user.first_name }} {{ template_data.user.last_name }}</h4>
+            {% if template_data.is_seeker %}
+            <h5>Job Seeker</h5>
+            {% endif %}
+            {% if not template_data.is_seeker %}
+            <h5>Recruiter at <b>{{ recruiter_user.company }}</b></h5>
+            {% endif %}
+            <p>Joined {{ template_data.user.date_joined }}</p>
+            <p>{{ template_data.user.email }}</p>
+        </div>    
+        {% if template_data.is_seeker %}
+            {% if not template_data.seeker_user.account_is_hidden %}
+                <p>{{ template_data.user.headline }}</p>
+                <!--smth here for skills-->
+                {% for exp in template_data.experience %}
+                    {% if not exp.is_hidden %}
+                        <p>Company: {{ exp.company_name }}</p>
+                        <p>Position Title: {{ exp.position_title }}</p>
+                        <p>Start Date: {{ exp.start_date }}</p>
+
+                        {% if exp.current_employee %}
+                            <p>End Date: {{ exp.end_date }}</p>
+                        {% endif %}
+                    
+                        <p>{{ exp.job_description }}</p>
+                    {% endif %}
+                {% endfor %}
+
+                {% for edu in template_data.education %}
+                    {% if not edu.is_hidden %}
+                    <p>Graduation Year: {{ edu.grad_year }}</p>
+                    <p>Institution: {{ edu.school_name }}</p>
+                    <p>Degree: {{ edu.degree }}</p>
+                    {% endif %}
+                {% endfor %}
+                <!--smth here for resume (dont forget hidden fields)-->
+                <!--implement links here (dont forget hidden fields)-->
+            {% endif %}
+            {% if template_data.seeker_user.account_is_hidden %}
+                <p>This account's details are hidden.</p>
+            {% endif %}
+        {% endif %}
+        {% if not template_data.is_seeker %}
+            <p>{{ template_data.user.headline }}</p>
+            <!--links go here-->
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="p-3 mt-4">
+  <div class="container">
+    <div class="row justify-content-center">
+        <p>sample text</p>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -7,4 +7,5 @@ urlpatterns = [
     path('logout/', views.logout, name='accounts.logout'),
     path('onboard/', views.onboard, name='accounts.onboard'),
     path('', views.index, name='accounts.index'),
+    path('<str:id>/', views.profiles, name='accounts.profiles'),
 ]
