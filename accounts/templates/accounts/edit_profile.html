@@ -1,4 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<div class="p-3">
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col mx-auto mb-3">
+                <h2>Edit Profile</h2>
+                <hr />
+                <form method="POST">
+                    {% csrf_token %}
+                    <p>
+                        <label for="first_name">First Name:</label>
+                        <textarea name="first_name" required class="form-control" id="first_name">{{ template_data.profile.first_name }}</textarea>
+                    </p>
+                    <p>
+                        <label for="last_name">Last Name:</label>
+                        <textarea name="last_name" required class="form-control" id="last_name">{{ template_data.profile.last_name }}</textarea>
+                    </p>
+                    <p>
+                        <label for="headline">Last Name:</label>
+                        <textarea name="headline" required class="headline" id="headline">{{ template_data.profile.headline }}</textarea>
+                    </p>
+                    <div class="text-start">
+                        <button type="submit" class="btn bg-dark text-white">Confirm Changes to Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
