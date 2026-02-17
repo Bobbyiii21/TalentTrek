@@ -11,7 +11,7 @@ class CustomErrorList(ErrorList):
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField()
     first_name = forms.CharField(max_length=31)
-    last_name = forms.CharField(max_length=31)
+    last_name = forms.CharField(max_length=31, required=False)
 
     field_order = ['email', 'first_name', 'last_name', 'password1', 'password2']
 
@@ -27,9 +27,12 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].label = 'Password Confirmation'
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+
         for field in ['email', 'first_name', 'last_name', 'password1', 'password2']:
             self.fields[field].help_text = None
 \
     class Meta:
         model = TTUser
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
+
+

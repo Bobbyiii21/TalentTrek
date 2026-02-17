@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django.utils.text import slugify
+from skills.models import Skill
 import os
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
@@ -15,9 +16,9 @@ def get_pfp_path(user, filename):
     new_name = user.slugify_name() + '.' + filetype
     return os.path.join('pfps', new_name)
 
-def get_resume_path(user, filename):
+def get_resume_path(job_seeker, filename):
     filetype = filename.split('.')[-1]
-    new_name = user.slugify_name() + '.' + filetype
+    new_name = job_seeker.user.slugify_name() + '.' + filetype
     return os.path.join('resumes', new_name)
 
 
@@ -132,18 +133,14 @@ class Experience(models.Model):
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     education = models.ManyToManyField(Education) #list of education objects
-    #skills = models.CharField(blank=True, choices=CHOICES, max_length=31) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
+    skills = models.ManyToManyField(Skill, blank=True)
     experience = models.ManyToManyField(Experience) #job experience objects
-    #country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True) #UNTESTED
-    #region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True) #UNTESTED
-    #city = models.ForeignKey(City, on_delete=models.CASCADE, null=True) #UNTESTED
-    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    #headline = models.TextField(max_length=1023)
-    #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
-    resume = models.FileField(upload_to='resumes/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    resume = models.FileField(upload_to=get_resume_path) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
     
-    #def __str__(self):
-    #    return {self.user.id} + ' - ' + {self.user.get_full_name()}
+    def __str__(self):
+        return str(self.user)
+    
     REQUIRED_FIELDS = ['user']
 
     class Meta:
@@ -152,11 +149,14 @@ class JobSeeker(models.Model):
 #model for a recruiter
 #TODO: build the model? if it needs anything
 class Recruiter(models.Model):
-    user = models.OneToOneField(TTUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
-    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    #headline = models.TextField(max_length=1023)
-    #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+
+    def __str__(self):
+        return str(self.user)
+
+    REQUIRED_FIELDS = ['user']
 
     class Meta:
         pass

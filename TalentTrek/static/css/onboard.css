@@ -1,3 +1,7 @@
+.onboarding-btn {
+  display: none;
+}
+
 .onbarding-container,
 .onbarding-container * {
   box-sizing: border-box;
@@ -56,7 +60,8 @@
 
 .onboarding-steps {
   display: flex;
-  width: 400%;
+  width: 500%;
+  height: 125%;
   transition: all 400ms ease;
 }
 
@@ -79,16 +84,41 @@
   padding: 0 32px;
 }
 
+.onboarding-navigation-buttons {
+  display: flex;
+  gap: 2px black;
+}
+
+.onboarding-back-btn,
 .onboarding-next-btn {
-  width: 100%;
+  width: 50%;
   padding: 18px 32px;
   font-size: 16px;
   font-weight: bold;
-  border: none;
   cursor: pointer;
   background: var(--primary-dark);
   color: var(--text);
   text-transform: uppercase;
+  transition: all 0.3s
+}
+
+.onboarding-back-btn {
+  border-right: 1px solid var(--secondary);
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+.onboarding-next-btn {
+  border-left: 1px solid var(--secondary);
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+.onboarding-back-btn:hover,
+.onboarding-next-btn:hover {
+  background-color: var(--primary);
 }
 
 .onboarding-skip-btn {
@@ -96,11 +126,15 @@
   top: 8px;
   right: 16px;
   text-transform: uppercase;
+
+}
+
+.onboarding-skip-btn.active {
   cursor: pointer;
   transition: all 0.3s
 }
 
-.onboarding-skip-btn:hover {
+.onboarding-skip-btn.active:hover {
   background-color: var(--accent-light);
   border: var(--accent-dark);
   color: var(--accent-dark);
@@ -176,5 +210,33 @@
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+
+#hidden-resume-button,
+#hidden-profile-pic-button {
+  display: none;
+}
+
+.onboard-short-text {
+  margin: 5px;
+  border-radius: 0.375rem;
+}
+
+#add-link-button {
+  border: 1px solid var(--accent);
+  border-radius: 0.375rem;
+  color: var(--accent);
+  padding: 0.375rem 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  cursor: default;
+}
+
+.onboard-short-text-xButton {
+  color: crimson;
+  border: none;
+  background-color: rgba(0,0,0,0)
 }
 
