@@ -32,7 +32,7 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-            <a class="nav-link" href="{% url 'posting.explore' %}">Jobs</a>
+            <a class="nav-link" href="{% url 'posting.index' %}">Jobs</a>
             <a class="nav-link" href="{% url 'profiles.index' %}">Profiles</a>
             {% endif %}
             
@@ -87,7 +87,10 @@
           <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
             <b>LINKS</b>
             <hr />
-            <p><a class="nav-link" href="{% url 'home.about' %}">About</a></p>
+            <p>
+              <a class="nav-link" href="{% url 'home.about' %}">About</a>
+              <a class="nav-link" href= "{% url 'posting.index' %}">Job Postings</a>
+            </p>
           </div>
           <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
             <b>CONTACT</b>
