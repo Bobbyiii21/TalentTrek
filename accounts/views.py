@@ -51,7 +51,6 @@ def register(request):
 @login_required    
 def onboard(request):
     if request.method == 'POST':
-        print('ONBARD POST')
         if (request.POST['user_type'] == 'job_seeker'):
             job_seeker = JobSeeker()
             job_seeker.user = request.user
@@ -89,11 +88,13 @@ def profiles(request, user_link):
     user = TTUser.objects.get(id=id) 
     template_data = {}
     template_data['title'] = 'Profiles'
-    template_data['user'] = user
+    template_data['profile_user'] = user
     template_data['id'] = id
-    template_data['is_seeker'] = True
+    template_data['is_seeker'] = False
+    template_data['is_recruiter'] = False
     try:
         seeker_user = JobSeeker.objects.get(user_id=id)
+        template_data['is_seeker'] = True
         template_data["seeker_user"] = seeker_user
         template_data['education'] = seeker_user.education.all()
         #template_data['skills'] = seeker_user.education.all()
@@ -101,19 +102,25 @@ def profiles(request, user_link):
         template_data['links'] = seeker_user.links.split(",")
         for link in template_data['links']:
             link = link.strip()
+        return render(request, 'accounts/profiles.html', {'template_data': template_data})
         #find some way to put resume
         
     except Exception:
-        template_data['is_seeker'] = False
-        recruiter_user = Recruiter.objects.get(user_id=id)
-        template_data['recruiter_user'] = recruiter_user
-        template_data['links'] = recruiter_user.links.split(",")
-        for link in template_data['links']:
-            link = link.strip()
-    return render(request, 'accounts/profiles.html', {'template_data': template_data})
+        try:
+            recruiter_user = Recruiter.objects.get(user_id=id)
+            template_data['is_recruiter'] = True
+            template_data['recruiter_user'] = recruiter_user
+            template_data['links'] = recruiter_user.links.split(",")
+            for link in template_data['links']:
+                link = link.strip()
+            return render(request, 'accounts/profiles.html', {'template_data': template_data})
+        
+        except Exception:
+            return render(request, 'accounts/profiles.html', {'template_data': template_data})
 
 @login_required
-def edit_profile(request, id):
+def edit_profile(request, user_link):
+    id = TTUser.get_id_by_name(user_link)
     profile = get_object_or_404(TTUser, id)
     if request.user != profile.user:
         return redirect('accounts.profiles')

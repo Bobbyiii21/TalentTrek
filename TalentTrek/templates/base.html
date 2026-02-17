@@ -16,7 +16,7 @@
     <nav class="p-1.5 navbar navbar-dark bg-dark navbar-expand-lg">
       <div class="container align-items-center">
         <a class="navbar-brand" href="{% url 'home.index' %}">
-          <img src="{% static 'img/logo.png' %}" alt="logo" height="20" />
+          <img src="{% static 'img/TTLogo.svg' %}" alt="logo" height="20" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
           aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
                 {% if not user.pfp %}
                   <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
                 {% else %}
-                  <img class="profile-picture" src="media/{{ user.pfp }}" alt="Profile Picture"/>
+                  <img class="profile-picture" src="{{ user.pfp.url }}" alt="Profile Picture"/>
                 {% endif %}
               </a>
               <div class="btn-group align-items-center">
@@ -105,7 +105,7 @@
           <span>Designed by Xavier Evans, Luke Ferguson, Ellie Fiftal, Alex Smith, & Bobby Stephens III</span>
         </div>
         <div class="text-white">
-          <span>© Us (duh) - 2026</span>
+          <span>© Nobody - 2026</span>
         </div>
       </div>
     </section>
