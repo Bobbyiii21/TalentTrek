@@ -8,4 +8,5 @@ urlpatterns = [
     path('onboard/', views.onboard, name='accounts.onboard'),
     path('', views.index, name='accounts.index'),
     path('<str:id>/', views.profiles, name='accounts.profiles'),
+    path('<str:id>/edit', views.edit_profile, name='accounts.edit_profile'),
 ]

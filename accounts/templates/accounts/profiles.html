@@ -11,14 +11,17 @@
             <img src="{{ template_data.user.pfp }}">
             <h4>{{ template_data.user.first_name }} {{ template_data.user.last_name }}</h4>
             {% if template_data.is_seeker %}
-            <h5>Job Seeker</h5>
+                <h5>Job Seeker</h5>
             {% endif %}
             {% if not template_data.is_seeker %}
-            <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
+                <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
             {% endif %}
             <p>Joined {{ template_data.user.date_joined }}</p>
             <p>{{ template_data.user.email }}</p>
-        </div>    
+        </div>
+        {% if template_data.user.is_authenticated and template_data.user == profile.user %}
+            <a class="btn btn-primary" href="{% url 'accounts.edit_profile' id=template_data.user.id %}">Edit Profile</a>
+        {% endif % }
         {% if template_data.is_seeker %}
             {% if not template_data.seeker_user.account_is_hidden %}
                 <p>{{ template_data.user.headline }}</p>
