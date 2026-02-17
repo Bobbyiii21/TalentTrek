@@ -10,9 +10,12 @@
   <div class="container">
     <div class="row mt-3">
       <div class="col mx-auto text-center mb-3">
-        <h4>Welcome to Talent Trek!</h4>
-        {% if not user.is_authenticated %}
-        <a class="primary-hover-btn" href="{% url 'accounts.register' %}">Join Today!</a>
+        {% if user.is_authenticated %}
+          <h4>Welcome back, {{ user.first_name }}!</h4>
+          Put some sort of menu here eventually w/ nearby or new job postings or something
+        {% else %}
+          <h4>Welcome to Talent Trek!</h4>
+          <a class="primary-hover-btn" href="{% url 'accounts.register' %}">Join Today!</a>
         {% endif %}
       </div>
     </div>

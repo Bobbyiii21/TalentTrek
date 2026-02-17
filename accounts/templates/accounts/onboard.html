@@ -14,6 +14,7 @@
             <div class="onboarding-dot"></div>
             <div class="onboarding-dot"></div>
             <div class="onboarding-dot"></div>
+            <div class="onboarding-dot"></div>
         </div>
 
         <div class="onboarding-steps">
@@ -21,7 +22,7 @@
                 <div class="image">
                     <img src="{% static 'img/recruiter.png' %}" alt="Recruiter" />
                 </div>
-                <h3>Step 1</h3>
+                <h3>Profile</h3>
                 <p>Are you a job seeker or a recruiter?</p>
                 <table>
                     <td>
@@ -49,15 +50,11 @@
                     <img src="{% static 'img/job_seeker.png' %}" alt="Job Seeker" />
                 </div>
                 <h3>Step 2</h3>
-                <p>What skills do you have?</p>
+                <p>Default Text Default Text Default Text Default Text Default Text Default Text</p>
                 {% csrf_token %}
                 <p>
-                    <label for="first-name">First Name:</label>
-                    <textarea name="first-name" required class="form-control" id="first-name" maxlength="31"></textarea>
-                </p>
-                <p>
-                    <label for="last-name">Last Name:</label>
-                    <textarea name="last-name" required class="form-control" id="last-name" maxlength="31"></textarea>
+                    <label for="headline">Headline:</label>
+                    <textarea name="headline" required class="form-control" id="headline" maxlength="1027"></textarea>
                 </p>
             </div>
 
@@ -66,13 +63,12 @@
                     <img src="{% static 'img/job_seeker.png' %}" alt="Job Seeker" />
                 </div>
                 <h3>Step 3</h3>
-                <p>What's your education level?</p>
-                {% csrf_token %}
-                <form action="/onboard.js" method="post" enctype="multipart/form-data">
-                    <label for="resume-upload">Upload Resume:</label>
-                    <input type="file"  id="resume-upload" name="resume" accept=".doc,.docx,.pdf">
-                    <button type="primary-hover-btn resume-submit">Browse...</button>
-                </form>
+                <p>Default Text Default Text Default Text Default Text Default Text Default Text</p>
+                <p class="onboarding-inner-html">
+                    <label for="resume-upload">Upload Resume: </label>
+                    <input type="file" id="hidden-resume-button" name="resume" accept=".doc,.docx,.pdf">
+                    <button class="secondary-hover-btn resume-submit" id="resume-upload">Browse...</button>
+                </p>
             </div>
 
             <div class="onboarding-step">
@@ -81,25 +77,376 @@
                 </div>
                 <h3>Step 4</h3>
                 <p>Upload your profile picture.</p>
-                {% csrf_token %}
-                <form method="post" enctype="multipart/form-data" class="profile_pic_submission">
-                    <div>
-                        <label for="profile_pic">Choose file to upload</label>
-                        <input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .jpeg, .png" />
-                    </div>
-                    <div>
-                        <button>Submit</button>
-                    </div>
-                </form>
+                <p>
+                    <label for="profile-pic">Choose file to upload</label>
+                    <input type="file" id="hidden-profile-pic-button" name="profile-pic" accept=".jpg, .jpeg, .png" />
+                    <button class="secondary-hover-btn profile-pic-submit" id="profile-pic">Submit</button>
+                </p>
+            </div>
+
+            <div class="onboarding-step">
+                <div class="image">
+                    <img src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
+                </div>
+                <h3>Step 5</h3>
+                <p>Add links.</p>
+                <div id="links-container"></div>
+                <a id="add-link-button">Add Link</a>
             </div>
         </div>
-    
-        <button class="onboarding-next-btn">Next</button>
+
+
+        <div class="onboarding-navigation-buttons">
+            <a class="onboarding-back-btn">Back</a>
+            <a class="onboarding-next-btn">Next</a>
+        </div>
     
     </div>
 </div>
 
 
 <link rel="stylesheet" href="{% static 'css/onboard.css' %}">
-<script src="{% static 'js/onboard.js' %} "></script>
+{# <script src="{% static 'js/onboard.js' %} "></script> #}
+
+<script>
+
+//const onboardingBtn = document.querySelector(".primary-hover-btn");
+const onboardingContainer = document.querySelector(".onboarding-container");
+const onboardingOverlay = document.querySelector(".onboarding-overlay");
+const skipBtn = document.querySelector(".onboarding-skip-btn");
+const steps = document.querySelectorAll(".onboarding-step");
+const stepsContainer = document.querySelector(".onboarding-steps");
+const nextBtn = document.querySelector(".onboarding-next-btn");
+const backBtn = document.querySelector(".onboarding-back-btn");
+const dots = document.querySelectorAll(".onboarding-dot");
+const dotsContainer = document.querySelector(".onboarding-dots");
+const headline = document.querySelector("#headline");
+const resumeUpload = document.querySelector("#hidden-resume-button");
+const pfpUpload = document.querySelector("#hidden-profile-pic-button");
+const addLinkBtn = document.querySelector("#add-link-button");
+const linksContainer = document.querySelector("#links-container");
+
+
+const recruiter_step_3_html = "";
+const job_seeker_step_3_html = "";
+const formData = new FormData();
+
+
+let stepPosition = 0;
+let currentStep = 0;
+let currentUser = "no_selection";
+let currentHeadline = "";
+let currentResume;
+let currentCompany = "";
+let currentPfp;
+let currentLinks = "";
+let linkCount = 0;
+let linkXButtons;
+
+
+
+
+const init = () => {
+  stepsContainer.style.transition = "unset";
+  onboardingContainer.classList.add("active");
+  onboardingOverlay.classList.add("active");
+  currentStep = 0;
+  stepPosition = 0;
+  stepsContainer.style.transform = `translateX(-${stepPosition}px)`;
+  
+  dots.forEach((d) => {
+    d.classList.remove("active");
+  });
+
+  dots[currentStep].classList.add("active");
+
+  nextBtn.innerHTML = "Next";
+};
+
+window.addEventListener("load", () => {
+  init();
+});
+
+skipBtn.addEventListener("click", () => {
+  if (currentUser == 'no_selection') {
+    return;
+  }
+  sendData();
+  onboardingContainer.classList.remove("active");
+  onboardingOverlay.classList.remove("active");
+});
+
+function link_xButtonHandler(event) {
+    let buttonIndex = this.id.charCodeAt(4) - '0'.charCodeAt(0);
+    let i = buttonIndex;
+    console.log(i);
+    while (i + 1 < linkCount) {
+        let linkToMove = document.querySelector("#link"+(i+1)+"input").value;
+        console.log(linkToMove);
+        document.querySelector("#link"+i+"input").value = linkToMove;
+        i++;
+    }
+    console.log(i);
+    linkCount--;
+    console.log(linkCount);
+    document.querySelector("#link"+(linkCount)+"input").remove();
+    document.querySelector("#link"+(linkCount)+"button").remove();
+    document.querySelector("#link"+(linkCount)+"br").remove();
+    addLinkBtn.innerHTML = "Add Link";
+}
+
+addLinkBtn.addEventListener("click", () => {
+    if (linkCount >= 5) {return;}
+    var input = document.createElement("input");
+    input.type = "text";
+    input.name = "link"+linkCount;
+    input.id = "link"+linkCount+"input";
+    input.className = "onboard-short-text";
+    linksContainer.appendChild(input);
+    var xButton = document.createElement("button");
+    xButton.className = "onboard-short-text-xButton";
+    xButton.id = "link"+linkCount+"button";
+    xButton.innerHTML = "&#10006";
+    xButton.addEventListener('click', link_xButtonHandler);
+    linksContainer.appendChild(xButton);
+    var br = document.createElement("br");
+    br.id = "link"+linkCount+"br";
+    linksContainer.appendChild(br);
+    linkCount++;
+    if (linkCount == 5) {
+        addLinkBtn.innerHTML = "Max number of links";
+    }
+});
+
+
+
+document.querySelector("#resume-upload").addEventListener("click", (e) => {
+  if (resumeUpload) {
+    resumeUpload.click();
+  }
+});
+
+document.querySelector("#profile-pic").addEventListener("click", (e) => {
+  if (pfpUpload) {
+    pfpUpload.click();
+  }
+});
+
+
+backBtn.addEventListener("click", () => {
+    if (currentStep <= 0) {
+        return;
+    }
+  stepsContainer.style.transition = "all 400ms ease";
+  currentStep--;
+  stepPosition -= steps[0].offsetWidth;
+
+  stepsContainer.style.transform = `translateX(-${stepPosition}px)`;
+
+  dots.forEach((d) => {
+    d.classList.remove("active");
+  });
+
+  dots[currentStep].classList.add("active");
+  nextBtn.innerHTML = "Next";
+});
+
+nextBtn.addEventListener("click", () => {
+  switch (currentStep) {
+    case 0:
+      if (userType.changeNextSteps(currentUser)) {
+        break;
+      } else {
+        return;
+      }
+    case 1:
+      if (saveHeadline()) {
+        break;
+      } else {
+        return;
+      }
+    case 2:
+      if (currentUser == "job_seeker") {
+        saveResume();
+      } else {
+        saveCompany();
+      }
+      break;
+    case 3:
+      savePfp();
+      break;
+    case 4:
+      saveLinks();
+      break;
+    default:
+      break;
+  }
+
+  stepsContainer.style.transition = "all 400ms ease";
+  currentStep++;
+
+  if (currentStep >= steps.length) {
+    sendData();
+    //nextBtn.href = "{% url 'accounts.profiles' %}";
+    stepsContainer.style.transition = "unset";
+    onboardingContainer.classList.remove("active");
+    onboardingOverlay.classList.remove("active");
+    currentStep = 0;
+  }
+
+  stepPosition += steps[0].offsetWidth;
+
+  stepsContainer.style.transform = `translateX(-${stepPosition}px)`;
+
+  dots.forEach((d) => {
+    d.classList.remove("active");
+  });
+
+  dots[currentStep].classList.add("active");
+ // dots[currentStep - 1].classList.remove("active");
+
+  if (currentStep == (steps.length - 1)) {
+    nextBtn.innerHTML = "Finish";
+  }
+});
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+async function sendData() {
+  formData.append('user_type', currentUser);
+  formData.append('headline', currentHeadline);
+  formData.append('resume', currentResume);
+  formData.append('company', currentCompany);
+  formData.append('pfp', currentPfp);
+  formData.append('links', currentLinks);
+
+  try {
+    const response = await fetch("{% url 'accounts.onboard' %}", {
+      method: "POST",
+      headers: {'X-CSRFToken': getCookie('csrftoken')},
+      body: formData,
+    });
+    //console.log(await response.json());
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Handles the first step, selecting the right user type and picking the right questions to follow
+let userType = {
+  default: 'no_selection',
+  job_seeker: {
+    step_2_h3: 'About',
+    step_2_p: 'You can write about your professional experience or skills.',
+    step_3_h3: 'Resume',
+    step_3_p: 'Upload your resume below.',
+    step_3_html: '<label for="resume-upload">Upload Resume: </label> <input type="file"  id="hidden-resume-button" name="resume" accept=".doc,.docx,.pdf"><button class="secondary-hover-btn resume-submit" id="resume-upload">Browse...</button>',
+    step_5_p: 'Add professional links.',
+  },
+  recruiter: {
+    step_2_h3: 'About',
+    step_2_p: 'You can write about your company motto or outlook.',
+    step_3_h3: 'Company',
+    step_3_p: 'What company or organization do you represent?',
+    step_3_html: "<label for='company'>Company:</label><textarea name='company' required class='form-control' id='company' maxlength='63'></textarea>",
+    step_5_p: 'Add company links.',
+  },
+  no_selection: {
+    step_2_h3: 'DEFAULT',
+    step_2_p: 'Long default text. Long default text. Long default text. Long default text.',
+    step_3_h3: 'DEFAULT',
+    step_3_p: 'DEFAULT',
+    step_5_p: 'DEFAULT',
+  },
+  changeNextSteps: function(radioInput) {
+    steps[1].querySelector("h3").innerHTML = userType[radioInput].step_2_h3;
+    steps[1].querySelector("p").innerHTML = userType[radioInput].step_2_p;
+    steps[2].querySelector("h3").innerHTML = userType[radioInput].step_3_h3;
+    steps[2].querySelector("p").innerHTML = userType[radioInput].step_3_p;
+    steps[2].querySelector(".onboarding-inner-html").innerHTML = userType[radioInput].step_3_html;
+    steps[4].querySelector("p").innerHTML = userType[radioInput].step_5_p;
+    if (radioInput == 'job_seeker') {
+        document.querySelector("#resume-upload").addEventListener("click", (e) => {
+        if (resumeUpload) {
+            resumeUpload.click();
+        }
+    });    
+    } else if (radioInput == 'no_selection') {
+      return false;
+    }
+    return true;
+  }
+}
+
+document.querySelector('#job_seeker').addEventListener("click", () => {
+  currentUser = "job_seeker";
+  skipBtn.classList.add("active");
+  userType.changeNextSteps(currentUser);
+});
+
+document.querySelector('#recruiter').addEventListener("click", () => {
+  currentUser = "recruiter";
+  skipBtn.classList.add("active");
+  userType.changeNextSteps(currentUser);
+});
+
+
+
+//Handles the second steps, getting a valid first and last name
+function saveHeadline() {
+  currentHeadline = headline.value;
+  return true;
+}
+
+function saveCompany() {
+  currentCompany = company.value;
+  return true;
+}
+
+function saveResume() {
+  if (resumeUpload.files.length == 0) {
+    //alert("No resume selected.");
+  } else {
+    currentResume = resumeUpload.files[0];
+  }
+}
+
+function savePfp() {
+  if (pfpUpload.files.length == 0) {
+    //alert("No picture set.");
+  } else {
+    currentPfp = pfpUpload.files[0];
+  }
+}
+
+function saveLinks() {
+    currentLinks = "";
+    for (let i = 0; i < linkCount; i++) {
+        currentLinks += document.querySelector("#link"+i+"input").value;
+        currentLinks += ",";
+        console.log(currentLinks);
+    }
+    return;
+}
+
+
+// Not used, could be implemented later to preview uploaded pfp
+function imagePreview(file) {
+  const img = document.createElement("img");
+  img.classList.add("obj");
+  img.file = file;
+  preview.appendChild(img); // Assuming that "preview" is the div output where the content will be displayed.
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+</script>
 {% endblock content %}

@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django.utils.text import slugify
+from skills.models import Skill
 import os
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
@@ -15,9 +16,9 @@ def get_pfp_path(user, filename):
     new_name = user.slugify_name() + '.' + filetype
     return os.path.join('pfps', new_name)
 
-def get_resume_path(user, filename):
+def get_resume_path(job_seeker, filename):
     filetype = filename.split('.')[-1]
-    new_name = user.slugify_name() + '.' + filetype
+    new_name = job_seeker.user.slugify_name() + '.' + filetype
     return os.path.join('resumes', new_name)
 
 
@@ -86,6 +87,9 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     def slugify_name(self):
         return f"{slugify(self.first_name)}-{slugify(self.last_name)}-{str(self.id)}"
 
+    def get_id_by_name(user_name):
+        return int(user_name.split('-')[-1])
+
     def natural_key(self):
         return self.email
 
@@ -133,22 +137,17 @@ class Experience(models.Model):
 #TODO: resume
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
-    education = models.ManyToManyField(Education, blank=True) #list of education objects
-    #skills = models.CharField(blank=True, choices=CHOICES, max_length=31, blank=True) MAKE A LIST OF POSSIBLE SKILLS SOMEWHERE AND REPLACE "CHOICES" WITH APPROPRIATE VARIABLE
-    experience = models.ManyToManyField(Experience, blank=True) #job experience objects
-    #country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True) #UNTESTED
-    #region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True) #UNTESTED
-    #city = models.ForeignKey(City, on_delete=models.CASCADE, null=True) #UNTESTED
-    #location_is_hidden = models.BooleanField(default=False) #hides all aspects of location
-    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    education = models.ManyToManyField(Education) #list of education objects
+    skills = models.ManyToManyField(Skill, blank=True)
+    experience = models.ManyToManyField(Experience) #job experience objects
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    resume = models.FileField(upload_to=get_resume_path) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
     links_is_hidden = models.BooleanField(default=False) #hides entire links field
-    #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
-    resume = models.FileField(upload_to='resumes/', blank=True) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
-    #resume_is_hidden = models.BooleanField(default=False)
-    account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on
+    account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on    
+
+    def __str__(self):
+        return str(self.user)
     
-    #def __str__(self):
-    #    return {self.user.id} + ' - ' + {self.user.get_full_name()}
     REQUIRED_FIELDS = ['user']
 
     class Meta:
@@ -156,10 +155,14 @@ class JobSeeker(models.Model):
 
 #model for a recruiter
 class Recruiter(models.Model):
-    user = models.OneToOneField(TTUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
     links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
+
+    def __str__(self):
+        return str(self.user)
+
+    REQUIRED_FIELDS = ['user']
 
     class Meta:
         pass
