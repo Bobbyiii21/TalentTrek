@@ -5,8 +5,6 @@ from accounts.models import TTUser
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
-
-
 def get_conversations(user):
     rooms = Room.objects.filter(Q(owner__TTUser=user) | Q(participant__TTUser=user)).order_by('-last_message_at')
     conversations = []
@@ -29,32 +27,26 @@ def get_conversations(user):
     
 @login_required
 def index(request):
-    # if logged in user is not a ChatUser, Create a new ChatUser
     if not ChatUser.objects.filter(TTUser=request.user).exists():
         ChatUser.objects.create(TTUser=request.user)
-    # if logged in user is a ChatUser, get the conversations
     conversations = get_conversations(request.user)
     template_data = {}
     template_data['title'] = 'Chat'
     template_data['conversations'] = conversations
     return render(request, 'chat/index.html', {'template_data': template_data})
 
-
-
-
 @login_required
 def room(request, room_id):
     
     template_data = {}
-    # if logged in user is not a ChatUser, Create a new ChatUser
+    
     if not ChatUser.objects.filter(TTUser=request.user).exists():
         ChatUser.objects.create(TTUser=request.user)
-    # if logged in user is a ChatUser, get the conversations
     conversations = get_conversations(request.user)
     template_data['title'] = 'Chat'
     template_data['conversations'] = conversations
     template_data['room_id'] = room_id
-    # get the room. if the room does not exist, redirect to the index page.
+    
     room = get_object_or_404(Room, id=room_id)
     if room.owner.TTUser_id != request.user.id and room.participant.TTUser_id != request.user.id:
         return redirect('chat.index')
@@ -86,7 +78,6 @@ def send_message(request, room_id):
 
 @login_required
 def create_room(request, participant_id):
-    """Create or get a room with the given participant. Creates ChatUser for both if needed."""
     participant = get_object_or_404(TTUser, id=participant_id)
     current_chat_user, _ = ChatUser.objects.get_or_create(TTUser=request.user)
     participant_chat_user, _ = ChatUser.objects.get_or_create(TTUser=participant)
