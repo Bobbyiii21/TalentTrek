@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
-
+{% load humanize %}
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}">
 <div class="chat-container">
@@ -10,134 +9,86 @@
             <h2>Chats</h2>
         </div>
         <div class="sidebar-content">
+            {% for conversation in template_data.conversations %}
             <div class="sidebar-item">
-                <div class="sidebar-item-content">
-                    <img src="{% static 'img/default_pfp.png' %}" alt="Profile Picture" class="profile-picture"/>
-                    <div class="sidebar-item-content-text">
-                        <h3>Chat 1</h3>
-                        <div class="sidebar-item-content-text-time">
-                            <p>2w ago</p>
-                            <p>Yo Twin</p>
+                <div class="sidebar-item-content" onclick="window.location.href='{% url 'chat.room' room_id=conversation.room.id %}';">
+                    {% if conversation.other.TTUser.pfp %}
+                    <img src="{{ conversation.other.TTUser.pfp.url }}" alt="" class="sidebar-item-avatar"/>
+                    {% else %}
+                    <img src="{% static 'img/default_pfp.png' %}" alt="" class="sidebar-item-avatar"/>
+                    {% endif %}
+                    <div class="sidebar-item-text">
+                        <h3 class="sidebar-item-name">{{ conversation.other.TTUser.first_name }} {{ conversation.other.TTUser.last_name }}</h3>
+                        <div class="sidebar-item-meta">
+                            <span class="sidebar-item-time">{{ conversation.last_message_at|naturaltime }}</span>
+                            <span class="sidebar-item-preview">{{ conversation.last_message_content|truncatechars:50|default:'No messages yet' }}</span>
                         </div>
                     </div>
                 </div>
             </div>
+            {% empty %}
             <div class="sidebar-item">
-                <h3>Chat 2</h3>
+                <div class="sidebar-item-content">
+                    <img src="{% static 'img/default_pfp.png' %}" alt="" class="sidebar-item-avatar"/>
+                    <div class="sidebar-item-text">
+                        <h3 class="sidebar-item-name">No chats yet</h3>
+                        <div class="sidebar-item-meta">
+                            <span class="sidebar-item-time">—</span>
+                            <span class="sidebar-item-preview">No chats yet. Start a conversation with someone!</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
-            <div class="sidebar-item">
-                <h3>Chat 2</h3>
-            </div>
+            {% endfor %}
         </div>
     </div>
     <div class="main">
         <div class="main-header">
+            <div class="main-header-spacer"></div>
+            {% if template_data.other %}
+            <h2>Conversation with {{ template_data.other.TTUser.first_name }} {{ template_data.other.TTUser.last_name }}</h2>
+            {% else %}
             <h2>Conversation</h2>
+            {% endif %}
+            <div class="main-header-actions">
+                <button type="button" class="main-header-btn" aria-label="View profile" ><i class="fas fa-user"></i></button>
+                <button type="button" class="main-delete-btn" aria-label="Delete conversation"><i class="fas fa-trash"></i></button>
+            </div>
         </div>
         <div class="main-chat">
             <div class="message-list">
-                <div class="message-item">
-                    <div class="message-item-sender"> 
-                        <h3>From You</h3>
-                    </div>
-                    <div class="message-item-recipient">
-                        <h3>Not From You</h3>
+                <div class="message-list-inner">
+                {% for message in template_data.messages %}
+                <div class="message-item {% if message.chat_user.TTUser.id == template_data.other.TTUser.id %}message-from-other{% else %}message-from-you{% endif %}">
+                    <div class="message-bubble">
+                        <p>{{ message.content }}</p>
                     </div>
                 </div>
+                {% empty %}
+                <div class="message-item">
+                    <div class="message-bubble">
+                        <p>No messages yet</p>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            <div class="message-input">
-                <input type="text" placeholder="Message" />
-                <button class="primary-hover-btn">Send</button>
-            </div>
+            
+                {% if template_data.room_id %}
+                <form class= "message-input" action="{% url 'chat.send_message' room_id=template_data.room_id %}" method="post">
+                    {% csrf_token %}
+                    <input required type="text" placeholder="Message" name="message" />
+                    <button type="submit" class="primary-hover-btn">Send</button>
+                </form>
+                {% endif %}
+            
         </div>
     </div>
     
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageList = document.querySelector('.message-list');
+        if (messageList) messageList.scrollTop = messageList.scrollHeight;
+    });
+</script>
 {% endblock content %}

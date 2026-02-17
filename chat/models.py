@@ -6,7 +6,7 @@ class ChatUser(models.Model):
     TTUser = models.ForeignKey(TTUser, on_delete=models.CASCADE)
     last_read_message_at = models.DateTimeField(auto_now=True)    
     def __str__(self):
-        return self.user.email
+        return self.TTUser.email
 
 class Room(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -21,7 +21,4 @@ class Message(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return f"{self.user.email} - {self.created_at}"
-
-    
-    
+        return f"{self.chat_user.TTUser.email} - {self.created_at}"
