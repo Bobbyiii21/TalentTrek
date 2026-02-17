@@ -50,7 +50,7 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField("first name", max_length=31)
     last_name = models.CharField("last_name", max_length=31)
     email = models.EmailField("email address", max_length=127, unique=True)
-    link = models.SlugField(max_length=127, blank=True)
+    link = models.SlugField(max_length=255, blank=True)
     pfp = models.ImageField(upload_to=get_pfp_path, height_field=None, width_field=None, blank=True)
     country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
     region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
@@ -116,11 +116,11 @@ class Education(models.Model):
 #builds a summary of a job experience
 class Experience(models.Model):
     start_date = models.DateField()
-    end_date = models.DateField(blank=True) #use html/css to hide this if currently employed
+    end_date = models.DateField(null=True) #use html/css to hide this if currently employed
     #Make sure to add a comment to user that date will not be displayed if they are currently employed.
     current_employee = models.BooleanField(default=False)
-    company_name = models.CharField(max_length=31)
-    position_title = models.CharField(max_length=31)
+    company_name = models.CharField(max_length=63)
+    position_title = models.CharField(max_length=63)
     job_description = models.TextField(max_length=511)
     is_hidden = models.BooleanField(default=False) #hides this individual experience experience
 
@@ -130,7 +130,7 @@ class Experience(models.Model):
 #model for a job seeker
 #TODO: add list of choices for skills somewhere (not in this app since they need to be used for search)
 #TODO: verify if country and city works properly
-#TODO: use html/css to make "links" into hyperlinks
+#TODO: resume
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     education = models.ManyToManyField(Education, blank=True) #list of education objects
@@ -158,7 +158,7 @@ class JobSeeker(models.Model):
 class Recruiter(models.Model):
     user = models.OneToOneField(TTUser, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
-    links = models.TextField(max_length=127, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
     #profile_pic = models.ImageField(upload_to='pfps/') # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype} 
 
     class Meta:

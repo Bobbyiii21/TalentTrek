@@ -59,19 +59,23 @@ def profiles(request, id):
     template_data['title'] = 'Profiles'
     template_data['user'] = user
     template_data['id'] = id
-    print("other print")
     try:
         seeker_user = JobSeeker.objects.get(user_id=id)
         template_data["seeker_user"] = seeker_user
         template_data['education'] = seeker_user.education.all()
         #template_data['skills'] = seeker_user.education.all()
         template_data['experience'] = seeker_user.experience.all()
-        #find some way to put links
+        template_data['links'] = seeker_user.links.split(",")
+        for link in template_data['links']:
+            link = link.strip()
         #find some way to put resume
         
     except Exception:
         is_seeker = False
         recruiter_user = Recruiter.objects.get(user_id=id)
-        #something abt links
-    template_data['is_seeker'] = is_seeker
+        template_data['recruiter_user'] = recruiter_user
+        template_data['links'] = recruiter_user.links.split(",")
+        for link in template_data['links']:
+            link = link.strip()
+        template_data['is_seeker'] = is_seeker
     return render(request, 'accounts/profiles.html', {'template_data': template_data})

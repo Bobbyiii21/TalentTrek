@@ -14,7 +14,7 @@
             <h5>Job Seeker</h5>
             {% endif %}
             {% if not template_data.is_seeker %}
-            <h5>Recruiter at <b>{{ recruiter_user.company }}</b></h5>
+            <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
             {% endif %}
             <p>Joined {{ template_data.user.date_joined }}</p>
             <p>{{ template_data.user.email }}</p>
@@ -29,7 +29,7 @@
                         <p>Position Title: {{ exp.position_title }}</p>
                         <p>Start Date: {{ exp.start_date }}</p>
 
-                        {% if exp.current_employee %}
+                        {% if not exp.current_employee %}
                             <p>End Date: {{ exp.end_date }}</p>
                         {% endif %}
                     
@@ -45,7 +45,12 @@
                     {% endif %}
                 {% endfor %}
                 <!--smth here for resume (dont forget hidden fields)-->
-                <!--implement links here (dont forget hidden fields)-->
+                {% if not template_data.seeker_user.links_is_hidden %}
+                    {% for link in template_data.links %}
+                        <a href="https://{{ link }}">{{ link }}</a>
+                        <br />
+                    {% endfor %}
+                {% endif %}
             {% endif %}
             {% if template_data.seeker_user.account_is_hidden %}
                 <p>This account's details are hidden.</p>
@@ -53,16 +58,12 @@
         {% endif %}
         {% if not template_data.is_seeker %}
             <p>{{ template_data.user.headline }}</p>
-            <!--links go here-->
+            {% for link in template_data.links %}
+                <a href="https://{{ link }}">{{ link }}</a>
+                <br />
+            {% endfor %}
         {% endif %}
       </div>
-    </div>
-  </div>
-</div>
-<div class="p-3 mt-4">
-  <div class="container">
-    <div class="row justify-content-center">
-        <p>sample text</p>
     </div>
   </div>
 </div>
