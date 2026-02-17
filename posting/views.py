@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from .models import Post
@@ -22,3 +23,24 @@ def post(request, id):
     template_data['post'] = post
     return render(request, 'posting/post.html',
                   {'template_data': template_data})
+
+@login_required
+def create(request):
+    if request.method == 'POST':
+        if request.POST['job_title'] != '' and request.POST['company_name'] != '':
+            posting = Post()
+            posting.company_name = request.POST['company_name']
+            posting.job_title = request.POST['job_title']
+
+            if request.POST['description'] != '':
+                posting.description = request.POST['description']
+            else:
+                posting.description = 'No description has been given for this posting.'
+
+            posting.image = request.FILES['image']
+            posting.save()
+            return redirect('posting.index')
+        else:
+            return redirect('posting.index')
+    else:
+        return render(request, 'posting/create.html')
