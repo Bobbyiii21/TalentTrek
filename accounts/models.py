@@ -58,6 +58,8 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED 
     date_joined = models.DateTimeField("date joined", default=timezone.now)
     headline = models.TextField(max_length=1023, blank=True)
+    is_seeker = models.BooleanField(default=False)
+    is_recruiter = models.BooleanField(default=False)
     # Check that the above image loads and figure out where to store user-uploaded images
     is_staff = models.BooleanField(
         "staff status",

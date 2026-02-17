@@ -54,6 +54,7 @@ def onboard(request):
         if (request.POST['user_type'] == 'job_seeker'):
             job_seeker = JobSeeker()
             job_seeker.user = request.user
+            request.user.is_seeker = True 
             if (request.POST['headline'] and request.POST['headline'].strip()):
                 request.user.headline = request.POST['headline'].strip()
             if ('pfp' in request.FILES):
@@ -67,6 +68,7 @@ def onboard(request):
         else:
             recruiter = Recruiter()
             recruiter.user = request.user
+            request.user.is_recruiter = True 
             if (request.POST['headline'] and request.POST['headline'].strip()):
                 request.user.headline = request.POST['headline'].strip()
             if ('pfp' in request.FILES):
@@ -90,11 +92,10 @@ def profiles(request, user_link):
     template_data['title'] = 'Profiles'
     template_data['profile_user'] = user
     template_data['id'] = id
-    template_data['is_seeker'] = False
-    template_data['is_recruiter'] = False
-    try:
+    template_data['is_seeker'] = user.is_seeker
+    template_data['is_recruiter'] = user.is_recruiter
+    if template_data['is_seeker']:
         seeker_user = JobSeeker.objects.get(user_id=id)
-        template_data['is_seeker'] = True
         template_data["seeker_user"] = seeker_user
         template_data['education'] = seeker_user.education.all()
         #template_data['skills'] = seeker_user.education.all()
@@ -103,20 +104,16 @@ def profiles(request, user_link):
         for link in template_data['links']:
             link = link.strip()
         return render(request, 'accounts/profiles.html', {'template_data': template_data})
-        #find some way to put resume
-        
-    except Exception:
-        try:
-            recruiter_user = Recruiter.objects.get(user_id=id)
-            template_data['is_recruiter'] = True
-            template_data['recruiter_user'] = recruiter_user
-            template_data['links'] = recruiter_user.links.split(",")
-            for link in template_data['links']:
-                link = link.strip()
-            return render(request, 'accounts/profiles.html', {'template_data': template_data})
-        
-        except Exception:
-            return render(request, 'accounts/profiles.html', {'template_data': template_data})
+        #find some way to put resume 
+    elif template_data['is_recruiter']:
+        recruiter_user = Recruiter.objects.get(user_id=id)
+        template_data['recruiter_user'] = recruiter_user
+        template_data['links'] = recruiter_user.links.split(",")
+        for link in template_data['links']:
+            link = link.strip()
+        return render(request, 'accounts/profiles.html', {'template_data': template_data})
+    else:
+        return render(request, 'accounts/profiles.html', {'template_data': template_data})
 
 @login_required
 def edit_profile(request, user_link):
@@ -128,12 +125,12 @@ def edit_profile(request, user_link):
         template_data = {}
         template_data['title'] = "Edit Profile"
         template_data['profile'] = profile
-        template_data['is_seeker'] = True
-        try:
+        template_data['is_seeker'] = request.user.is_seeker
+        template_data['is_recruiter'] = request.user.is_recruiter
+        if request.user.is_seeker:
             template_data['seeker_user'] = JobSeeker.objects.get(user_id=id)
-        except Exception:
+        elif request.user.is_recruiter:
             template_data['recruiter_user'] = Recruiter.objects.get(user_id=id)
-            template_data['is_seeker'] = False
         return render(request, 'accounts/edit_profile.html', {'template_data': template_data})
     elif request.method == 'POST':
         profile = TTUser.objects.get(id=id)
