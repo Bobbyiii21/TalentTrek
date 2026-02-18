@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
+
+from .models import TTUser, JobSeeker, Recruiter
 from .forms import CustomUserCreationForm, CustomErrorList
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -49,7 +51,6 @@ def register(request):
 @login_required    
 def onboard(request):
     if request.method == 'POST':
-        print('ONBARD POST')
         if (request.POST['user_type'] == 'job_seeker'):
             job_seeker = JobSeeker()
             job_seeker.user = request.user
@@ -82,16 +83,67 @@ def onboard(request):
         template_data['degreeTypes'] = DegreeType.choices
         return render(request, 'accounts/onboard.html', {'template_data': template_data})
 
-
-# Create your views here.
-def index(request):
+def profiles(request, user_link):
+    id = TTUser.get_id_by_name(user_link)
+    user = TTUser.objects.get(id=id) 
     template_data = {}
-    template_data['title'] = 'Accounts'
-    return render(request, 'accounts/index.html', {'template_data': template_data})
+    template_data['title'] = 'Profiles'
+    template_data['profile_user'] = user
+    template_data['id'] = id
+    template_data['is_seeker'] = False
+    template_data['is_recruiter'] = False
+    try:
+        seeker_user = JobSeeker.objects.get(user_id=id)
+        template_data['is_seeker'] = True
+        template_data["seeker_user"] = seeker_user
+        template_data['education'] = seeker_user.education.all()
+        #template_data['skills'] = seeker_user.education.all()
+        template_data['experience'] = seeker_user.experience.all()
+        template_data['links'] = seeker_user.links.split(",")
+        for link in template_data['links']:
+            link = link.strip()
+        return render(request, 'accounts/profiles.html', {'template_data': template_data})
+        #find some way to put resume
+        
+    except Exception:
+        try:
+            recruiter_user = Recruiter.objects.get(user_id=id)
+            template_data['is_recruiter'] = True
+            template_data['recruiter_user'] = recruiter_user
+            template_data['links'] = recruiter_user.links.split(",")
+            for link in template_data['links']:
+                link = link.strip()
+            return render(request, 'accounts/profiles.html', {'template_data': template_data})
+        
+        except Exception:
+            return render(request, 'accounts/profiles.html', {'template_data': template_data})
 
-# DELETE ME ON MERGE
-def profiles(request):
-    template_data = {}
-    template_data['title'] = 'Accounts'
-    return render(request, 'accounts/index.html', {'template_data': template_data})
-
+@login_required
+def edit_profile(request, user_link):
+    id = TTUser.get_id_by_name(user_link)
+    profile = get_object_or_404(TTUser, id)
+    if request.user != profile.user:
+        return redirect('accounts.profiles')
+    if request.method == 'GET':
+        template_data = {}
+        template_data['title'] = "Edit Profile"
+        template_data['profile'] = profile
+        template_data['is_seeker'] = True
+        try:
+            template_data['seeker_user'] = JobSeeker.objects.get(user_id=id)
+        except Exception:
+            template_data['recruiter_user'] = Recruiter.objects.get(user_id=id)
+            template_data['is_seeker'] = False
+        return render(request, 'accounts/edit_profile.html', {'template_data': template_data})
+    elif request.method == 'POST':
+        profile = TTUser.objects.get(id=id)
+        profile.save()
+        try:
+            seeker_user = JobSeeker.objects.get(user_id=id)
+            seeker_user.save()
+        except:
+            recruiter_user = Recruiter.objects.get(user_id=id)
+            recruiter_user.save()
+        return redirect('accounts.profiles')
+    else:
+        return redirect('accounts.profiles')

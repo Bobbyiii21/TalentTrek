@@ -1,14 +1,75 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 <div class="p-3">
   <div class="container">
     <div class="row mt-3">
-      <div class="col-md-6 mx-auto mb-3">
-        <h2>Job Posting Page</h2>
+      <div class="col mx-auto mb-3">
+        <h2>Job Postings</h2>
+        <a href="create">Create a Job Posting</a>
         <hr />
-        <p>Hi</p>
+        <p class="card-text">
+          <form method="GET">
+            <div class="row">
+              <div class="col-auto">
+                <div class="input-group col-auto">
+                  <div class="input-group-text">
+                    Search</div>
+                  <input type="text" class="form-control" name="search">
+                </div>
+              </div>
+              <div class="col-auto">
+                <button class="btn bg-dark text-white" type="submit">Search</button>
+              </div>
+            </div>
+          </form>
+        </p>
       </div>
     </div>
+  <div class="row">
+  {% for post in template_data.postings %}
+  <div class="col-12 mb-3">
+    <div class="card p-3">
+      <div class="row g-0 align-items-center">
+        <div class="col-auto">
+          <img src="{{ post.image.url }}"
+               class="img-fluid rounded"
+               style="width: 100px; height: auto;">
+        </div>
+        <div class="col ps-3">
+          <h5 class="mb-1">
+            <a href="{% url 'posting.post' id=post.id %}" class="job-title text-dark text-decoration-none">
+              {{ post.company_name }} – {{ post.job_title }}
+            </a>
+          </h5>
+          <p class="mb-1 text-muted short-desc" id="short-{{ post.id }}">
+            {{ post.description|truncatechars:150 }}
+          </p>
+
+           <div class="collapse" id="desc-{{ post.id }}">
+            <p class="text-muted mb-1">
+              {{ post.description }}
+            </p>
+          </div>
+
+          <a
+            class="small text-primary"
+            data-bs-toggle="collapse"
+            href="#desc-{{ post.id }}"
+            role="button"
+            aria-expanded="false"
+            aria-controls="desc-{{ post.id }}"
+            id="show-toggle">
+            Show more
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
   </div>
 </div>
 {% endblock content %}

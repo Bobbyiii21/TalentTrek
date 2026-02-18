@@ -287,7 +287,6 @@ nextBtn.addEventListener("click", () => {
 
   if (currentStep >= steps.length) {
     sendData();
-    //nextBtn.href = "{% url 'accounts.profiles' %}";
     stepsContainer.style.transition = "unset";
     onboardingContainer.classList.remove("active");
     onboardingOverlay.classList.remove("active");

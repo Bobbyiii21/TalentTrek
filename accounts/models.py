@@ -51,7 +51,7 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField("first name", max_length=31)
     last_name = models.CharField("last_name", max_length=31)
     email = models.EmailField("email address", max_length=127, unique=True)
-    link = models.SlugField(max_length=127, blank=True)
+    link = models.SlugField(max_length=255, blank=True)
     pfp = models.ImageField(upload_to=get_pfp_path, height_field=None, width_field=None, blank=True)
     country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
     region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
@@ -87,6 +87,9 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     def slugify_name(self):
         return f"{slugify(self.first_name)}-{slugify(self.last_name)}-{str(self.id)}"
 
+    def get_id_by_name(user_name):
+        return int(user_name.split('-')[-1])
+
     def natural_key(self):
         return self.email
 
@@ -97,9 +100,9 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
 #NOTE: make sure to verify that we are using the same method of implementation for things such as locations, fix conflicts immediately
+#NOTE: hidden properties should be shown on the users own profile page with a flag showing they are hidden, and hide them from all other users.
 
 #builds an education summary that will be displayed as one unified part of the profile
-#TODO: test if degree type selection works properly when creating an education model
 class DegreeType(models.TextChoices):
     HIGHSCHOOL = "HIGHSCHOOL", "High School"
     CERTIFICATE = "CERTIFICATE", "Certificate"
@@ -112,16 +115,18 @@ class Education(models.Model):
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
+    is_hidden = models.BooleanField(default=False) #hides this individual education instance
 
 #builds a summary of a job experience
 class Experience(models.Model):
     start_date = models.DateField()
-    end_date = models.DateField(blank=True) #use html/css to hide this if currently employed
+    end_date = models.DateField(null=True) #use html/css to hide this if currently employed
     #Make sure to add a comment to user that date will not be displayed if they are currently employed.
     current_employee = models.BooleanField(default=False)
-    company_name = models.CharField(max_length=31)
-    position_title = models.CharField(max_length=31)
+    company_name = models.CharField(max_length=63)
+    position_title = models.CharField(max_length=63)
     job_description = models.TextField(max_length=511)
+    is_hidden = models.BooleanField(default=False) #hides this individual experience experience
 
 
 #children of User model for different account types below
@@ -129,7 +134,7 @@ class Experience(models.Model):
 #model for a job seeker
 #TODO: add list of choices for skills somewhere (not in this app since they need to be used for search)
 #TODO: verify if country and city works properly
-#TODO: use html/css to make "links" into hyperlinks
+#TODO: resume
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     education = models.ManyToManyField(Education) #list of education objects
@@ -137,7 +142,9 @@ class JobSeeker(models.Model):
     experience = models.ManyToManyField(Experience) #job experience objects
     links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
     resume = models.FileField(upload_to=get_resume_path) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
-    
+    links_is_hidden = models.BooleanField(default=False) #hides entire links field
+    account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on    
+
     def __str__(self):
         return str(self.user)
     
@@ -147,11 +154,10 @@ class JobSeeker(models.Model):
         verbose_name = "Job Seeker"
 
 #model for a recruiter
-#TODO: build the model? if it needs anything
 class Recruiter(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
-    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
 
     def __str__(self):
         return str(self.user)

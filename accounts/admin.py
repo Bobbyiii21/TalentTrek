@@ -16,4 +16,6 @@ class TTUserAdmin(admin.ModelAdmin):
 admin.site.register(TTUser, TTUserAdmin)
 admin.site.register(JobSeeker, JobSeekerAdmin)
 admin.site.register(Recruiter, RecruiterAdmin)
+admin.site.register(Education)
+admin.site.register(Experience)
 # Register your models here.
