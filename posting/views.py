@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from skills.models import Skill
 
 # Create your views here.
 from .models import Post
@@ -39,8 +40,14 @@ def create(request):
 
             posting.image = request.FILES['image']
             posting.save()
+            
+            
+            skill_ids = request.POST.getlist('skills')
+            if skill_ids:
+                posting.skills.set(skill_ids)
             return redirect('posting.index')
         else:
             return redirect('posting.index')
     else:
-        return render(request, 'posting/create.html')
+        skills = Skill.objects.all().order_by('name')
+        return render(request, 'posting/create.html', {'skills': skills})

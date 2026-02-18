@@ -32,16 +32,19 @@
     <div class="card p-3">
       <div class="row g-0 align-items-center">
         <div class="col-auto">
+
           <img src="{{ post.image.url }}"
                class="img-fluid rounded"
                style="width: 100px; height: auto;">
         </div>
+
         <div class="col ps-3">
           <h5 class="mb-1">
             <a href="{% url 'posting.post' id=post.id %}" class="job-title text-dark text-decoration-none">
               {{ post.company_name }} – {{ post.job_title }}
             </a>
           </h5>
+
           <p class="mb-1 text-muted short-desc" id="short-{{ post.id }}">
             {{ post.description|truncatechars:150 }}
           </p>
@@ -64,6 +67,15 @@
           </a>
         </div>
 
+        <div class="col-auto ps-3 text-end">
+    <div class="d-flex flex-column align-items-end gap-1">
+      {% for skill in post.skills.all %}
+        <span class="badge" style="background-color: var(--primary); color: var(--text);">{{ skill.name }}</span>
+      {% empty %}
+        <span class="text-muted small">No skills</span>
+      {% endfor %}
+    </div>
+  </div>
       </div>
     </div>
   </div>
