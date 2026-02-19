@@ -23,12 +23,12 @@
             {% if template_data.is_seeker %}
                 <h5>Job Seeker</h5>
             {% endif %}
+            -->
             {% if not template_data.is_seeker %}
                 <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
             {% endif %}
-            <p>Joined {{ template_data.user.date_joined }}</p>
-            <p>{{ template_data.user.email }}</p>
-            -->
+            <p>Joined {{ template_data.profile_user.date_joined }}</p>
+            <p>{{ template_data.profile_user.email }}</p>
         </div>
         <div id="profile-info">
         {% if template_data.is_seeker %}
@@ -40,41 +40,43 @@
                     </div>
                     <hr>
                 {% endif %}
-                <!--smth here for skills-->
+                {% for skill in template_data.skills %}
+                    
+                {% endfor %}
                 <h2 class="profile-section-header">Experience</h2>
                 <div class="profile-info-box">
-                {% for exp in template_data.experience %}
-                    {% if not exp.is_hidden %}
-                    <div style="display: flex;">
-                        <p><b>{{ exp.company_name }}</b></p>
-                        {% if not exp.current_employee %}
-                            <p style="margin-left: auto;">{{ exp.start_date }} - {{ exp.end_date }}</p>
-                        {% else %}
-                            <p style="margin-left: auto;">{{ exp.start_date }} - Present</p>
-                        {% endif %}
-                    </div>
-                        <p><i>{{ exp.position_title }}</i></p>
-                    
-                        <p>Description: {{ exp.job_description }}</p>
-                    {% endif %}
-                    <hr>
-                {% endfor %}
+                {% if not template_data.seeker_user.experience_is_hidden %}
+                    {% for exp in template_data.experience %}
+                        <div style="display: flex;">
+                            <p><b>{{ exp.company_name }}</b></p>
+                            {% if not exp.current_employee %}
+                                <p style="margin-left: auto;">{{ exp.start_date }} - {{ exp.end_date }}</p>
+                            {% else %}
+                                <p style="margin-left: auto;">{{ exp.start_date }} - Present</p>
+                            {% endif %}
+                        </div>
+                            <p><i>{{ exp.position_title }}</i></p>
+                        
+                            <p>Description: {{ exp.job_description }}</p>
+                        <hr>
+                    {% endfor %}
+                {% endif %}
                 </div>
                 <hr>
                 <h2 class="profile-section-header">Education</h2>
                 <div class="profile-info-box">
-                {% for edu in template_data.education %}
-                    {% if not edu.is_hidden %}
-                    <div style="display: flex;">
-                        <p><b>{{ edu.school_name }}</b></p>
-                        <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
-                    </div>
-                        <p>Degree: {{ edu.degree }}</p>
-                    {% endif %}
-                    <hr>
-                {% endfor %}
+                {% if not template_data.seeker_user.education_is_hidden %}
+                    {% for edu in template_data.education %}
+                        <div style="display: flex;">
+                            <p><b>{{ edu.school_name }}</b></p>
+                            <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
+                        </div>
+                            <p>Degree: {{ edu.degree }}</p>
+                        <hr>
+                    {% endfor %}
+                {% endif %}
                 </div>
-                <!--smth here for resume (dont forget hidden fields)-->
+                <!--resume here-->
                 {% if not template_data.seeker_user.links_is_hidden %}
                 <h2 class="profile-section-header">Links</h2>
                 <div class="profile-info-box">

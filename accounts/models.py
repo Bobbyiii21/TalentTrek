@@ -115,7 +115,6 @@ class Education(models.Model):
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
-    is_hidden = models.BooleanField(default=False) #hides this individual education instance
 
 #builds a summary of a job experience
 class Experience(models.Model):
@@ -126,7 +125,6 @@ class Experience(models.Model):
     company_name = models.CharField(max_length=63)
     position_title = models.CharField(max_length=63)
     job_description = models.TextField(max_length=511)
-    is_hidden = models.BooleanField(default=False) #hides this individual experience experience
 
 
 #children of User model for different account types below
@@ -137,11 +135,13 @@ class Experience(models.Model):
 #TODO: resume
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
-    education = models.ManyToManyField(Education) #list of education objects
+    education = models.ManyToManyField(Education, blank=True) #list of education objects
     skills = models.ManyToManyField(Skill, blank=True)
-    experience = models.ManyToManyField(Experience) #job experience objects
+    experience = models.ManyToManyField(Experience, blank=True) #job experience objects
     links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    resume = models.FileField(upload_to=get_resume_path) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
+    resume = models.FileField(upload_to=get_resume_path, blank=True)
+    education_is_hidden = models.BooleanField(default=False)
+    experience_is_hidden = models.BooleanField(default=False)
     links_is_hidden = models.BooleanField(default=False) #hides entire links field
     account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on    
 

@@ -8,20 +8,53 @@
                 <hr />
                 <form method="POST">
                     {% csrf_token %}
+                    <!--pfp goes here-->
                     <p>
                         <label for="first_name">First Name:</label>
-                        <textarea name="first_name" required class="form-control" id="first_name">{{ template_data.profile.first_name }}</textarea>
+                        <textarea name="first_name" required class="form-control" id="first_name">{{ template_data.profile_user.first_name }}</textarea>
                     </p>
                     <p>
                         <label for="last_name">Last Name:</label>
-                        <textarea name="last_name" required class="form-control" id="last_name">{{ template_data.profile.last_name }}</textarea>
+                        <textarea name="last_name" required class="form-control" id="last_name">{{ template_data.profile_user.last_name }}</textarea>
                     </p>
                     <p>
-                        <label for="headline">Last Name:</label>
-                        <textarea name="headline" required class="headline" id="headline">{{ template_data.profile.headline }}</textarea>
+                        <label for="headline">Headline:</label>
+                        <textarea name="headline" class="form-control" id="headline">{{ template_data.profile_user.headline }}</textarea>
                     </p>
+                    <!--location goes here when implemented-->
+                    {% if not template_data.is_seeker %}
+                        <p>
+                            <label for="links">Links:</label>
+                            <textarea name="links" class="form-control" id="links">{{ template_data.recruiter_user.links }}</textarea>Each link should be separated by a comma with no spaces. Leaving a space will still show your link but will not allow it to be clicked.
+                        </p>
+                    {% endif %}
+                    {% if template_data.is_seeker %}
+                        <!--skills here-->
+                        <!--experience here-->
+                        <input type="checkbox" id="experience" value="experience" name="hidden" style="accent-color: #548060;"> Hide my experience from employers.<br /><br />
+                        {% for edu in template_data.education %}
+                            <h4>Education Instance:</h4>
+                            <p>
+                                <label for="grad_year">Graduation Year:</label>
+                                <textarea name="grad_year" class="form-control" id="grad_year">{{ edu.grad_year }}</textarea>
+                            </p>
+                            <p>
+                                <label for="school_name">School Name:</label>
+                                <textarea name="school_name" class="form-control" id="school_name">{{ edu.school_name }}</textarea>
+                            </p>
+                            <!--figure out degree dropdown-->
+                        {% endfor %}
+                        <input type="checkbox" id="education" value="education" name="hidden" style="accent-color: #548060;"> Hide my education from employers.<br /><br />
+                        <!--resume here at some point-->
+                        <p>
+                            <label for="links">Links:</label>
+                            <textarea name="links" class="form-control" id="links">{{ template_data.seeker_user.links }}</textarea>Each link should be separated by a comma with no spaces. Leaving a space will still show your link but will not allow it to be clicked.
+                        </p>
+                        <input type="checkbox" id="links" value="links" name="hidden" style="accent-color: #548060;"> Hide my links from employers.<br /><br />
+                        <input type="checkbox" id="profile" value="profile" name="hidden" style="accent-color: #548060;"> Only show my name and email to employers.<br /><br />
+                    {% endif %}
                     <div class="text-start">
-                        <button type="submit" class="btn bg-dark text-white">Confirm Changes to Profile</button>
+                        <button type="submit" class="btn text-white" style="background-color: #548060;">Confirm Changes to Profile</button>
                     </div>
                 </form>
             </div>

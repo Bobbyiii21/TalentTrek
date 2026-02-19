@@ -97,7 +97,7 @@ def profiles(request, user_link):
         template_data['is_seeker'] = True
         template_data["seeker_user"] = seeker_user
         template_data['education'] = seeker_user.education.all()
-        #template_data['skills'] = seeker_user.education.all()
+        template_data['skills'] = seeker_user.education.all()
         template_data['experience'] = seeker_user.experience.all()
         template_data['links'] = seeker_user.links.split(",")
         for link in template_data['links']:
@@ -121,29 +121,57 @@ def profiles(request, user_link):
 @login_required
 def edit_profile(request, user_link):
     id = TTUser.get_id_by_name(user_link)
-    profile = get_object_or_404(TTUser, id)
-    if request.user != profile.user:
+    profile_user = get_object_or_404(TTUser, id=id)
+    if request.user.id != profile_user.id:
         return redirect('accounts.profiles')
     if request.method == 'GET':
         template_data = {}
         template_data['title'] = "Edit Profile"
-        template_data['profile'] = profile
+        template_data['profile_user'] = profile_user
         template_data['is_seeker'] = True
         try:
-            template_data['seeker_user'] = JobSeeker.objects.get(user_id=id)
+            seeker_user = JobSeeker.objects.get(user_id=id)
+            template_data['seeker_user'] = seeker_user
+            template_data['education'] = seeker_user.education.all()
         except Exception:
             template_data['recruiter_user'] = Recruiter.objects.get(user_id=id)
             template_data['is_seeker'] = False
         return render(request, 'accounts/edit_profile.html', {'template_data': template_data})
     elif request.method == 'POST':
-        profile = TTUser.objects.get(id=id)
-        profile.save()
+        profile_user.first_name = request.POST['first_name']
+        profile_user.last_name = request.POST['last_name']
+        profile_user.headline = request.POST['headline']
+        profile_user.save()
         try:
             seeker_user = JobSeeker.objects.get(user_id=id)
+            #for edu in template_data['education']:
+            #    edu.grad_year = request.POST['grad_year']
+            #    edu.school_name = request.POST['school_name']
+                #figure out degree
+            seeker_user.links = request.POST['links']
+            #resume
+            hidden_links = request.POST.getlist('hidden')
+            if 'profile' in hidden_links:
+                seeker_user.account_is_hidden = True
+            else:
+                seeker_user.account_is_hidden = False
+            if 'experience' in hidden_links:
+                seeker_user.experience_is_hidden = True
+            else:
+                seeker_user.experience_is_hidden = False
+            if 'education' in hidden_links:
+                seeker_user.education_is_hidden = True
+            else:
+                seeker_user.education_is_hidden = False
+            if 'links' in hidden_links:
+                seeker_user.links_is_hidden = True
+            else:
+                seeker_user.links_is_hidden = False
             seeker_user.save()
         except:
             recruiter_user = Recruiter.objects.get(user_id=id)
+            recruiter_user.links = request.POST['links']
             recruiter_user.save()
-        return redirect('accounts.profiles')
+        return redirect('accounts.profiles', user_link=user_link)
     else:
-        return redirect('accounts.profiles')
+        return redirect('accounts.profiles', user_link=user_link)
