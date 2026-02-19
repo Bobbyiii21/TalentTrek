@@ -13,16 +13,7 @@
           enctype="multipart/form-data"
         >
           {% csrf_token %}
-          <p>
-            <label for="company_name"><b>Company:</b> *</label>
-            <input
-              name="company_name"
-              required
-              class="form-control"
-              id="company_name"
-              type="text"
-            />
-          <p>
+          
             <label for="job_title"><b>Job Title:</b> *</label>
             <input
               name="job_title"
@@ -263,8 +254,8 @@
           maxVal = minVal + gap;
         }
       }
-      $minLabel.text(format($min.val()));
-      $maxLabel.text(format($max.val()));
+      $minLabel.text(format($min.Val()));
+      $maxLabel.text(format($max.Val()));
     }
     $min.on("input", updateSalary);
     $max.on("input", updateSalary);

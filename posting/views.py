@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from skills.models import Skill
 from django.db.models import Q, Case, When, IntegerField, Value
+from accounts.models import Recruiter
 
 # Create your views here.
 from .models import Post
@@ -71,11 +72,13 @@ def post(request, id):
 
 @login_required
 def create(request):
+    recruiter = Recruiter.objects.get(user=request.user)
     if request.method == 'POST':
-        if request.POST['job_title'] != '' and request.POST['company_name'] != '':
+        if request.POST.get('job_title', '').strip() != '':
             posting = Post()
-            posting.company_name = request.POST['company_name'].strip()
-            posting.job_title = request.POST['job_title'].strip()
+            posting.recruiter = recruiter
+            posting.company_name = recruiter.company
+            posting.job_title = request.POST.get('job_title', '').strip()
             posting.job_type = request.POST.get('job_type')
             posting.location_type = request.POST.get('location_type')
             posting.visa_sponsorship = 'visa_sponsorship' in request.POST

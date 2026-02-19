@@ -215,8 +215,8 @@
           maxVal = minVal + gap;
         }
       }
-      $minLabel.text(format(minVal));
-      $maxLabel.text(format(maxVal));
+      $minLabel.text(format($min.val()));
+      $maxLabel.text(format($max.val()));
     }
     $min.on("input", updateSalary);
     $max.on("input", updateSalary);
