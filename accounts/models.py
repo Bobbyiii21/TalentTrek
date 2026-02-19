@@ -58,6 +58,8 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED 
     date_joined = models.DateTimeField("date joined", default=timezone.now)
     headline = models.TextField(max_length=1023, blank=True)
+    is_seeker = models.BooleanField(default=False)
+    is_recruiter = models.BooleanField(default=False)
     # Check that the above image loads and figure out where to store user-uploaded images
     is_staff = models.BooleanField(
         "staff status",
@@ -103,15 +105,16 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
 #NOTE: hidden properties should be shown on the users own profile page with a flag showing they are hidden, and hide them from all other users.
 
 #builds an education summary that will be displayed as one unified part of the profile
-class DegreeType(models.TextChoices):
-    HIGHSCHOOL = "HIGHSCHOOL", "High School"
-    CERTIFICATE = "CERTIFICATE", "Certificate"
-    ASSOCIATES = "ASSOCIATES", "Associate's"
-    BACHELORS = "BACHELORS", "Bachelor's"
-    MASTERS = "MASTERS", "Master's"
-    DOCTORATE = "DOCTORATE", "Doctorate"
 
 class Education(models.Model):
+    class DegreeType(models.TextChoices):
+        HIGHSCHOOL = "HIGHSCHOOL", "High School"
+        CERTIFICATE = "CERTIFICATE", "Certificate"
+        ASSOCIATES = "ASSOCIATES", "Associate's"
+        BACHELORS = "BACHELORS", "Bachelor's"
+        MASTERS = "MASTERS", "Master's"
+        DOCTORATE = "DOCTORATE", "Doctorate"
+
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
@@ -137,11 +140,13 @@ class Experience(models.Model):
 #TODO: resume
 class JobSeeker(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
-    education = models.ManyToManyField(Education) #list of education objects
+    education = models.ManyToManyField(Education, blank=True) #list of education objects
     skills = models.ManyToManyField(Skill, blank=True)
-    experience = models.ManyToManyField(Experience) #job experience objects
+    experience = models.ManyToManyField(Experience, blank=True) #job experience objects
     links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    resume = models.FileField(upload_to=get_resume_path) # FILES SHOULD BE SAVED AS media/pfps/{id}.{filetype}
+    resume = models.FileField(upload_to=get_resume_path, blank=True)
+    education_is_hidden = models.BooleanField(default=False)
+    experience_is_hidden = models.BooleanField(default=False)
     links_is_hidden = models.BooleanField(default=False) #hides entire links field
     account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on    
 

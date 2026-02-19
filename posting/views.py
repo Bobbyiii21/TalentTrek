@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
-# Create your views here.
+from applications.views import apply
 from .models import Post
 
 def index(request):
@@ -21,6 +20,7 @@ def post(request, id):
     template_data = {}
     template_data['title'] = post.company_name + ' - ' + post.job_title
     template_data['post'] = post
+    template_data['id'] = id
     return render(request, 'posting/post.html',
                   {'template_data': template_data})
 

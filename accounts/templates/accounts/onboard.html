@@ -329,6 +329,7 @@ async function sendData() {
       headers: {'X-CSRFToken': getCookie('csrftoken')},
       body: formData,
     });
+    window.location = "{% url 'accounts.profiles' user_link=user.slugify_name%}"
     //console.log(await response.json());
   } catch (e) {
     console.error(e);
