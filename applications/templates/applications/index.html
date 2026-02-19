@@ -13,10 +13,15 @@
           {% for application in template_data.applications %}
             <div style="padding: 0.5rem 0rem">
               <div class="card">
-                <h5 class="card-header">{{ application.posting.company_name }} - {{ application.posting.job_title }}</h5>
+                <h5 class="card-header">
+                  <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-dark text-decoration-none">
+                    {{ application.posting.company_name }} - {{ application.posting.job_title }}
+                  </a>
+                </h5>
                 <div class="card-body">
-                  <p>Application to {{ application.posting.job_title }} at {{ application.posting.company_name }}</p>
+                  <p><em>Application to {{ application.posting.job_title }} at {{ application.posting.company_name }}</em></p>
                   <p><strong>Status:</strong> {{ application.status }}</p>
+                  <p><strong>Message:</strong> {{ application.message }}</p>
                 </div>
                 <div class="card-footer text-body-secondary">
                   Applied {{ application.date }}
