@@ -9,6 +9,7 @@
                 <form method="POST">
                     {% csrf_token %}
                     <!--pfp goes here-->
+                    <input type="checkbox" id="profile" value="profile" name="hidden" style="accent-color: #548060;"> Only show my name and email to employers.<br /><br />
                     <p>
                         <label for="first_name">First Name:</label>
                         <textarea name="first_name" required class="form-control" id="first_name">{{ template_data.profile_user.first_name }}</textarea>
@@ -32,7 +33,9 @@
                         <!--skills here-->
                         <!--experience here-->
                         <input type="checkbox" id="experience" value="experience" name="hidden" style="accent-color: #548060;"> Hide my experience from employers.<br /><br />
+                        <div id="education-section">
                         {% for edu in template_data.education %}
+                        <div id="education-id-{{ edu.id }}">
                             <h4>Education Instance:</h4>
                             <p>
                                 <label for="grad_year">Graduation Year:</label>
@@ -42,8 +45,12 @@
                                 <label for="school_name">School Name:</label>
                                 <textarea name="school_name" class="form-control" id="school_name">{{ edu.school_name }}</textarea>
                             </p>
+                            <button id="education-remove-{{ edu.id }}"></button>
                             <!--figure out degree dropdown-->
+                        </div>
                         {% endfor %}
+                        <a id="add-education-button" style="padding: 2px; margin: 5px; border-radius: 0.375rem; border: black solid 1px;">&#10010 Add Education</a>
+                        </div>
                         <input type="checkbox" id="education" value="education" name="hidden" style="accent-color: #548060;"> Hide my education from employers.<br /><br />
                         <!--resume here at some point-->
                         <p>
@@ -51,7 +58,6 @@
                             <textarea name="links" class="form-control" id="links">{{ template_data.seeker_user.links }}</textarea>Each link should be separated by a comma with no spaces. Leaving a space will still show your link but will not allow it to be clicked.
                         </p>
                         <input type="checkbox" id="links" value="links" name="hidden" style="accent-color: #548060;"> Hide my links from employers.<br /><br />
-                        <input type="checkbox" id="profile" value="profile" name="hidden" style="accent-color: #548060;"> Only show my name and email to employers.<br /><br />
                     {% endif %}
                     <div class="text-start">
                         <button type="submit" class="btn text-white" style="background-color: #548060;">Confirm Changes to Profile</button>
@@ -61,4 +67,57 @@
         </div>
     </div>
 </div>
+
+<script>
+
+const educationSection = document.querySelector("#education-section");
+const addEducationBtn = document.querySelector("#add-education-button");
+
+
+const addNewButtonCSS = "border: 1px solid var(--accent); border-radius: 0.375rem; color: var(--accent); padding: 0.375rem 0.75rem; text-align: center; text-decoration: none; display: inline-block; font-size: 1rem; cursor: default;"
+const xButtonCSS =   "color: crimson; border: none; background-color: rgba(0,0,0,0)"
+const shortTextInputCSS = "margin: 5px; border-radius: 0.375rem;"
+
+let educationCount = 0;
+
+addEducationBtn.addEventListener("click", () => {
+    debugger;
+    if (educationCount >= 5) {return;}
+    var newInstance = document.createElement("div");
+    newInstance.id = "education"+educationCount+"new";
+    var gradYear = document.createElement("input");
+    gradYear.type = "text";
+    gradYear.name = "gradYear"+educationCount;
+    gradYear.id = "education"+educationCount+"gradYear";
+    gradYear.style = shortTextInputCSS;
+    newInstance.appendChild(gradYear);
+    var xButton = document.createElement("button");
+    xButton.style = xButtonCSS;
+    xButton.id = "education"+educationCount+"button";
+    xButton.innerHTML = "&#10006";
+    xButton.addEventListener('click', education_xButtonHandler);
+    newInstance.appendChild(xButton);
+    var br = document.createElement("br");
+    newInstance.appendChild(br);
+    educationSection.append(newInstance);
+    educationCount++;
+    if (educationCount == 5) {
+        addEducationBtn.innerHTML = "Max number of educations";
+    }
+});
+
+function education_xButtonHandler(event) {
+    debugger;
+    let buttonIndex = this.id.charCodeAt(9) - '0'.charCodeAt(0);
+    console.log(buttonIndex);
+    educationCount--;
+    document.querySelector("#education"+{buttonIndex}+"new").remove();
+    addLinkBtn.innerHTML = " &#10010 Add Education";
+}
+
+
+
+
+</script>
+
 {% endblock content %}

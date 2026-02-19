@@ -24,7 +24,7 @@
                 <h5>Job Seeker</h5>
             {% endif %}
             -->
-            {% if not template_data.is_seeker %}
+            {% if template_data.is_recruiter %}
                 <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
             {% endif %}
             <p>Joined {{ template_data.profile_user.date_joined }}</p>

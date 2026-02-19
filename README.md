@@ -7,6 +7,8 @@ Email: admin@talenttrek.com (btw this is not a real email)
 
 Password: adminpassword
 
+Passowrd (db.sqlite version): pbkdf2_sha256$720000$HCWFeKrrQSz3zfb81hecMG$NAYWdl4yBjmGZnfLCyLpvPmmked0w5MCo1fqUAsqvxI=
+
 
 Test User sign-in -
 
