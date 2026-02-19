@@ -21,7 +21,9 @@
                 <div class="card-body">
                   <p><em>Application to {{ application.posting.job_title }} at {{ application.posting.company_name }}</em></p>
                   <p><strong>Status:</strong> {{ application.status }}</p>
-                  <p><strong>Message:</strong> {{ application.message }}</p>
+                  {% if application.message != '' %}
+                    <p><strong>Message:</strong> {{ application.message }}</p>
+                  {% endif %}
                 </div>
                 <div class="card-footer text-body-secondary">
                   Applied {{ application.date }}
