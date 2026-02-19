@@ -105,15 +105,17 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
 #NOTE: hidden properties should be shown on the users own profile page with a flag showing they are hidden, and hide them from all other users.
 
 #builds an education summary that will be displayed as one unified part of the profile
-class DegreeType(models.TextChoices):
-    HIGHSCHOOL = "HIGHSCHOOL", "High School"
-    CERTIFICATE = "CERTIFICATE", "Certificate"
-    ASSOCIATES = "ASSOCIATES", "Associate's"
-    BACHELORS = "BACHELORS", "Bachelor's"
-    MASTERS = "MASTERS", "Master's"
-    DOCTORATE = "DOCTORATE", "Doctorate"
+
 
 class Education(models.Model):
+    class DegreeType(models.TextChoices):
+        HIGHSCHOOL = "HIGHSCHOOL", "High School"
+        CERTIFICATE = "CERTIFICATE", "Certificate"
+        ASSOCIATES = "ASSOCIATES", "Associate's"
+        BACHELORS = "BACHELORS", "Bachelor's"
+        MASTERS = "MASTERS", "Master's"
+        DOCTORATE = "DOCTORATE", "Doctorate"
+
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
