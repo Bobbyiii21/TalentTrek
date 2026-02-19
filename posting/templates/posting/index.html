@@ -1,87 +1,226 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+
 <div class="p-3">
   <div class="container">
     <div class="row mt-3">
-      <div class="col mx-auto mb-3">
+      <div class="col mx-auto mb-3" style="color: var(--secondary);">
         <h2>Job Postings</h2>
         <a href="create">Create a Job Posting</a>
         <hr />
-        <p class="card-text">
-          <form method="GET">
-            <div class="row">
-              <div class="col-auto">
-                <div class="input-group col-auto">
-                  <div class="input-group-text">
-                    Search</div>
-                  <input type="text" class="form-control" name="search">
-                </div>
-              </div>
-              <div class="col-auto">
-                <button class="btn bg-dark text-white" type="submit">Search</button>
-              </div>
-            </div>
-          </form>
-        </p>
       </div>
     </div>
-  <div class="row">
-  {% for post in template_data.postings %}
-  <div class="col-12 mb-3">
+    <div class="row">
+      <!--Filters -->
+<div class="col-md-3 mb-3">
+  <h5>Filters</h5>
+  <form method="GET">
+    <!--Search Filter-->
+    <div class="mb-3">
+      <label class="form-label">Search:</label>
+      <input type="text" class="form-control" name="search" value="{{ request.GET.search }}">
+    </div>
+    <!--Location Filter-->
+<div class="mb-3">
+  <label class="form-label">Location:</label>
+  <input type="text" class="form-control" name="location" 
+         value="{{ request.GET.location }}">
+</div>
+    <!--Job Type Filter-->
+    <div class="mb-3">
+      <label class="form-label">Job Type:</label>
+      <select class="form-select" name="job_type">
+        <option value="">Any</option>
+        {% for value, label in template_data.job_type_choices %}
+          <option value="{{ value }}" {% if template_data.filter_job_type == value %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <!--Location Type Filter-->
+    <div class="mb-3">
+      <label class="form-label">Location Type:</label>
+      <select class="form-select" name="location_type">
+        <option value="">Any</option>
+        {% for value, label in template_data.location_type_choices %}
+          <option value="{{ value }}" {% if template_data.filter_location_type == value %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <!--Visa Scholarship Filter-->
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" name="visa" id="visa"
+             {% if template_data.filter_visa == 'on' %}checked{% endif %}>
+      <label class="form-check-label" for="visa">Visa Sponsorship Available</label>
+    </div>
+    <!--Salary Range Filter (JS at bottom)-->
+    <div class="mb-2">
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" name="use_salary" id="use_salary"
+               {% if template_data.filter_use_salary == 'on' %}checked{% endif %}>
+        <label class="form-check-label" for="use_salary">Apply Salary Range Filter</label>
+      </div>
+      <label class="form-label">Salary Range (K USD):</label>
+      <div class="d-flex justify-content-between mb-2">
+        <span id="salaryMinLabel">${{ template_data.filter_salary_min|default:"40" }}k</span>
+        <span id="salaryMaxLabel">${{ template_data.filter_salary_max|default:"120" }}k</span>
+      </div>
+      <div class="position-relative">
+        <input
+          type="range"
+          id="salary_min"
+          name="salary_min"
+          min="30"
+          max="300"
+          step="1"
+          value="{{ template_data.filter_salary_min|default:"40" }}"
+          class="form-range"
+        />
+        <input
+          type="range"
+          id="salary_max"
+          name="salary_max"
+          min="30"
+          max="300"
+          step="1"
+          value="{{ template_data.filter_salary_max|default:"120" }}"
+          class="form-range mt-n2"
+        />
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+  </form>
+</div>
+      <!--Job Postings-->
+      <div class="col-md-9">
+        {% for post in template_data.postings %}
+          <div class="col-12 mb-3">
     <div class="card p-3">
-      <div class="row g-0 align-items-center">
+      <div class="row g-0 align-items-start">
+        <!--Image-->
         <div class="col-auto">
-
           <img src="{{ post.image.url }}"
                class="img-fluid rounded"
                style="width: 100px; height: auto;">
         </div>
-
         <div class="col ps-3">
-          <h5 class="mb-1">
-            <a href="{% url 'posting.post' id=post.id %}" class="job-title text-dark text-decoration-none">
-              {{ post.company_name }} – {{ post.job_title }}
+          <!--Job Title-->
+          <h5 class="mb-1 d-flex align-items-center gap-2">
+            <a href="{% url 'posting.post' id=post.id %}" 
+               class="job-title text-decoration-none" style="color: var(--primary)">
+              {{ post.job_title }}
             </a>
+            <span class="text-muted fst-italic" style="font-size: 0.75rem;">
+              {{ post.get_job_type_display }}
+            </span>
           </h5>
-
-          <p class="mb-1 text-muted short-desc" id="short-{{ post.id }}">
-            {{ post.description|truncatechars:150 }}
+          <!--Company Name-->
+          <p class="mb-1 short-desc" id="short-{{ post.id }}">
+            {{ post.company_name }}
           </p>
-
-           <div class="collapse" id="desc-{{ post.id }}">
+          <!--Location-->
+          <p class="mb-1 text-muted short-desc" id="short-{{ post.id }}">
+            {{ post.location }} ({{ post.get_location_type_display }})
+          </p>
+          <!--Description-->
+          <div class="collapse" id="desc-{{ post.id }}">
             <p class="text-muted mb-1">
               {{ post.description }}
             </p>
           </div>
-
-          <a
-            class="small text-primary"
-            data-bs-toggle="collapse"
-            href="#desc-{{ post.id }}"
-            role="button"
-            aria-expanded="false"
-            aria-controls="desc-{{ post.id }}"
-            id="show-toggle">
+          <!--Show more text-->
+          <a class="small text-primary"
+             data-bs-toggle="collapse"
+             href="#desc-{{ post.id }}"
+             role="button"
+             aria-expanded="false"
+             aria-controls="desc-{{ post.id }}"
+             id="show-toggle">
             Show more
           </a>
         </div>
 
+        <div class="col-auto ps-3 text-end d-flex flex-column justify-content-between">
+          <!--Salary-->
+          <div class="mb-2">
+            <span class="fw-bold text-primary">
+              {% if post.salary_min and post.salary_max %}
+                ${{ post.salary_min }}K - ${{ post.salary_max }}K
+              {% else %}
+                <span class="text-muted small">Salary not specified</span>
+              {% endif %}
+            </span>
+          </div>
+
+          <!--Visa Scholarship-->
+          {% if post.visa_sponsorship %}
+          <div>
+            <span class="text-muted small fst-italic">
+              Visa Sponsorship
+            </span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!--Skills-->
         <div class="col-auto ps-3 text-end">
-    <div class="d-flex flex-column align-items-end gap-1">
-      {% for skill in post.skills.all %}
-        <span class="badge" style="background-color: var(--primary); color: var(--text);">{{ skill.name }}</span>
-      {% empty %}
-        <span class="text-muted small">No skills</span>
-      {% endfor %}
-    </div>
-  </div>
+          <div class="d-flex flex-column align-items-end gap-1">
+            {% for skill in post.skills.all %}
+              <span class="badge" style="background-color: var(--primary); color: var(--text);">
+                {{ skill.name }}
+              </span>
+            {% empty %}
+              <span class="text-muted small">No skills</span>
+            {% endfor %}
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
-  {% endfor %}
-</div>
+        {% empty %}
+          <p>No postings found.</p>
+        {% endfor %}
+      </div>
 
+    </div>
   </div>
 </div>
+
+<!--Salary Filter JS-->
+<script>
+  $(document).ready(function () {
+    const $min = $("#salary_min");
+    const $max = $("#salary_max");
+    const $minLabel = $("#salaryMinLabel");
+    const $maxLabel = $("#salaryMaxLabel");
+    const gap = 5;
+
+    function format(val) {
+      return "$" + Number(val).toLocaleString() + "k";
+    }
+    function updateSalary() {
+      let minVal = parseInt($min.val());
+      let maxVal = parseInt($max.val());
+      if (maxVal - minVal < gap) {
+        if (this === $min[0]) {
+          $min.val(maxVal - gap);
+          minVal = maxVal - gap;
+        } else {
+          $max.val(minVal + gap);
+          maxVal = minVal + gap;
+        }
+      }
+      $minLabel.text(format(minVal));
+      $maxLabel.text(format(maxVal));
+    }
+    $min.on("input", updateSalary);
+    $max.on("input", updateSalary);
+    updateSalary();
+  });
+</script>
 {% endblock content %}
