@@ -97,7 +97,10 @@
 </div>
       <!--Job Postings-->
   <div class="col-md-9">
+    {% if template_data.my_postings %}
         <h4>My Posts</h4>
+    {% else %}
+    {% endif %}
         {% for post in template_data.my_postings %}
           <div class="col-12 mb-3">
     <div class="card p-3">
@@ -184,9 +187,7 @@
     </div>
   </div>
         {% empty %}
-          <p>No postings found.</p>
         {% endfor %}
-
 
 <!--Job Postings-->
         <h4>Posts</h4>
