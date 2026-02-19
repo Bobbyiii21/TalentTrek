@@ -30,7 +30,7 @@ class CustomUserCreationForm(UserCreationForm):
 
         for field in ['email', 'first_name', 'last_name', 'password1', 'password2']:
             self.fields[field].help_text = None
-\
+
     class Meta:
         model = TTUser
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
