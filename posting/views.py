@@ -46,10 +46,19 @@ def index(request):
             postings = postings.filter(salary_min__gte=int(salary_min))
         if salary_max:
             postings = postings.filter(salary_max__lte=int(salary_max))
+            
+    if request.user.is_authenticated:
+        my_postings = postings.filter(recruiter__user=request.user)
+        other_postings = postings.exclude(recruiter__user=request.user)
+    else:
+        my_postings = Post.objects.none()
+        other_postings = postings
 
     template_data = {
         'title': 'Postings',
         'postings': postings,
+        'my_postings': my_postings,
+        'other_postings': other_postings,
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
         'filter_job_type': job_type,
