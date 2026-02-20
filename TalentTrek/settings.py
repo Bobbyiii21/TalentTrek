@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'posting',
     'profiles',
     'cities_light',
+    'applications',
 ]
 
 MIDDLEWARE = [
