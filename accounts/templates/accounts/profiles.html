@@ -77,7 +77,8 @@
                             <p><b>{{ edu.school_name }}</b></p>
                             <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
                         </div>
-                            <p>Degree: {{ edu.degree }}</p>
+                            <p>Degree: {{ edu.get_degree_display }}</p>
+                            <p>Name: {{ edu.degree_name }}</p>
                         <hr>
                     {% endfor %}
                 {% endif %}
@@ -90,6 +91,10 @@
                         <a href="https://{{ link }}">{{ link }}</a>
                         <hr>
                     {% endfor %}
+                {% endif %}
+                
+                {% if true %}
+
                 {% endif %}
             {% endif %}
             {% if template_data.seeker_user.account_is_hidden %}

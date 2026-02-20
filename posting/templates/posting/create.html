@@ -141,9 +141,7 @@
             </p>
           </div>
           <div class="mb-3">
-            <label for="image" class="form-label"
-              ><b>Upload a Job Image:</b></label
-            >
+            <label for="image" class="form-label"><b>Upload a Job Image:</b></label>
             <input
               class="form-control"
               type="file"
@@ -154,9 +152,7 @@
           </div>
 
           <div class="mb-3">
-            <label for="skills" class="form-label"
-              ><b>Required Skills:</b></label
-            >
+            <label for="skills" class="form-label"><b>Required Skills:</b></label>
             <select name="skills" id="skills" class="form-select" multiple>
               {% for skill in skills %}
               <option value="{{ skill.id }}">{{ skill.name }}</option>

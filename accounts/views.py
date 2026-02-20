@@ -133,6 +133,7 @@ def edit_profile(request, user_link):
             template_data['education'] = profile_job_seeker.education.all()
             template_data['experience'] = profile_job_seeker.experience.all()
             template_data['degree_choices'] = Education.DegreeType.choices
+            template_data['skills'] = Skill.objects.all().order_by('name')
         elif request.user.is_recruiter:
             template_data['recruiter_user'] = Recruiter.objects.get(user_id=id)
         return render(request, 'accounts/edit_profile.html', {'template_data': template_data})
@@ -146,6 +147,7 @@ def edit_profile(request, user_link):
             new_education = Education()
             new_education.grad_year = grad_year
             new_education.degree = request.POST['degree']
+            new_education.degree_name = request.POST['degree_name']
             new_education.school_name = request.POST['school_name']
             new_education.save()
             seeker_user = JobSeeker.objects.get(user_id=id)
@@ -193,6 +195,8 @@ def edit_profile(request, user_link):
             #    edu.school_name = request.POST['school_name']
                 #figure out degree
             seeker_user.links = request.POST['links']
+            for skill in request.POST['skills']:
+                seeker_user.skills.add(skill)
             #resume
             hidden_links = request.POST.getlist('hidden')
             if 'profile' in hidden_links:

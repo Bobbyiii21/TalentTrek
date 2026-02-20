@@ -118,6 +118,7 @@ class Education(models.Model):
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
+    degree_name = models.CharField(max_length=63, blank=True)
     is_hidden = models.BooleanField(default=False) #hides this individual education instance
 
 #builds a summary of a job experience
@@ -128,7 +129,7 @@ class Experience(models.Model):
     current_employee = models.BooleanField(default=False)
     company_name = models.CharField(max_length=63)
     position_title = models.CharField(max_length=63)
-    job_description = models.TextField(max_length=511)
+    job_description = models.TextField(max_length=511, blank=True)
     is_hidden = models.BooleanField(default=False) #hides this individual experience experience
 
 
@@ -152,6 +153,9 @@ class JobSeeker(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+    def list_links(self):
+        return self.links.split(',')
     
     REQUIRED_FIELDS = ['user']
 

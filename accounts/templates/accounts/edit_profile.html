@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <div class="p-3">
     <div class="container">
         <div class="row mt-3">
@@ -23,12 +25,15 @@
                         <textarea name="headline" class="form-control" id="headline">{{ template_data.profile_user.headline }}</textarea>
                     </p>
                     <!--location goes here when implemented-->
-                    {% if not template_data.is_seeker %}
+                    {% if template_data.is_recruiter %}
                         <p>
                             <label for="links">Links:</label>
                             <textarea name="links" class="form-control" id="links">{{ template_data.recruiter_user.links }}</textarea>Each link should be separated by a comma with no spaces. Leaving a space will still show your link but will not allow it to be clicked.
                         </p>
-                    {% endif %}
+                        <p>
+                            <label for="company">Links:</label>
+                            <textarea name="company" class="form-control" id="company">{{ template_data.recruiter_user.company }}</textarea>Each link should be separated by a comma with no spaces. Leaving a space will still show your link but will not allow it to be clicked.
+                        </p>                    {% endif %}
                     {% if template_data.is_seeker %}
                         <!--skills here-->
                         <!--experience here-->
@@ -83,30 +88,30 @@
               </div>
               <div class="modal-body">
                 <div class="mb-3">
-                  <label for="company_name" class="form-label">Company Name:</label>
-                  <textarea class="form-control" id="company-name-input" name="company_name" rows="2" maxlength="63"></textarea>
+                  <label for="company_name" class="form-label">Company Name*</label>
+                  <textarea class="form-control" id="company-name-input" name="company_name" rows="2" maxlength="63" required></textarea>
                   <span style="color:crimson;" id="company-name-errmsg"></span>
                 </div>
                 <div class="mb-3">
-                  <label for="position_title" class="form-label">Position Title:</label>
-                  <textarea class="form-control" id="position-title-input" name="position_title" rows="2" maxlength="63"></textarea>
+                  <label for="position_title" class="form-label">Position Title*</label>
+                  <textarea class="form-control" id="position-title-input" name="position_title" rows="2" maxlength="63" required></textarea>
                   <span style="color:crimson;" id="position-title-errmsg"></span>
                 </div>
                 <div class="mb-3">
-                  <label for="job_description" class="form-label">Job Description:</label>
+                  <label for="job_description" class="form-label">Job Description</label>
                   <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511"></textarea>
                   <span style="color:crimson;" id="job-description-errmsg"></span>
                 </div>
                 <div class="mb-3">
-                    <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()"> Current Employee<br /><br />
+                    <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()" required> Current Employee*<br /><br />
                 </div>
                 <div class="mb-3">
-                  <label for="start_date" class="form-label">Start Date:</label>
-                  <input type="date" id="start-date-input" name="start_date" value="2025-02-19">
+                  <label for="start_date" class="form-label">Start Date*</label>
+                  <input type="date" id="start-date-input" name="start_date" value="2025-02-19" required>
                 </div>
                 <div class="mb-3" id="experience-end-date-container" style="display:block;">
-                  <label for="end_date" class="form-label">End Date:</label>
-                  <input type="date" id="end-date-input" name="end_date" value="2025-02-19">
+                  <label for="end_date" class="form-label">End Date*</label>
+                  <input type="date" id="end-date-input" name="end_date" value="2025-03-01">
                 </div> 
             </div>
               <div class="modal-footer">
@@ -129,7 +134,8 @@
                                 <p><b>{{ edu.school_name }}</b></p>
                                 <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
                             </div>
-                                <p>Degree: {{ edu.degree }}</p>
+                                <p>Degree Level: {{ edu.get_degree_display }}</p>
+                                <p>Name: {{ edu.degree_name }}</p>                                
                                 <br>
                         <form method="POST" action="{% url 'accounts.edit_profile' user_link=user.slugify_name %}">
                         {% csrf_token %}
@@ -166,21 +172,27 @@
               </div>
               <div class="modal-body">
                 <div class="mb-3">
-                  <label for="grad_year" class="form-label">Graduation Year:</label>
-                  <textarea class="form-control" id="grad-year-input" name="grad_year" rows="1" maxlength="4"></textarea>
+                  <label for="grad_year" class="form-label">Graduation Year*</label>
+                  <textarea class="form-control" id="grad-year-input" name="grad_year" rows="1" maxlength="4" required></textarea>
                   <span style="color:crimson;" id="grad-year-errmsg"></span>
                 </div>
                 <div class="mb-3">
-                  <label for="school_name" class="form-label">School Name:</label>
-                  <textarea class="form-control" id="school-name-input" name="school_name" rows="2" maxlength="63"></textarea>
+                  <label for="school_name" class="form-label">School Name*</label>
+                  <textarea class="form-control" id="school-name-input" name="school_name" rows="2" maxlength="63" required></textarea>
                   <span style="color:crimson;" id="school-name-errmsg"></span>
                 </div>
                 <div class="mb-3">
-                  <label for="degree" class="form-label">Degree:</label>
-                  <select name="degree" class="filter-selectbox">
+                  <label for="degree" class="form-label">Degree Level*</label>
+                  <select name="degree" class="filter-selectbox" required>
                   {% for value, label in template_data.degree_choices %}
                   <option value="{{ value }}">{{ label }}</option>
                   {% endfor %}
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="degree_name" class="form-label">Degree Name</label>
+                  <textarea class="form-control" id="degree_name-input" name="degree_name" rows="2" maxlength="63"></textarea>
+                  <span style="color:crimson;" id="degree-name-errmsg"></span>
                   </select>
                 </div>
               </div>
@@ -201,15 +213,35 @@
                             <textarea name="links" class="form-control" id="links">{{ template_data.seeker_user.links }}</textarea>Each link should be separated by a comma with no spaces. Leaving a space will still show your link but will not allow it to be clicked.
                         </p>
                         <input type="checkbox" id="links" value="links" name="hidden" style="accent-color: #548060;"> Hide my links from employers.<br /><br />
+
+                        <div class="mb-3">
+                          <label for="skills" class="form-label"><b>Skills:</b></label>
+                          <select name="skills" id="skills" class="form-select" multiple>
+                            {% for skill in template_data.skills %}
+                            <option value="{{ skill.id }}">{{ skill.name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
                     {% endif %}
                     <div class="text-start">
-                        <button type="submit" class="btn text-white" style="background-color: #548060;">Confirm Changes to Profile</button>
+                        <button type="submit" class="primary-hover-btn">Confirm Changes to Profile</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
+<script>
+  $(document).ready(function () {
+    $("#skills").select2({
+      placeholder: "Search and select skills",
+      allowClear: true,
+      width: "resolve",
+    });
+  });
+</script>
 
 <script>
 
