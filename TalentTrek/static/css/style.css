@@ -163,3 +163,15 @@ html, body {
   width: fit-content;
   max-height: 400px;
 }
+
+.select2-container--default .select2-selection--multiple {
+    min-height: 38px;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    color: black;
+}
+
+.select2-container {
+    width: 100% !important;
+}
