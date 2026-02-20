@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load django_tables2 %}
 {% load static %}
 <div class="p-3">
   <div class="container">
@@ -15,6 +16,63 @@
         <img src="{{ template_data.post.image.url }}"
           class="rounded img-card-400" />
       </div>
+      {% if template_data.table_access %}
+      <div class="col-12">
+        <h2>Candidate Pool</h2>
+        <hr />
+        <form method="GET" action="{% url 'posting.post' id=template_data.id %}" class="row g-2 mb-3 align-items-end">
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Name</span>
+              <input type="text" class="form-control" name="search" value="{{ request.GET.search }}" placeholder="Search candidates">
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Status</span>
+              <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="Applied" {% if request.GET.status == "Applied" %}selected{% endif %}>Applied</option>
+                <option value="Reviewed" {% if request.GET.status == "Reviewed" %}selected{% endif %}>Reviewed</option>
+                <option value="Interview" {% if request.GET.status == "Interview" %}selected{% endif %}>Interview</option>
+                <option value="Offer" {% if request.GET.status == "Offer" %}selected{% endif %}>Offer</option>
+                <option value="Closed" {% if request.GET.status == "Closed" %}selected{% endif %}>Closed</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Skills</span>
+              <select name="skills" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Skills</option>
+                {% for skill in template_data.skills %}
+                  <option value="{{ skill.name }}" {% if request.GET.skills == skill.name %}selected{% endif %}>{{ skill.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Sort by</span>
+              <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="applicant__first_name" {% if request.GET.sort == "applicant__first_name" or not request.GET.sort %}selected{% endif %}>Name (A-Z)</option>
+                <option value="-applicant__first_name" {% if request.GET.sort == "-applicant__first_name" %}selected{% endif %}>Name (Z-A)</option>
+                <option value="status" {% if request.GET.sort == "status" %}selected{% endif %}>Status (A-Z)</option>
+                <option value="-status" {% if request.GET.sort == "-status" %}selected{% endif %}>Status (Z-A)</option>
+                <option value="message" {% if request.GET.sort == "message" %}selected{% endif %}>Message (A-Z)</option>
+                <option value="-message" {% if request.GET.sort == "-message" %}selected{% endif %}>Message (Z-A)</option>
+              </select>
+            </div>
+          </div>
+        </form>
+        <hr />
+        {% if template_data.applications %}
+          {% render_table template_data.applications %}
+        {% else %}
+          <p>No candidates have applied to this posting yet.</p>
+        {% endif %}
+      </div>
+      {% endif %}
       <!--Application Modal (popup)--->
       <div class="modal fade" id="applyModal" data-bs-backdrop="static" data-bs-keyboard="false"
            tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
