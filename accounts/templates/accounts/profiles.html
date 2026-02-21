@@ -67,10 +67,9 @@
                     <hr>
                 {% endif %}
 
-
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden %}
                 <h2 class="profile-section-header">Experience</h2>
                 <div class="profile-info-box">
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden %}
                     {% for exp in template_data.experience %}
                         <div style="display: flex;">
                             <p><b>{{ exp.company_name }}</b>
@@ -144,12 +143,14 @@
                     {% if user.is_authenticated and user == template_data.profile_user and not template_data.experience %}
                         <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addExperienceModal" style="margin-left:auto; width:100%;">Add Experience</button>
                     {% endif %}
-                {% endif %}
                 </div>
                 <hr>
+                {% endif %}
+
+
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden %}
                 <h2 class="profile-section-header">Education</h2>
                 <div class="profile-info-box">
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden %}
                     {% for edu in template_data.education %}
                         <div style="display: flex;">
                             <p><b>{{ edu.school_name }}</b>
@@ -221,10 +222,11 @@
                     {% if user.is_authenticated and user == template_data.profile_user and not template_data.education %}
                         <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addEducationModal" style="margin-left:auto; width:100%;">Add Education</button>
                     {% endif %}
-                {% endif %}
                 </div>
-
                 <hr>
+                {% endif %}
+
+
                 <!--resume here-->
                 {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden %}
                 <h2 class="profile-section-header">Links</h2>
