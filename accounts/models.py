@@ -5,6 +5,7 @@ from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseU
 from django.utils import timezone
 from django.utils.text import slugify
 from skills.models import Skill
+from django.utils.safestring import mark_safe
 import os
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
@@ -118,6 +119,7 @@ class Education(models.Model):
     grad_year = models.PositiveIntegerField() #if current student, they should put in projected grad date
     school_name = models.CharField(max_length=63)
     degree = models.CharField(choices=DegreeType.choices, max_length=15)
+    degree_name = models.CharField(max_length=63, blank=True)
     is_hidden = models.BooleanField(default=False) #hides this individual education instance
 
 #builds a summary of a job experience
@@ -128,7 +130,7 @@ class Experience(models.Model):
     current_employee = models.BooleanField(default=False)
     company_name = models.CharField(max_length=63)
     position_title = models.CharField(max_length=63)
-    job_description = models.TextField(max_length=511)
+    job_description = models.TextField(max_length=511, blank=True)
     is_hidden = models.BooleanField(default=False) #hides this individual experience experience
 
 
@@ -143,7 +145,7 @@ class JobSeeker(models.Model):
     education = models.ManyToManyField(Education, blank=True) #list of education objects
     skills = models.ManyToManyField(Skill, blank=True)
     experience = models.ManyToManyField(Experience, blank=True) #job experience objects
-    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
     resume = models.FileField(upload_to=get_resume_path, blank=True)
     education_is_hidden = models.BooleanField(default=False)
     experience_is_hidden = models.BooleanField(default=False)
@@ -152,6 +154,18 @@ class JobSeeker(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+    def list_links(self):
+        return self.links.split(',')
+    
+    def render_resume(self):
+        try:
+            resume = self.resume
+            if resume:
+                return mark_safe(f'<a href="{resume.url}" target="_blank" rel="noopener">View</a>')
+        except Exception:
+            pass
+        return 'No resume available'
     
     REQUIRED_FIELDS = ['user']
 

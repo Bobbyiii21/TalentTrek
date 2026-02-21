@@ -13,10 +13,20 @@
                 {% else %}
                     <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
                 {% endif %}
+                <!--{% if user.is_authenticated and user == template_data.profile_user %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <textarea name="subfield" style="display:none;">pfp</textarea>
+                    <label for="pfp_upload">&#9998</label>
+                    <input type="file" name="pfp_upload" accept=".jpg, .jpeg, .png" required style="display:none;" />
+                </form>
+                {% endif %}-->
                 <h4 style="text-align: center;">{{ template_data.profile_user.first_name }} {{ template_data.profile_user.last_name }}</h4>
                 {% if user.is_authenticated and user == template_data.profile_user %}
-                    <a class="primary-hover-btn" href="{% url 'accounts.edit_profile' user_link=user.slugify_name %}" style="margin-left: auto;">Edit Profile and Privacy</a>
-                {% else %}
+                    {% if user.is_seeker %}
+                    <button type="button" class="primary-hover-btn" data-bs-toggle="modal" data-bs-target="#hiddenModal" style="margin-left:auto;">Edit Privacy</button>
+                    {% endif %}
+                {% elif user.is_authenticated %}
                 <div style="margin-left: auto; display: flex; flex-direction: column; gap: 10px;">
                     <a class="primary-hover-btn" href="{% url 'chat.create_room' participant_id=template_data.profile_user.id %}" style="margin-left: auto;"><i class="fas fa-message"></i></a>
                     <a class="primary-hover-btn" href="mailto:{{ template_data.profile_user.email }}" style="margin-left: auto;"><i class="fas fa-envelope"></i></a>
@@ -33,28 +43,40 @@
             {% if template_data.is_recruiter %}
                 <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
             {% endif %}
-            <p>Joined {{ template_data.profile_user.date_joined }}</p>
-            <p>{{ template_data.profile_user.email }}</p>
+            <!--<p>Joined {{ template_data.profile_user.date_joined }}</p>
+            <p>{{ template_data.profile_user.email }}</p>-->
+
         </div>
         <div id="profile-info">
         {% if template_data.is_seeker %}
-            {% if not template_data.seeker_user.account_is_hidden %}
+            {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.account_is_hidden %}
                 {% if template_data.profile_user.headline %}
-                    <h2 class="profile-section-header">Headline</h2>
+                    <div style="display:flex;">
+                        <h2 class="profile-section-header">Headline</h2>
+                        <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                    </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
                     </div>
                     <hr>
+                {% elif user.is_authenticated and user == template_data.profile_user %}
+                    <div style="display:flex;">
+                        <h2 class="profile-section-header">Headline</h2>
+                        <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:auto;">Edit Headline</button>
+                    </div>
+                    <hr>
                 {% endif %}
-                {% for skill in template_data.skills %}
-                    
-                {% endfor %}
+
+
                 <h2 class="profile-section-header">Experience</h2>
                 <div class="profile-info-box">
-                {% if not template_data.seeker_user.experience_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden %}
                     {% for exp in template_data.experience %}
                         <div style="display: flex;">
-                            <p><b>{{ exp.company_name }}</b></p>
+                            <p><b>{{ exp.company_name }}</b>
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#editExperienceModal">&#9998</button>
+                            {% endif %}</p>
                             {% if not exp.current_employee %}
                                 <p style="margin-left: auto;">{{ exp.start_date }} - {{ exp.end_date }}</p>
                             {% else %}
@@ -64,54 +86,269 @@
                             <p><i>{{ exp.position_title }}</i></p>
                         
                             <p>Description: {{ exp.job_description }}</p>
+                        {% if not forloop.last %}    
                         <hr>
+                        {% elif user.is_authenticated and user == template_data.profile_user %}
+                        <hr><button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addExperienceModal" style="margin-left:auto; width:100%;margin-top:0px;margin-bottom:10px;">Add Experience</button>
+                        {% endif %}
+<div class="modal fade" id="editExperienceModal" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3" style="display:none;">
+            <label for="subfield" class="form-label"></label>
+            <textarea class="form-control" name="subfield">experience_edit</textarea>
+            <textarea class="form-control" name="id">{{ exp.id }}</textarea>
+        </div>
+        <div class="modal-header">
+        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Editing Experience</strong></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        <div class="mb-3">
+            <label for="company_name" class="form-label">Company Name*</label>
+            <textarea class="form-control" id="company-name-input" name="company_name" rows="2" maxlength="63" required>{{ exp.company_name }}</textarea>
+            <span style="color:crimson;" id="company-name-errmsg"></span>
+        </div>
+        <div class="mb-3">
+            <label for="position_title" class="form-label">Position Title*</label>
+            <textarea class="form-control" id="position-title-input" name="position_title" rows="2" maxlength="63" required>{{ exp.position_title }}</textarea>
+            <span style="color:crimson;" id="position-title-errmsg"></span>
+        </div>
+        <div class="mb-3">
+            <label for="job_description" class="form-label">Job Description</label>
+            <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511">{{ exp.job_description }}</textarea>
+            <span style="color:crimson;" id="job-description-errmsg"></span>
+        </div>
+            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()" required> Current Employee*<br /><br />
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Start Date*</label>
+            <input type="date" id="start-date-input" name="start_date" value="{{ exp.start_date }}" required>
+        </div>
+        <div class="mb-3" id="experience-end-date-container" style="display:block;">
+            <label for="end_date" class="form-label">End Date*</label>
+            <input type="date" id="end-date-input" name="end_date" value="{{ exp.end_date }}">
+        </div> 
+    </div>
+        <div class="modal-footer">
+        <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="primary-hover-btn">Add</button>
+        </div>
+    </form>
+    </div>
+</div>
+</div>
                     {% endfor %}
                 {% endif %}
                 </div>
                 <hr>
                 <h2 class="profile-section-header">Education</h2>
                 <div class="profile-info-box">
-                {% if not template_data.seeker_user.education_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden %}
                     {% for edu in template_data.education %}
                         <div style="display: flex;">
-                            <p><b>{{ edu.school_name }}</b></p>
+                            <p><b>{{ edu.school_name }}</b>
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#editEducationModal">&#9998</button>
+                            {% endif %}
+                            </p>
                             <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
                         </div>
-                            <p>Degree: {{ edu.degree }}</p>
+                            <p>Degree: {{ edu.get_degree_display }}</p>
+                            {% if edu.degree_name %}
+                            <p>Name: {{ edu.degree_name }}</p>
+                            {% endif %}
+                        {% if not forloop.last %}    
                         <hr>
+                        {% elif user.is_authenticated and user == template_data.profile_user %}
+                        <hr><button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addEducationModal" style="margin-left:auto; width:100%;margin-top:0px;margin-bottom:10px;">Add Education</button>
+                        {% endif %}
+<div class="modal fade" id="editEducationModal" data-bs-backdrop="static" data-bs-keyboard="false"
+      tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">
+        {% csrf_token %}
+          <div class="mb-3" style="display:none;">
+              <label for="subfield" class="form-label"></label>
+              <textarea class="form-control" name="subfield">education_edit</textarea>
+              <textarea class="form-control" name="id">{{ edu.id }}</textarea>
+          </div>
+        <div class="modal-header">
+        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Adding Education to profile</strong></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="grad_year" class="form-label">Graduation Year*</label>
+            <textarea class="form-control" id="grad-year-input" name="grad_year" rows="1" maxlength="4" required>{{ edu.grad_year }}</textarea>
+            <span style="color:crimson;" id="grad-year-errmsg"></span>
+          </div>
+          <div class="mb-3">
+            <label for="school_name" class="form-label">School Name*</label>
+            <textarea class="form-control" id="school-name-input" name="school_name" rows="2" maxlength="63" required>{{ edu.school_name }}</textarea>
+            <span style="color:crimson;" id="school-name-errmsg"></span>
+          </div>
+          <div class="mb-3">
+            <label for="degree" class="form-label">Degree Level*</label>
+            <select name="degree" class="filter-selectbox" required>
+            {% for value, label in template_data.degree_choices %}
+            <option value="{{ value }}">{{ edu.get_degree_display }}</option>
+            {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="degree_name" class="form-label">Degree Name</label>
+            <textarea class="form-control" id="degree_name-input" name="degree_name" rows="2" maxlength="63">{{ edu.degree_name }}</textarea>
+            <span style="color:crimson;" id="degree-name-errmsg"></span>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="primary-hover-btn">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
                     {% endfor %}
                 {% endif %}
                 </div>
+
+                <hr>
                 <!--resume here-->
-                {% if not template_data.seeker_user.links_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden %}
                 <h2 class="profile-section-header">Links</h2>
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
+                        <div style="display:flex;">
                         <a href="https://{{ link }}">{{ link }}</a>
+                        {% if user.is_authenticated and user == template_data.profile_user %}
+                        <form method="POST" style="margin-left:auto;">
+                            {% csrf_token %}
+                            <textarea name="subfield" style="display:none;">link_delete</textarea>
+                            <textarea name="link" style="display:none;">{{ link }}</textarea>
+                            <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                        </form>
+                        {% endif %}
+                        </div>
+                    {% if not forloop.last %}
                         <hr>
+                    {% elif user.is_authenticated and user == template_data.profile_user %}
+                        <hr>
+                    {% endif %}
                     {% endfor %}
+                {% if user.is_authenticated and user == template_data.profile_user %}
+                <form method="POST"><div style="display:flex;">
+                    {% csrf_token %}
+                    <textarea name="subfield" style="display:none;">link_add</textarea>
+                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;"required>
+                    <button type="submit" class="profile-check-btn" style="color:green;margin-left:0">&#10010</button>
+                </div></form>      
+                {% endif %}
+                </div>
+                {% endif %}
+                <hr>
+                
+                <!--Eventually replace this with skills_is_hidden-->
+                {% if True %}
+                <h2 class="profile-section-header">Skills</h2>
+                <div class="profile-info-box">
+                    {% for skill in template_data.skills %}
+                        <div style="display:flex;">
+                        <p>{{ skill.name }}</p>
+                        {% if user.is_authenticated and user == template_data.profile_user %}
+                        <form method="POST" style="margin-left:auto;">
+                            {% csrf_token %}
+                            <textarea name="subfield" style="display:none;">skill_delete</textarea>
+                            <textarea name="id" style="display:none;">{{ skill.id }}</textarea>
+                            <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                        </form>
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                    <form method="POST">
+                        <div style="display:flex;margin-bottom:5px;">
+                        {% csrf_token %}
+                        <textarea name="subfield" style="display:none;">skill_add</textarea>
+                          <select name="skills" id="skills" class="form-select" multiple>
+                            {% for skill in template_data.skills_options %}
+                            <option value="{{ skill.id }}">{{ skill.name }}</option>
+                            {% endfor %}
+                          </select>
+                          </div>
+                          <button type="submit" class="profile-hollow-btn" style="width:100%;">Add Skills</button>
+                    </form> 
+                </div>
+                {% endif %}
+
+                {% if template_data.seeker_user.resume %}
+                <hr>
+                <a href="{{ template_data.seeker_user.resume.url }}" download><h4 class="profile-section-header">Resume</h4></a>
                 {% endif %}
             {% endif %}
             {% if template_data.seeker_user.account_is_hidden %}
                 <p>This account's details are hidden.</p>
             {% endif %}
+
+
+
+
+
+
         {% elif template_data.is_recruiter %}
             {% if not template_data.recruiter_user.account_is_hidden %}
                 {% if template_data.profile_user.headline %}
-                    <h2 class="profile-section-header">Headline</h2>
+                    <div style="display:flex;">
+                        <h2 class="profile-section-header">Headline</h2>
+                        <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                    </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
                     </div>
                     <hr>
+                {% elif user.is_authenticated and user == template_data.profile_user %}
+                    <div style="display:flex;">
+                        <h2 class="profile-section-header">Headline</h2>
+                        <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:auto;">Edit Headline</button>
+                    </div>
+                    <hr>
                 {% endif %}
-                {% if not template_data.recruiter_user.links_is_hidden %}
+            {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden %}
                 <h2 class="profile-section-header">Links</h2>
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
+                        <div style="display:flex;">
                         <a href="https://{{ link }}">{{ link }}</a>
+                        {% if user.is_authenticated and user == template_data.profile_user %}
+                        <form method="POST" style="margin-left:auto;">
+                            {% csrf_token %}
+                            <textarea name="subfield" style="display:none;">link_delete</textarea>
+                            <textarea name="link" style="display:none;">{{ link }}</textarea>
+                            <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                        </form>
+                        {% endif %}
+                        </div>
+                    {% if not forloop.last %}
                         <hr>
+                    {% elif user.is_authenticated and user == template_data.profile_user %}
+                        <hr>
+                    {% endif %}
                     {% endfor %}
+                {% if user.is_authenticated and user == template_data.profile_user %}
+                <form method="POST"><div style="display:flex;">
+                    {% csrf_token %}
+                    <textarea name="subfield" style="display:none;">link_add</textarea>
+                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;"required>
+                    <button type="submit" class="profile-check-btn" style="color:green;margin-left:0">&#10010</button>
+                </div></form>      
                 {% endif %}
+                </div>
+                {% endif %}
+    
             {% endif %}
             {% if template_data.recruiter_user.account_is_hidden %}
                 <p>This account's details are hidden.</p>
@@ -124,50 +361,256 @@
     </div>
   </div>
 </div>
-
-<link rel="stylesheet" href="{% static 'css/profile.css' %}">
-<!-- None of this works btw
-<div id="hidden-data" style="display: none;">
-    <div id="is_seeker">{{ template_data.is_seeker }}</div>
-    <div id="is_recruiter">{{ template_data.is_recruiter }}</div>
-    {% if template_data.is_seeker %}
-    <div id="is_hidden">{{ template_data.seeker_user.is_hidden }}</div>
-    {% elif template_data.is_recruiter %}
-    <div id="is_hidden">{{ template_data.recruiter_user.is_hidden }}</div>
-    {% else %}
-    <div id="is_hidden">No User Type</div>
-    {% endif %}
 </div>
 
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<div class="modal fade" id="hiddenModal" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Edit Privacy</strong></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                <textarea class="form-control" name="subfield" style="display:none;">hidden</textarea>
+                <input type="checkbox" id="profile" value="profile" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Only show my name and email to employers.<br /><br />
+                <input type="checkbox" id="profile" value="education" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Hide my education.<br /><br />
+                <input type="checkbox" id="profile" value="experience" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Hide my experience.<br /><br />
+                <input type="checkbox" id="profile" value="links" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Hide my links.<br /><br />
+                <div class="modal-footer">
+                    <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="primary-hover-btn">Save Changes</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="headlineModal" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Edit Headline</strong></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                <textarea class="form-control" name="subfield" style="display:none;">headline</textarea>
+                <label for="headline">Headline:</label>
+                <textarea name="headline" class="form-control" id="headline">{{ template_data.profile_user.headline }}</textarea>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="primary-hover-btn">Save Changes</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addExperienceModal" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3" style="display:none;">
+            <label for="subfield" class="form-label"></label>
+            <textarea class="form-control" name="subfield">experience_add</textarea>
+        </div>
+        <div class="modal-header">
+        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Adding Experience to profile</strong></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        <div class="mb-3">
+            <label for="company_name" class="form-label">Company Name*</label>
+            <textarea class="form-control" id="company-name-input" name="company_name" rows="2" maxlength="63" required></textarea>
+            <span style="color:crimson;" id="company-name-errmsg"></span>
+        </div>
+        <div class="mb-3">
+            <label for="position_title" class="form-label">Position Title*</label>
+            <textarea class="form-control" id="position-title-input" name="position_title" rows="2" maxlength="63" required></textarea>
+            <span style="color:crimson;" id="position-title-errmsg"></span>
+        </div>
+        <div class="mb-3">
+            <label for="job_description" class="form-label">Job Description</label>
+            <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511"></textarea>
+            <span style="color:crimson;" id="job-description-errmsg"></span>
+        </div>
+            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()" required> Current Employee*<br /><br />
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Start Date*</label>
+            <input type="date" id="start-date-input" name="start_date" value="2025-02-19" required>
+        </div>
+        <div class="mb-3" id="experience-end-date-container" style="display:block;">
+            <label for="end_date" class="form-label">End Date*</label>
+            <input type="date" id="end-date-input" name="end_date" value="2025-03-01">
+        </div> 
+    </div>
+        <div class="modal-footer">
+        <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="primary-hover-btn">Add</button>
+        </div>
+    </form>
+    </div>
+</div>
+</div>
+
+
+
+
+<div class="modal fade" id="addEducationModal" data-bs-backdrop="static" data-bs-keyboard="false"
+      tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">
+        {% csrf_token %}
+          <div class="mb-3" style="display:none;">
+              <label for="subfield" class="form-label"></label>
+              <textarea class="form-control" name="subfield">education_add</textarea>
+          </div>
+        <div class="modal-header">
+        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Adding Education to profile</strong></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="grad_year" class="form-label">Graduation Year*</label>
+            <textarea class="form-control" id="grad-year-input" name="grad_year" rows="1" maxlength="4" required></textarea>
+            <span style="color:crimson;" id="grad-year-errmsg"></span>
+          </div>
+          <div class="mb-3">
+            <label for="school_name" class="form-label">School Name*</label>
+            <textarea class="form-control" id="school-name-input" name="school_name" rows="2" maxlength="63" required></textarea>
+            <span style="color:crimson;" id="school-name-errmsg"></span>
+          </div>
+          <div class="mb-3">
+            <label for="degree" class="form-label">Degree Level*</label>
+            <select name="degree" class="filter-selectbox" required>
+            {% for value, label in template_data.degree_choices %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="degree_name" class="form-label">Degree Name</label>
+            <textarea class="form-control" id="degree_name-input" name="degree_name" rows="2" maxlength="63"></textarea>
+            <span style="color:crimson;" id="degree-name-errmsg"></span>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="primary-hover-btn">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 <script>
-    const profileInfo = document.querySelector("#profile-info");
-    const isSeeker = document.querySelector("#is_seeker").innerHTML;
-    const isRecruiter = document.querySelector("#is_recruiter").innerHTML;
-    const isHidden = document.querySelector("#is_hidden");
-
-    let hideProfile = false;
-    let noUserType = false;
-
-    function checkPrivacy() {
-        console.log(isSeeker);
-        console.log(isRecruiter);
-        if (isSeeker == "True" || isRecruiter == "True") {
-            hideProfile = (isHidden.innerHTML) == "True";
-        } else {
-            noUserType = true;
-        }
-    }
-
-    window.addEventListener("load", () => {
-        checkPrivacy();
-        console.log("No User Type: "+noUserType);
-        console.log("Hidden Profile: "+hideProfile);
-        if (noUserType) {
-            profileInfo.innerHtml = "<p>This profile has not been set up.</p>"
-        } else if (hideProfile) {
-            profileInfo.innerHtml = "<p>This profile is private.</p>"
-        }
+  $(document).ready(function () {
+    $("#skills").select2({
+      placeholder: "Search and select skills",
+      allowClear: true,
+      width: "resolve",
     });
+  });
 </script>
--->
+
+<script>
+
+  // FOR grad_year input
+  const gradYearTextarea = document.getElementById("grad-year-input");
+  const gradYearErrMsg = document.getElementById("grad-year-errmsg");
+
+  // Add an input event listener
+  gradYearTextarea.addEventListener("input", function(e) {
+    // Remove any non-numeric characters (except for potential leading - or .)
+    const numericValue = this.value.replace(/[^\d.-]/g, ''); 
+    
+    // Update the textarea value
+    this.value = numericValue;
+    
+    // Display an error message if non-numeric characters were present
+    if (this.value !== e.data) { // Simple check if the input was modified
+      gradYearErrMsg.textContent = "Only numbers are allowed.";
+    } else {
+      gradYearErrMsg.textContent = "";
+    }
+  });
+  // For mobile devices, the inputmode attribute helps bring up the numeric keyboard
+  gradYearTextarea.setAttribute("inputmode", "numeric"); //
+
+  // For toggling EndDate when creating experience
+  function hideEndDate() {
+    var currentEmployee = document.getElementById("current-employee");
+    var endDate = document.getElementById("experience-end-date-container");
+    if (currentEmployee.checked == true) {
+        endDate.style= "display:none;";
+    } else {
+        endDate.style= "display:block;";
+    }
+  }
+/*const educationSection = document.querySelector("#education-section");
+const addEducationBtn = document.querySelector("#add-education-button");
+
+
+const addNewButtonCSS = "border: 1px solid var(--accent); border-radius: 0.375rem; color: var(--accent); padding: 0.375rem 0.75rem; text-align: center; text-decoration: none; display: inline-block; font-size: 1rem; cursor: default;"
+const xButtonCSS =   "color: crimson; border: none; background-color: rgba(0,0,0,0)"
+const shortTextInputCSS = "margin: 5px; border-radius: 0.375rem;"
+
+let educationCount = 0;
+
+addEducationBtn.addEventListener("click", () => {
+    debugger;
+    if (educationCount >= 5) {return;}
+    var newInstance = document.createElement("div");
+    newInstance.id = "education"+educationCount+"new";
+    var gradYear = document.createElement("input");
+    gradYear.type = "text";
+    gradYear.name = "gradYear"+educationCount;
+    gradYear.id = "education"+educationCount+"gradYear";
+    gradYear.style = shortTextInputCSS;
+    newInstance.appendChild(gradYear);
+    var xButton = document.createElement("button");
+    xButton.style = xButtonCSS;
+    xButton.id = "education"+educationCount+"button";
+    xButton.innerHTML = "&#10006";
+    xButton.addEventListener('click', education_xButtonHandler);
+    newInstance.appendChild(xButton);
+    var br = document.createElement("br");
+    newInstance.appendChild(br);
+    educationSection.append(newInstance);
+    educationCount++;
+    if (educationCount == 5) {
+        addEducationBtn.innerHTML = "Max number of educations";
+    }
+});
+
+function education_xButtonHandler(event) {
+    debugger;
+    let buttonIndex = this.id.charCodeAt(9) - '0'.charCodeAt(0);
+    console.log(buttonIndex);
+    educationCount--;
+    document.querySelector("#education"+{buttonIndex}+"new").remove();
+    addLinkBtn.innerHTML = " &#10010 Add Education";
+}*/
+
+</script>
+
 {% endblock content %}
