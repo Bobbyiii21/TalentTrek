@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Case, When, IntegerField, Value
+from applications.views import apply
 
 from skills.models import Skill
 from accounts.models import Recruiter
 from .models import Post
+from .tables import ApplicationsTable
+from applications.models import Application
+
 
 
 def index(request):
@@ -93,6 +97,16 @@ def post(request, id):
         'id': id,
     }
 
+    # --
+    template_data['skills'] = Skill.objects.all()
+    if (request.user.is_authenticated and (Recruiter.objects.filter(user=request.user, company=post.company_name).exists())) or request.user.is_superuser:
+        template_data['table_access'] = True
+        queryset = build_filter_queryset(request, post)
+
+        template_data['applications'] = ApplicationsTable(queryset)
+    else:
+        template_data['applications'] = None
+        template_data['table_access'] = False
     return render(request, 'posting/post.html', {'template_data': template_data})
 
 
