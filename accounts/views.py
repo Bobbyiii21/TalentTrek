@@ -190,7 +190,8 @@ def profiles(request, user_link):
                 new_experience.company_name = request.POST['company_name']
                 new_experience.position_title = request.POST['position_title']
                 new_experience.job_description = request.POST['job_description']
-                new_experience.current_employee = bool(request.POST['current_employee'])
+                try: new_experience.current_employee = bool(request.POST['current_employee'])
+                except: new_experience.current_employee = False
                 new_experience.start_date = request.POST['start_date']
                 if not new_experience.current_employee:
                     new_experience.end_date = request.POST['end_date']
@@ -207,7 +208,8 @@ def profiles(request, user_link):
                 edit_experience.company_name = request.POST['company_name']
                 edit_experience.position_title = request.POST['position_title']
                 edit_experience.job_description = request.POST['job_description']
-                edit_experience.current_employee = bool(request.POST['current_employee'])
+                try: edit_experience.current_employee = bool(request.POST['current_employee'])
+                except: new_experience.current_employee = False
                 edit_experience.start_date = request.POST['start_date']
                 if not edit_experience.current_employee:
                     edit_experience.end_date = request.POST['end_date']

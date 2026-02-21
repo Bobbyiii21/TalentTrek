@@ -122,7 +122,7 @@
             <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511">{{ exp.job_description }}</textarea>
             <span style="color:crimson;" id="job-description-errmsg"></span>
         </div>
-            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()" required> Current Employee*<br /><br />
+            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()"> Current Employee*<br /><br />
         <div class="mb-3">
             <label for="start_date" class="form-label">Start Date*</label>
             <input type="date" id="start-date-input" name="start_date" value="{{ exp.start_date }}" required>
@@ -134,13 +134,16 @@
     </div>
         <div class="modal-footer">
         <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="primary-hover-btn">Add</button>
+        <button type="submit" class="primary-hover-btn">Save</button>
         </div>
     </form>
     </div>
 </div>
 </div>
                     {% endfor %}
+                    {% if user.is_authenticated and user == template_data.profile_user and not template_data.experience %}
+                        <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addExperienceModal" style="margin-left:auto; width:100%;">Add Experience</button>
+                    {% endif %}
                 {% endif %}
                 </div>
                 <hr>
@@ -195,7 +198,7 @@
             <label for="degree" class="form-label">Degree Level*</label>
             <select name="degree" class="filter-selectbox" required>
             {% for value, label in template_data.degree_choices %}
-            <option value="{{ value }}">{{ edu.get_degree_display }}</option>
+            <option value="{{ value }}">{{ label }}</option>
             {% endfor %}
             </select>
           </div>
@@ -208,13 +211,16 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="primary-hover-btn">Add</button>
+          <button type="submit" class="primary-hover-btn">Save</button>
         </div>
       </form>
     </div>
   </div>
 </div>
                     {% endfor %}
+                    {% if user.is_authenticated and user == template_data.profile_user and not template_data.education %}
+                        <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addEducationModal" style="margin-left:auto; width:100%;">Add Education</button>
+                    {% endif %}
                 {% endif %}
                 </div>
 
@@ -420,6 +426,7 @@
     </div>
 </div>
 
+
 <div class="modal fade" id="addExperienceModal" data-bs-backdrop="static" data-bs-keyboard="false"
     tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
 <div class="modal-dialog">
@@ -450,7 +457,7 @@
             <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511"></textarea>
             <span style="color:crimson;" id="job-description-errmsg"></span>
         </div>
-            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()" required> Current Employee*<br /><br />
+            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()"> Current Employee*<br /><br />
         <div class="mb-3">
             <label for="start_date" class="form-label">Start Date*</label>
             <input type="date" id="start-date-input" name="start_date" value="2025-02-19" required>
@@ -468,8 +475,6 @@
     </div>
 </div>
 </div>
-
-
 
 
 <div class="modal fade" id="addEducationModal" data-bs-backdrop="static" data-bs-keyboard="false"
