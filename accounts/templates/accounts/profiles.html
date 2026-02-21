@@ -23,7 +23,9 @@
                 {% endif %}-->
                 <h4 style="text-align: center;">{{ template_data.profile_user.first_name }} {{ template_data.profile_user.last_name }}</h4>
                 {% if user.is_authenticated and user == template_data.profile_user %}
+                    {% if user.is_seeker %}
                     <button type="button" class="primary-hover-btn" data-bs-toggle="modal" data-bs-target="#hiddenModal" style="margin-left:auto;">Edit Privacy</button>
+                    {% endif %}
                 {% elif user.is_authenticated %}
                 <div style="margin-left: auto; display: flex; flex-direction: column; gap: 10px;">
                     <a class="primary-hover-btn" href="{% url 'chat.create_room' participant_id=template_data.profile_user.id %}" style="margin-left: auto;"><i class="fas fa-message"></i></a>
@@ -251,6 +253,7 @@
                 {% endif %}
                 <hr>
                 
+                <!--Eventually replace this with skills_is_hidden-->
                 {% if True %}
                 <h2 class="profile-section-header">Skills</h2>
                 <div class="profile-info-box">
@@ -285,16 +288,31 @@
             {% if template_data.seeker_user.account_is_hidden %}
                 <p>This account's details are hidden.</p>
             {% endif %}
+
+
+
+
+
+
         {% elif template_data.is_recruiter %}
             {% if not template_data.recruiter_user.account_is_hidden %}
                 {% if template_data.profile_user.headline %}
-                    <h2 class="profile-section-header">Headline</h2>
+                    <div style="display:flex;">
+                        <h2 class="profile-section-header">Headline</h2>
+                        <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                    </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
                     </div>
                     <hr>
+                {% elif user.is_authenticated and user == template_data.profile_user %}
+                    <div style="display:flex;">
+                        <h2 class="profile-section-header">Headline</h2>
+                        <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:auto;">Edit Headline</button>
+                    </div>
+                    <hr>
                 {% endif %}
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden %}
+            {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden %}
                 <h2 class="profile-section-header">Links</h2>
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
@@ -325,6 +343,7 @@
                 {% endif %}
                 </div>
                 {% endif %}
+    
             {% endif %}
             {% if template_data.recruiter_user.account_is_hidden %}
                 <p>This account's details are hidden.</p>

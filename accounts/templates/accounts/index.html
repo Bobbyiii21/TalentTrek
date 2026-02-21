@@ -1,5 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<p>Accounts Page</p>
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3" style="color: var(--secondary);">
+        <h2>Profiles</h2>
+        <hr />
+      </div>
+    </div>
+    {% for profile in template_data.profiles %}
+    <div class="col-12 mb-3">
+        <div class="card p-3">
+            <div class="container" style="display: flex; align-items: center;">
+              <a href="{% url 'accounts.profiles' user_link=profile.slugify_name %}" style="display: flex; align-items: center;color:inherit;text-decoration:none;">
+                {% if profile.pfp %}
+                    <img src="{{ profile.pfp.url }}" class="profile-picture" style="width:100px;height:100px;" alt="Profile Picture">
+                {% else %}
+                    <img src="{% static 'img/default_pfp.png' %}" class="profile-picture"  style="width:100px;height:100px;" alt="Profile Picture"/>
+                {% endif %}
+
+                <h4 style="text-align:center;margin-left:25px;"><b>{{ profile.first_name }} {{ profile.last_name }}</b></h4>
+                </a>
+                {% if user.is_authenticated and user == profile %}
+                {% elif user.is_authenticated %}
+                <div style="margin-left: auto; display: flex; flex-direction: column; gap: 10px;">
+                    <a class="primary-hover-btn" href="{% url 'chat.create_room' participant_id=profile.id %}" style="margin-left: auto;"><i class="fas fa-message"></i></a>
+                    <a class="primary-hover-btn" href="mailto:{{ template_data.profile_user.email }}" style="margin-left: auto;"><i class="fas fa-envelope"></i></a>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if profile.is_recruiter %}
+                <h5><b>Recruiter</b></h5>
+            {% elif profile.is_seeker %}
+                <h5><b>Job Seeker</b></h5>
+            {% endif %}
+
+            <p>{{ profile.headline }}</p>
+        </div>
+    </div>
+
+
+
+
+{% endfor %}
+</div>
+</div>
+
+
 {% endblock content %}

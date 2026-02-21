@@ -167,8 +167,6 @@ class Recruiter(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
     links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
-    links_is_hidden = models.BooleanField(default=False) #hides entire links field
-    account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on    
 
     def __str__(self):
         return str(self.user)
