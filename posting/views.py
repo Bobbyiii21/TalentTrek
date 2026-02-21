@@ -60,6 +60,10 @@ def index(request):
     else:
         my_postings = Post.objects.none()
         other_postings = postings
+        
+    is_recruiter = False
+    if request.user.is_authenticated:
+        is_recruiter = Recruiter.objects.filter(user=request.user).exists()
 
     template_data = {
         'title': 'Postings',
@@ -74,6 +78,7 @@ def index(request):
         'filter_salary_min': salary_min,
         'filter_salary_max': salary_max,
         'filter_use_salary': use_salary,
+        'is_recruiter': is_recruiter,
     }
 
     return render(request, 'posting/index.html', {'template_data': template_data})
@@ -100,7 +105,7 @@ def create(request):
             posting = Post()
             posting.recruiter = recruiter
             posting.company_name = recruiter.company
-            _save_post_from_request(posting, request)
+            save_post(posting, request)
             return redirect('posting.index')
 
         return redirect('posting.index')
