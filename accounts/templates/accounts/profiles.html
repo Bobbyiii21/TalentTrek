@@ -284,6 +284,11 @@
                     </form> 
                 </div>
                 {% endif %}
+
+                {% if template_data.seeker_user.resume %}
+                <hr>
+                <a href="{{ template_data.seeker_user.resume.url }}" download><h4 class="profile-section-header">Resume</h4></a>
+                {% endif %}
             {% endif %}
             {% if template_data.seeker_user.account_is_hidden %}
                 <p>This account's details are hidden.</p>

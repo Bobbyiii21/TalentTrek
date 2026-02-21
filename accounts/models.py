@@ -5,6 +5,7 @@ from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseU
 from django.utils import timezone
 from django.utils.text import slugify
 from skills.models import Skill
+from django.utils.safestring import mark_safe
 import os
 
 #NOTE: some of these models may need to be moved into different apps in order to be integrated properly, dont forget import statments if necessary after moving
@@ -156,6 +157,15 @@ class JobSeeker(models.Model):
 
     def list_links(self):
         return self.links.split(',')
+    
+    def render_resume(self):
+        try:
+            resume = self.resume
+            if resume:
+                return mark_safe(f'<a href="{resume.url}" target="_blank" rel="noopener">View</a>')
+        except Exception:
+            pass
+        return 'No resume available'
     
     REQUIRED_FIELDS = ['user']
 
