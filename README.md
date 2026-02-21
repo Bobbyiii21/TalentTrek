@@ -7,6 +7,8 @@ Email: admin@talenttrek.com (btw this is not a real email)
 
 Password: adminpassword
 
+Password (db.sqlite version): pbkdf2_sha256$720000$HCWFeKrrQSz3zfb81hecMG$NAYWdl4yBjmGZnfLCyLpvPmmked0w5MCo1fqUAsqvxI=
+
 
 Test User sign-in -
 
@@ -15,12 +17,9 @@ Email: test@talenttrek.com
 Password: testuserpassword
 
 
-The registration and login should now make a new TTUser object. It requires a unique email instead of a username but still gives each user an ID.
+PythonAnywhere account info -
+Email: xevans7@gatech.edu
 
-Then the Recruiter and Job Seeker have OneToOneFields for their user connecting back to the TTUser object. This allows for the registration/login to occur before doing the onboarding functions.
+Password: TalentTrek
 
-
-Setup Wizard - Visually functions, still doesn't save all inputs somewhere as it's entirely frontend work
-
-
-Note - Use 'pip install django-cities-light' for location-based data
+Deploys To: [Website Link](https://xsevans06.pythonanywhere.com/)

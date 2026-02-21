@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_tables2',
     'accounts',
     'chat',
     'skills',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'posting',
     'profiles',
     'cities_light',
+    'applications',
 ]
 
 MIDDLEWARE = [

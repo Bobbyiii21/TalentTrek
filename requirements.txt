@@ -2,6 +2,7 @@ asgiref==3.11.0
 Django==5.0
 django-autoslug==1.9.9
 django-cities-light==3.10.2
+django-tables2==2.8.0
 pillow==12.1.0
 progressbar2==4.5.0
 python-utils==3.9.1
