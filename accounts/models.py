@@ -144,7 +144,7 @@ class JobSeeker(models.Model):
     education = models.ManyToManyField(Education, blank=True) #list of education objects
     skills = models.ManyToManyField(Skill, blank=True)
     experience = models.ManyToManyField(Experience, blank=True) #job experience objects
-    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values") #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
     resume = models.FileField(upload_to=get_resume_path, blank=True)
     education_is_hidden = models.BooleanField(default=False)
     experience_is_hidden = models.BooleanField(default=False)
@@ -167,6 +167,8 @@ class Recruiter(models.Model):
     user = models.OneToOneField(TTUser, primary_key=True, on_delete=models.CASCADE)
     company = models.TextField(max_length=63)
     links = models.TextField(max_length=255, help_text="Please enter links as Comma Separated Values", blank=True) #check if list implemented propery; implement as a list of links that the job seeker can input to relevant sites such as a personal site or linkedin, etc
+    links_is_hidden = models.BooleanField(default=False) #hides entire links field
+    account_is_hidden = models.BooleanField(default=False) #hides everything except name and pfp with a message a la "this profile is hidden" if user profile is clicked on    
 
     def __str__(self):
         return str(self.user)
