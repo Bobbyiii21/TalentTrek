@@ -9,7 +9,12 @@ def index(request):
     template_data = {}
     template_data['title'] = 'Applications'
     template_data['is_recruiter'] = TTUser.objects.get(id=request.user.id).is_recruiter
-    template_data['applications'] = Application.objects.filter(applicant=request.user).order_by('-date')
+    if not template_data['is_recruiter']:
+        template_data['applications'] = Application.objects.filter(applicant=request.user).order_by('-date')
+    else:
+        recruiter_applications = Application.objects.filter(posting__recruiter__user=request.user).order_by('-date')
+        for choice in Application.STATUS_CHOICES:
+            template_data[f"applications_{choice.lower()}"] = recruiter_applications.filter(status=choice)
     return render(request, 'applications/index.html', {'template_data': template_data})
 
 @login_required
