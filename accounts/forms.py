@@ -35,4 +35,8 @@ class CustomUserCreationForm(UserCreationForm):
         model = TTUser
         fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
 
+class UploadPfpForm(forms.Form):
+    pfp = forms.ImageField()
 
+class UploadResumeForm(forms.Form):
+    resume = forms.FileField()

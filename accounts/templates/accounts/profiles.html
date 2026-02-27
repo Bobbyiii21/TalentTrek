@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<!--this should really be cleaned up and formatted lol-->
 <div class="p-3 mt-4">
   <div class="container">
     <div class="row justify-content-center">
@@ -9,18 +8,18 @@
         <div>
             <div class="container" style="display: flex; align-items: center;">
                 {% if template_data.profile_user.pfp %}
-                    <img src="{{ template_data.profile_user.pfp.url }}" class="img-fluid rounded" style="width: 100px; height: auto; clip-path: circle();">
+                    <img src="{{ template_data.profile_user.pfp.url }}" class="profile-picture" style="width: 100px; height: 100px; clip-path: circle();">
                 {% else %}
-                    <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
+                    <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture" style="width: 100px; height: 100px; clip-path: circle();"/>
                 {% endif %}
-                <!--{% if user.is_authenticated and user == template_data.profile_user %}
-                <form method="POST">
+                {% if user.is_authenticated and user == template_data.profile_user %}
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <textarea name="subfield" style="display:none;">pfp</textarea>
-                    <label for="pfp_upload">&#9998</label>
-                    <input type="file" name="pfp_upload" accept=".jpg, .jpeg, .png" required style="display:none;" />
+                    <input type="file" name="pfp_upload" id="pfp_upload" accept="image/*" required style="display:none;" onchange="this.form.submit()" />
+                    <label for="pfp_upload" class="profile-edit-btn" style="margin-right:25px;">&#9998</label>
                 </form>
-                {% endif %}-->
+                {% endif %}
                 <h4 style="text-align: center;">{{ template_data.profile_user.first_name }} {{ template_data.profile_user.last_name }}</h4>
                 {% if user.is_authenticated and user == template_data.profile_user %}
                     {% if user.is_seeker %}
@@ -49,6 +48,13 @@
         </div>
         <div id="profile-info">
         {% if template_data.is_seeker %}
+            {% if template_data.seeker_user.account_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user %}
+                <p><i>*Only your name and email is visible.</i></p><hr>
+                {% else %}
+                <p>This account's details are hidden.</p>
+                {% endif %}
+            {% endif %}
             {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.account_is_hidden %}
                 {% if template_data.profile_user.headline %}
                     <div style="display:flex;">
@@ -68,7 +74,11 @@
                 {% endif %}
 
                 {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden %}
+
                 <h2 class="profile-section-header">Experience</h2>
+                {% if template_data.seeker_user.experience_is_hidden %}
+                <p><i>*Your experience is hidden to others.</i></p>
+                {% endif %}
                 <div class="profile-info-box">
                     {% for exp in template_data.experience %}
                         <div style="display: flex;">
@@ -150,6 +160,9 @@
 
                 {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden %}
                 <h2 class="profile-section-header">Education</h2>
+                {% if template_data.seeker_user.education_is_hidden %}
+                <p><i>*Your education is hidden to others.</i></p>
+                {% endif %}
                 <div class="profile-info-box">
                     {% for edu in template_data.education %}
                         <div style="display: flex;">
@@ -230,6 +243,9 @@
                 <!--resume here-->
                 {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden %}
                 <h2 class="profile-section-header">Links</h2>
+                {% if template_data.seeker_user.links_is_hidden %}
+                <p><i>*Your links are hidden to others.</i></p>
+                {% endif %}
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
                         <div style="display:flex;">
@@ -253,9 +269,9 @@
                 <form method="POST"><div style="display:flex;">
                     {% csrf_token %}
                     <textarea name="subfield" style="display:none;">link_add</textarea>
-                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;"required>
+                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;width:100%;"required>
                     <button type="submit" class="profile-check-btn" style="color:green;margin-left:0">&#10010</button>
-                </div></form>      
+                </div></form>
                 {% endif %}
                 </div>
                 {% endif %}
@@ -294,12 +310,34 @@
                 {% endif %}
 
                 {% if template_data.seeker_user.resume %}
-                <hr>
-                <a href="{{ template_data.seeker_user.resume.url }}" download><h4 class="profile-section-header">Resume</h4></a>
+                    <hr>
+                    <div style="align-items:center;display:flex;">
+                    <a href="{{ template_data.seeker_user.resume.url }}" download><h4 class="profile-section-header">Resume</h4></a>
+                    {% if user.is_authenticated and user == template_data.profile_user %}
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <textarea name="subfield" style="display:none;">resume_change</textarea>
+                        <input type="file" name="resume_upload" id="resume_upload" accept=".doc,.docx,.pdf" required style="display:none;" onchange="this.form.submit()"/>
+                        <label for="resume_upload" class="profile-edit-btn" style="margin-right:25px;">&#9998</label>
+                    </form>
+                    <form method="POST" style="margin-left:auto;">
+                        {% csrf_token %}
+                        <textarea name="subfield" style="display:none;">resume_delete</textarea>
+                        <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                    </form>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    {% if user.is_authenticated and user == template_data.profile_user %}
+                        <hr>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <textarea name="subfield" style="display:none;">resume_change</textarea>
+                            <input type="file" name="resume_upload" id="resume_upload" accept=".doc,.docx,.pdf" required style="display:none;" onchange="this.form.submit()" />
+                            <label for="resume_upload" class="profile-hollow-btn" style="width:100%;">Add Resume</label>
+                        </form>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-            {% if template_data.seeker_user.account_is_hidden %}
-                <p>This account's details are hidden.</p>
             {% endif %}
 
 

@@ -1,6 +1,13 @@
 from django.db import models
 from skills.models import Skill
 from accounts.models import Recruiter
+import os
+from django.utils.text import slugify
+
+def get_image_path(post, filename):
+    filetype = filename.split('.')[-1]
+    new_name = slugify(post.company_name) + '.' + filetype
+    return os.path.join('post_images', new_name) 
 
 class Post(models.Model):
     id = models.AutoField(primary_key=True)
@@ -8,7 +15,7 @@ class Post(models.Model):
     company_name = models.CharField(max_length=255, editable=False)
     job_title = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='post_images/', default='post_images/default_job_posting.jpg')
+    image = models.ImageField(upload_to=get_image_path, default='post_images/default_job_posting.jpg')
     skills = models.ManyToManyField(Skill, blank = True, related_name='posts')
     street = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
@@ -49,4 +56,5 @@ class Post(models.Model):
             self.company_name = self.recruiter.company
         super().save(*args, **kwargs)
     def __str__(self):
-        return str(self.id) + ' - ' + self.company_name
+        return str(self.id) + ' - ' + self.company_name + ' - ' + self.job_title
+

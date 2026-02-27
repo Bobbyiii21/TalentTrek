@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 
 from .models import TTUser, JobSeeker, Recruiter
-from .forms import CustomUserCreationForm, CustomErrorList
+from .forms import CustomUserCreationForm, CustomErrorList, UploadPfpForm, UploadResumeForm
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import JobSeeker, Recruiter, Education, Experience
@@ -123,7 +123,10 @@ def profiles(request, user_link):
             user.save()
 
         if updated == 'pfp':
-            request.user.pfp = request.FILES['pfp_upload'][0]
+            if ('pfp_upload' in request.FILES):
+                user.pfp.delete()
+                user.pfp = request.FILES['pfp_upload']
+                user.save()
             
         elif user.is_seeker:
             if updated == 'hidden':
@@ -233,7 +236,8 @@ def profiles(request, user_link):
             if request.POST['subfield'] == 'link_delete':
                 seeker_user.links = seeker_user.links.replace(f"{request.POST['link'].strip()},", '')
                 seeker_user.save()
-                template_data['links'].remove(request.POST['link'])
+                #Removes all copies of deleted link since template data stuff is done before in the code
+                template_data['links'][:] = [item for item in template_data['links'] if item != request.POST['link'].strip()]
 
             if request.POST['subfield'] == 'skill_add':
                 for skill in request.POST['skills']:
@@ -245,6 +249,16 @@ def profiles(request, user_link):
                 seeker_user.skills.remove(skill)
                 seeker_user.save()
 
+            if request.POST['subfield'] == 'resume_change':
+                if ('resume_upload' in request.FILES):
+                    seeker_user.resume.delete()
+                    seeker_user.resume = request.FILES['resume_upload']
+                    seeker_user.save()
+
+            if request.POST['subfield'] == 'resume_delete':
+                seeker_user.resume.delete()
+                seeker_user.save()
+
         elif user.is_recruiter:
             if request.POST['subfield'] == 'link_add':
                 recruiter_user.links += f"{request.POST['link'].strip()},"
@@ -254,7 +268,8 @@ def profiles(request, user_link):
             if request.POST['subfield'] == 'link_delete':
                 recruiter_user.links = recruiter_user.links.replace(f"{request.POST['link'].strip()},", '')
                 recruiter_user.save()
-                template_data['links'].remove(request.POST['link'])
+                #Removes all copies of deleted link since template data stuff is done before in the code
+                template_data['links'][:] = [item for item in template_data['links'] if item != request.POST['link'].strip()]
 
 
     return render(request, 'accounts/profiles.html', {'template_data': template_data})
