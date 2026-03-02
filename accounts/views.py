@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from .models import JobSeeker, Recruiter, Education, Experience
 from skills.models import Skill
 
+import csv, io
+from django.http import HttpResponse
+
 @login_required
 def logout(request):
     auth_logout(request)
@@ -278,3 +281,105 @@ def index(request):
     profiles = TTUser.objects.all().order_by('first_name')
     template_data = {'profiles': profiles}
     return render(request, 'accounts/index.html', {'template_data': template_data})
+
+def export_csv(request):
+    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Company']]
+    all_users = TTUser.objects.all()
+    for ttuser in all_users:
+        row = []
+        row.append(ttuser.id)
+        row.append(f"{ttuser.first_name} {ttuser.last_name}")
+        row.append(ttuser.email)
+        if ttuser.is_seeker:
+            row.append("Job Seeker")
+            seeker = JobSeeker.objects.get(user_id=ttuser.id)
+            if ttuser.country:
+                row.append(ttuser.country)
+            else:
+                row.append("")
+            if ttuser.region:
+                row.append(ttuser.region)
+            else:
+                row.append("")
+            if ttuser.city:
+                row.append(ttuser.city)
+            else:
+                row.append("")
+            row.append(ttuser.date_joined)
+            row.append(ttuser.last_login)
+            row.append(bool(seeker.links))
+            row.append(bool(ttuser.pfp))
+            row.append(bool(ttuser.headline))
+            row.append(bool(seeker.education))
+            row.append(bool(seeker.experience))
+            row.append(bool(seeker.resume))
+            row.append(bool(seeker.skills))
+            row.append("") #Recruiter Company
+            
+        elif ttuser.is_recruiter:
+            row.append("Recruiter")
+            recruiter = Recruiter.objects.get(user_id=ttuser.id)
+            if ttuser.country:
+                row.append(ttuser.country)
+            else:
+                row.append("")
+            if ttuser.region:
+                row.append(ttuser.region)
+            else:
+                row.append("")
+            if ttuser.city:
+                row.append(ttuser.city)
+            else:
+                row.append("")
+            row.append(ttuser.date_joined)
+            row.append(ttuser.last_login)
+            row.append(bool(recruiter.links))
+            row.append(bool(ttuser.pfp))
+            row.append(bool(ttuser.headline))
+            row.append(False) # Job Seeker stuff (including next 3)
+            row.append(False)
+            row.append(False)
+            row.append(False)
+            row.append(recruiter.company) 
+
+        else:
+            row.append('None')
+            if ttuser.country:
+                row.append(ttuser.country)
+            else:
+                row.append("")
+            if ttuser.region:
+                row.append(ttuser.region)
+            else:
+                row.append("")
+            if ttuser.city:
+                row.append(ttuser.city)
+            else:
+                row.append("")
+            row.append(ttuser.date_joined)
+            row.append(ttuser.last_login)
+            row.append(False) #Links
+            row.append(bool(ttuser.pfp))
+            row.append(bool(ttuser.headline))
+            row.append(False) # Job Seeker stuff (including next 3)
+            row.append(False)
+            row.append(False)
+            row.append(False)
+            row.append("") # Recruiter Company
+
+        data.append(row)
+        print(row)
+
+    file_path = 'accounts/UserData.csv'
+    with open(file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
+    print(f'CSV file "{file_path}" created')
+    response = HttpResponse(open(file_path, 'rb'), content_type='text/csv')
+    response['content-Disposition'] = 'attachment; filename="userdata.csv"'
+    return response
+
+
+
+    
+    

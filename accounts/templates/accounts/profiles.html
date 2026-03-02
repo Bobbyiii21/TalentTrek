@@ -73,7 +73,7 @@
                     <hr>
                 {% endif %}
 
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden and template_data.seeker_user.experience.all.count > 0 %}
 
                 <h2 class="profile-section-header">Experience</h2>
                 {% if template_data.seeker_user.experience_is_hidden %}
@@ -92,8 +92,17 @@
                                 <p style="margin-left: auto;">{{ exp.start_date }} - Present</p>
                             {% endif %}
                         </div>
+                        <div style="display:flex;">
                             <p><i>{{ exp.position_title }}</i></p>
-                        
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <form method="POST" style="margin-left:auto;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">experience_remove</textarea>
+                                <textarea name="experience_id" style="display:none;">{{ exp.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                            {% endif %}
+                        </div>
                             <p>Description: {{ exp.job_description }}</p>
                         {% if not forloop.last %}    
                         <hr>
@@ -158,7 +167,7 @@
                 {% endif %}
 
 
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden or not template_data.seeker_user.education.all.count > 0 %}
                 <h2 class="profile-section-header">Education</h2>
                 {% if template_data.seeker_user.education_is_hidden %}
                 <p><i>*Your education is hidden to others.</i></p>
@@ -173,7 +182,17 @@
                             </p>
                             <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
                         </div>
+                        <div style="display:flex;">
                             <p>Degree: {{ edu.get_degree_display }}</p>
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <form method="POST" style="margin-left:auto;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">education_remove</textarea>
+                                <textarea name="education_id" style="display:none;">{{ edu.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                            {% endif %}
+                        </div>
                             {% if edu.degree_name %}
                             <p>Name: {{ edu.degree_name }}</p>
                             {% endif %}
@@ -240,10 +259,9 @@
                 {% endif %}
 
 
-                <!--resume here-->
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden or not template_data.seeker_user.links %}
                 <h2 class="profile-section-header">Links</h2>
-                {% if template_data.seeker_user.links_is_hidden %}
+                {% if template_data.seeker_user.links_is_hidden and user.is_authenticated and user == template_data.profile_user %}
                 <p><i>*Your links are hidden to others.</i></p>
                 {% endif %}
                 <div class="profile-info-box">
@@ -275,10 +293,10 @@
                 {% endif %}
                 </div>
                 {% endif %}
-                <hr>
                 
+                {% if not template_data.seeker_user.skills and not user.is_authenticated and not user == template_data.profile_user%}
+                <hr>
                 <!--Eventually replace this with skills_is_hidden-->
-                {% if True %}
                 <h2 class="profile-section-header">Skills</h2>
                 <div class="profile-info-box">
                     {% for skill in template_data.skills %}
@@ -363,7 +381,7 @@
                     </div>
                     <hr>
                 {% endif %}
-            {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden %}
+            {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden and template_data.recruiter_user.links %}
                 <h2 class="profile-section-header">Links</h2>
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
