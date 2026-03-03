@@ -4,13 +4,6 @@
 
 <div class="p-3">
   <div class="container">
-    <div class="row mt-3">
-      <div class="col mx-auto mb-3" style="color: var(--secondary);">
-        {% if template_data.is_recruiter %}
-          <a href="{% url 'posting.create' %}">Create a Job Posting</a>
-        {% endif %}
-      </div>
-    </div>
     <div class="row">
       <!--Filters -->
 <div class="col-md-3 mb-3">
@@ -98,7 +91,12 @@
       <!--Job Postings-->
   <div class="col-md-9">
     {% if template_data.my_postings %}
+    <div style="display:flex;align-items:center;">
         <h4>My Posts</h4>
+        {% if template_data.is_recruiter %}
+          <a href="{% url 'posting.create' %}" class="profile-hollow-btn" style="margin-left:20px;">&#10010</a>
+        {% endif %}
+    </div>
     {% else %}
     {% endif %}
         {% for post in template_data.my_postings %}
@@ -190,7 +188,15 @@
         {% endfor %}
 
 <!--Job Postings-->
-        <h4>Posts</h4>
+      <div style="display:flex;align-items:center;margin-bottom:10px;">
+          <h4>Posts</h4>
+          {% if template_data.is_recruiter and not template_data.my_postings %}
+            <a href="{% url 'posting.create' %}" class="profile-hollow-btn" style="margin-left:20px;">&#10010</a>
+          {% endif %}
+          {% if user.is_authenticated and user.is_superuser %}
+          <a href="{% url 'posting.export_csv' %}" class="primary-hover-btn" style="margin-left:auto;">Get Job Posting Data</a>
+          {% endif %}
+      </div>
         {% for post in template_data.postings %}
           <div class="col-12 mb-3">
     <div class="card p-3">
@@ -284,6 +290,7 @@
   </div>
 </div>
 
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
 <!--Salary Filter JS-->
 <script>
   $(document).ready(function () {

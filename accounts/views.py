@@ -7,6 +7,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from .models import JobSeeker, Recruiter, Education, Experience
 from skills.models import Skill
+from posting.models import Post
+from applications.models import Application
 
 import csv, io
 from django.http import HttpResponse
@@ -283,7 +285,7 @@ def index(request):
     return render(request, 'accounts/index.html', {'template_data': template_data})
 
 def export_csv(request):
-    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Company']]
+    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
     all_users = TTUser.objects.all()
     for ttuser in all_users:
         row = []
@@ -314,7 +316,9 @@ def export_csv(request):
             row.append(bool(seeker.experience))
             row.append(bool(seeker.resume))
             row.append(bool(seeker.skills))
+            row.append(len(Application.objects.filter(applicant=ttuser)))
             row.append("") #Recruiter Company
+            row.append(0)
             
         elif ttuser.is_recruiter:
             row.append("Recruiter")
@@ -340,7 +344,9 @@ def export_csv(request):
             row.append(False)
             row.append(False)
             row.append(False)
+            row.append(0)
             row.append(recruiter.company) 
+            row.append(len(Post.objects.filter(recruiter=recruiter)))
 
         else:
             row.append('None')
@@ -365,7 +371,9 @@ def export_csv(request):
             row.append(False)
             row.append(False)
             row.append(False)
+            row.append(0)
             row.append("") # Recruiter Company
+            row.append(0) 
 
         data.append(row)
         print(row)
@@ -375,9 +383,11 @@ def export_csv(request):
         writer = csv.writer(file)
         writer.writerows(data)
     print(f'CSV file "{file_path}" created')
-    response = HttpResponse(open(file_path, 'rb'), content_type='text/csv')
-    response['content-Disposition'] = 'attachment; filename="userdata.csv"'
-    return response
+    if request.user.is_superuser:
+        response = HttpResponse(open(file_path, 'rb'), content_type='text/csv')
+        response['content-Disposition'] = 'attachment; filename="userdata.csv"'
+        return response
+    return redirect('accounts.index')
 
 
 

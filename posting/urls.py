@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.index, name='posting.index'),
     path('<int:id>/', views.post, name='posting.post'),
     path('create/', views.create, name='posting.create'),
+    path('export_csv/', views.export_csv, name='posting.export_csv'),
     path('edit/<int:id>/', views.edit, name='posting.edit'),
     path('delete/<int:id>/', views.delete, name='posting.delete'),
 ]

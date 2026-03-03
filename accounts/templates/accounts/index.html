@@ -7,7 +7,7 @@
       <div class="col mx-auto mb-3" style="display: flex;">
         <h2>Profiles</h2>
         {% if user.is_authenticated and user.is_superuser %}
-        <a href="{% url 'accounts.export_csv' %}" class="primary-hover-btn" style="margin-left:auto;" download="UserData.csv">Get User Data</a>
+        <p style="margin-left:auto;"><a href="{% url 'accounts.export_csv' %}" class="primary-hover-btn" download="JobPostingData.csv">Get User Data</a></p>
         {% endif %}
       </div>
       <hr />
