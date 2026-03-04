@@ -8,6 +8,7 @@ from accounts.models import Recruiter
 from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
+from home.notifications import update_seeker_notifications
 
 
 
@@ -222,3 +223,4 @@ def save_post(posting, request):
     skill_ids = request.POST.getlist('skills')
     if skill_ids:
         posting.skills.set(skill_ids)
+    update_seeker_notifications(posting)

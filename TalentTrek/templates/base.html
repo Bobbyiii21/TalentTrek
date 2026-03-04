@@ -37,12 +37,15 @@
             <div class="vr bg-white mx-2 d-none d-lg-block"></div>
 
             {% if user.is_authenticated %}
-              <a class="navbar-brand" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">
+              <a class="navbar-brand" style="padding-right:5px;margin-right:0;" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">
                 {% if not user.pfp %}
                   <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
                 {% else %}
                   <img class="profile-picture" src="{{ user.pfp.url }}" alt="Profile Picture"/>
                 {% endif %}
+              </a>
+              <a class="nav-link" style="margin-right:5px;" href="{% url 'home.notifications' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>
               </a>
               <div class="btn-group align-items-center">
                 <a type="button" class="btn profile-btn" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">{{ user.first_name }}</a>
@@ -51,7 +54,7 @@
                 </button>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">My Profile</a></li>
-                  <li><a class="dropdown-item" href="#">My Applications</a></li>
+                  <li><a class="dropdown-item" href="{% url 'applications.index' %}">My Applications</a></li>
                   <li><a class="dropdown-item" href="{% url 'chat.index' %}">Messages</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="{% url 'accounts.logout' %}">Logout</a></li>

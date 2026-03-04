@@ -14,6 +14,7 @@ class Room(models.Model):
     last_message_at = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(ChatUser, on_delete=models.CASCADE, related_name='owner')
     participant = models.ForeignKey(ChatUser, on_delete=models.CASCADE, related_name='participant')
+        
     
 class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)

@@ -15,6 +15,7 @@ class Post(models.Model):
     state = models.CharField(max_length=255, blank=True)
     postal_code = models.CharField(max_length=20, blank=True)
     country = models.CharField(max_length=255, blank=True)
+    date_posted = models.DateTimeField(auto_now_add=True, blank=True)
     location = models.CharField(max_length=255, blank=True)
     salary_min = models.IntegerField(null=True, blank=True)
     salary_max = models.IntegerField(null=True, blank=True)
@@ -49,4 +50,4 @@ class Post(models.Model):
             self.company_name = self.recruiter.company
         super().save(*args, **kwargs)
     def __str__(self):
-        return str(self.id) + ' - ' + self.company_name
+        return str(self.id) + ' - ' + self.company_name + ' - ' + self.job_title
