@@ -38,6 +38,13 @@ html, body {
   color: var(--accent) !important;
 }
 
+.navbar a.navbar-brand {
+  height: 45px;
+  width: 45px;
+  margin-right: 5px;
+  padding: 0;
+}
+
 .bg-dark {
   background-color: #2E2E2E !important;
 }
@@ -149,8 +156,8 @@ html, body {
     margin-bottom: 4px;
     margin-left: 8px;
     vertical-align: middle;
-    width: 2.5vw;
-    height: 2.5vw;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -179,6 +186,7 @@ html, body {
 
 .notification-button {
   anchor-name: --notif-anchor;
+  margin-right: 5px;
 }
 
 .notification-popup {
@@ -194,6 +202,20 @@ html, body {
   padding: 10px;
   flex-direction: column;
   z-index: 1000;
+}
+
+.notification-amount {
+  position: absolute;
+  border: 1px white solid;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+  width: 20px;
+  height: 20px;
+  top: anchor(--notif-anchor bottom);
+  left: anchor(--notif-anchor right);
+  transform: translate(-20px, -20px);
+  text-align: center;
 }
 
 .notification-popup.hidden {
