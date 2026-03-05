@@ -149,8 +149,8 @@ html, body {
     margin-bottom: 4px;
     margin-left: 8px;
     vertical-align: middle;
-    width: 30px;
-    height: 30px;
+    width: 2.5vw;
+    height: 2.5vw;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -175,4 +175,27 @@ html, body {
 
 .select2-container {
     width: 100% !important;
+}
+
+.notification-button {
+  anchor-name: --notif-anchor;
+}
+
+.notification-popup {
+  border: var(--secondary-light) 1px solid;
+  border-radius: 4px;
+  background-color: white;
+  position:absolute;
+  position-anchor: --notif-anchor;
+  top: anchor(--notif-anchor bottom);
+  left: anchor(--notif-anchor center);
+  transform: translateX(-50%);
+  width: 320px;
+  padding: 10px;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.notification-popup.hidden {
+  display: none;
 }

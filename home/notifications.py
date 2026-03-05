@@ -40,7 +40,29 @@ def update_seeker_notifications(user: TTUser):
 
 def update_recruiter_notifications(user: TTUser):
     #Recommend job seekers to hire
-    return
+    if not user.is_recruiter: return
+    recruiter = Recruiter.objects.get(user=user)
+    posts = Post.objects.filter(recruiter=recruiter)
+    seekerPool = JobSeeker.objects.all()
+    seekersToNotify = []
+    for seeker in seekerPool:
+        if len(seeker.skills.all()) == 0: continue
+        for post in posts:
+            if Application.objects.filter(applicant=seeker.user, posting=post): continue
+            if not post.skills: continue
+            postingSkills = post.skills.all()
+            if calculate_fit(seeker.skills.all(), postingSkills, 0.1): seekersToNotify.append([seeker.user, post])
+    for seeker, post in seekersToNotify:
+        link = reverse('accounts.profiles', kwargs={'user_link': str(seeker)})
+        try:
+            NotiToDelete = Notification.objects.get(recipient=user, viewslink=link)
+            NotiToDelete.delete()
+        except:
+            pass
+        finally:
+            notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.first_name} {seeker.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.pfp)
+
+
 
 def update_unsupported_user_notifications(user: TTUser):
     #Remove all existing notifications and tell user to onboard

@@ -33,6 +33,7 @@ def login(request, just_registered=False):
         else:
             auth_login(request, user)
             home_notif.update_seeker_notifications(user)
+            home_notif.update_recruiter_notifications(user)
             return redirect('home.index')
 
 def register(request):
