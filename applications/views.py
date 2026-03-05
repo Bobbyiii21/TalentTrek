@@ -28,10 +28,13 @@ def apply(request, posting_id):
     return redirect('applications.index')
 
 @login_required
-def update_status(request, application_id):
+def update_status(request, application_id, context):
     if request.method == 'POST':
         application = Application.objects.get(id=application_id)
         if (request.user.is_authenticated and (Recruiter.objects.filter(user=request.user, company=application.posting.company_name).exists())) or request.user.is_superuser:
             application.status = request.POST['status']
             application.save()
+        print(request.path)
+    if context == 'application_page':
+        return redirect('applications.index')
     return redirect('posting.post', id=application.posting.id)

@@ -1,0 +1,59 @@
+{% load static %}
+<div class="card mb-3">
+  <div class="card-header">
+    <a href="#" role="button" data-bs-toggle="modal" data-bs-target="#infoModal{{ application.id }}" class="h6">{{ application.posting.job_title }}</a>
+  </div>
+  <div class="card-body">
+    <strong>Applicant:</strong>
+    {{ application.applicant.first_name }} {{ application.applicant.last_name }}
+    <p class="card-text"><small class="text-body-secondary"><em>Applied {{ application.date|date:"M d, Y" }}</em></small></p>
+  </div>
+</div>
+<div class="modal fade" id="infoModal{{ application.id }}" tabindex="-1" aria-labelledby="infoModalLabel {{ application.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" action="{% url 'applications.update_status' application_id=application.id context='application_page' %}">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="infoModalLabel {{ application.id }}">
+                <strong>{{ application.posting.job_title }} at {{ application.posting.company_name }}</strong>
+            </h1>
+            <!--button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button-->
+          </div>
+            <div class="modal-body">
+              <div class="container mb-3" style="display: flex; align-items: center;">
+                {% if application.applicant.pfp %}
+                    <img src="{{ application.applicant.pfp.url }}" class="img-fluid rounded"
+                         style="width: 50px; height: auto; clip-path: circle(); margin-right: 15px;" alt="Profile Picture">
+                {% else %}
+                    <img class="profile-picture" src="{% static 'img/default_pfp.png' %}"
+                         style="width: 50px; height: auto; clip-path: circle(); margin-right: 15px;" alt="Profile Picture"/>
+                {% endif %}
+                <a style="text-decoration: none; text-align: center;" class="h5" href="{{ application.applicant.link }}">{{ application.applicant.first_name }} {{ application.applicant.last_name }}</a>
+              </div>
+              <div style="margin-left: 12px;">
+                {% if application.message != "" %}
+                  <p>
+                    <strong>Application message:</strong><br>
+                    {{ application.message }}
+                  </p>
+                {% endif %}
+                <strong>Change Application Status:</strong>
+                <select class="form-select" aria-label="Change application status" name="status">
+                  <option selected disabled value="application.status">-</option>
+                  <option value="Applied">Applied</option>
+                  <option value="Reviewed">Reviewed</option>
+                  <option value="Interview">Interview</option>
+                  <option value="Offer">Offer</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn secondary-hover-btn" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn primary-hover-btn">Change Status</button>
+            </div>
+          </form>
+        </div>
+    </div>
+</div>

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="19258e38-f52b-4ae9-9d4a-1f0eafe218a6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/media/post_images/default_job_posting.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/posting/templates/posting/create.html" afterDir="false" />
+    <list default="true" id="19258e38-f52b-4ae9-9d4a-1f0eafe218a6" name="Changes" comment="Recruiter applications frontend">
+      <change afterPath="$PROJECT_DIR$/applications/templates/applications/recruiter_application_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/templates/applications/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/applications/templates/applications/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/applications/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/applications/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/posting/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/posting/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/posting/templates/posting/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/posting/templates/posting/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/posting/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/posting/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/posting/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/posting/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/posting/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/posting/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/posting/templates/posting/post.html" beforeDir="false" afterPath="$PROJECT_DIR$/posting/templates/posting/post.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,41 +31,43 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "LukeFerg"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;LukeFerg&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Bobbyiii21/TalentTrek.git",
-    "accountId": "f54b6012-a748-4586-96ce-5b4a5b2a5a93"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Bobbyiii21/TalentTrek.git&quot;,
+    &quot;accountId&quot;: &quot;f54b6012-a748-4586-96ce-5b4a5b2a5a93&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="39mSFxAjJ4dpdaacKiyNaWQDEAh" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feat/postings",
-    "last_opened_file_path": "C:/Users/fergm/PycharmProjects/TalentTrek/TalentTrek/static/img",
-    "settings.editor.selected.configurable": "editor.preferences.completion"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;applications&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/fergm/PycharmProjects/TalentTrek/TalentTrek/static/img&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.completion&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\fergm\PycharmProjects\TalentTrek\TalentTrek\static\img" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\fergm\PycharmProjects\TalentTrek\applications\templates\applications" />
       <recent name="C:\Users\fergm\PycharmProjects\TalentTrek\media\post_images" />
     </key>
   </component>
@@ -83,6 +86,15 @@
       <option name="presentableId" value="Default" />
       <updated>1771299654501</updated>
     </task>
+    <task id="LOCAL-00001" summary="Recruiter applications frontend">
+      <option name="closed" value="true" />
+      <created>1772061053105</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1772061053105</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -95,5 +107,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Recruiter applications frontend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Recruiter applications frontend" />
   </component>
 </project>

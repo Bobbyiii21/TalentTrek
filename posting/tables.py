@@ -16,7 +16,7 @@ class ApplicationsTable(tables.Table):
     status = tables.TemplateColumn(
         verbose_name='Status',
         template_code='''
-        <form method="post" action="{% url 'applications.update_status' application_id=record.id %}" class="d-inline">
+        <form method="post" action="{% url 'applications.update_status' application_id=record.id context='posting_page' %}" class="d-inline">
           {% csrf_token %}
           <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
             <option value="Applied" {% if record.status == "Applied" %}selected{% endif %}>Applied</option>
