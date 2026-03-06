@@ -35,6 +35,6 @@ def update_status(request, application_id, context):
             application.status = request.POST['status']
             application.save()
         print(request.path)
-    if context == 'application_page':
+    if context == 'applications_page':
         return redirect('applications.index')
     return redirect('posting.post', id=application.posting.id)
