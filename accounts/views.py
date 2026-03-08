@@ -1,17 +1,25 @@
-from django.shortcuts import get_object_or_404, render
+import csv
+import io
+import re
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
-
-from .models import TTUser, JobSeeker, Recruiter
-from .forms import CustomUserCreationForm, CustomErrorList, UploadPfpForm, UploadResumeForm
-from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from .models import JobSeeker, Recruiter, Education, Experience
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import CustomUserCreationForm, CustomErrorList
+from .models import JobSeeker, Recruiter, Education, Experience, TTUser
 from skills.models import Skill
 from posting.models import Post
 from applications.models import Application
 
-import csv, io
-from django.http import HttpResponse
+
+def validate_urls(urls: str) -> list[str]:
+    """Validate a string of comma-separated URLs. Returns an empty list if the URL is invalid."""
+
+    return_urls = re.findall(r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)', urls)
+    print(return_urls)
+    return return_urls
+    
 
 @login_required
 def logout(request):
@@ -234,9 +242,12 @@ def profiles(request, user_link):
                 return redirect('accounts.profiles', user_link=str(request.user))
 
             if request.POST['subfield'] == 'link_add':
-                seeker_user.links += f"{request.POST['link'].strip()},"
+                links = validate_urls(request.POST['link'])
+                for link in links:
+                    seeker_user.links += f"{link},"
                 seeker_user.save()
-                template_data['links'].append(request.POST['link'].strip())
+                for link in links:
+                    template_data['links'].append(link)
 
             if request.POST['subfield'] == 'link_delete':
                 seeker_user.links = seeker_user.links.replace(f"{request.POST['link'].strip()},", '')
@@ -388,8 +399,5 @@ def export_csv(request):
         response['content-Disposition'] = 'attachment; filename="userdata.csv"'
         return response
     return redirect('accounts.index')
-
-
-
     
     
