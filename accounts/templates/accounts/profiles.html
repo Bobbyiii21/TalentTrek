@@ -33,7 +33,6 @@
                 {% endif %}
             </div>
 
-            <hr>
             <!--
             {% if template_data.is_seeker %}
                 <h5>Job Seeker</h5>
@@ -46,6 +45,7 @@
             <p>{{ template_data.profile_user.email }}</p>-->
 
         </div>
+            <hr>
         <div id="profile-info">
         {% if template_data.is_seeker %}
             {% if template_data.seeker_user.account_is_hidden %}
@@ -64,16 +64,15 @@
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
                     </div>
-                    <hr>
                 {% elif user.is_authenticated and user == template_data.profile_user %}
                     <div style="display:flex;">
                         <h2 class="profile-section-header">Headline</h2>
                         <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:auto;">Edit Headline</button>
                     </div>
-                    <hr>
                 {% endif %}
 
                 {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden and template_data.seeker_user.experience.all.count > 0 %}
+                    <hr>
 
                 <h2 class="profile-section-header">Experience</h2>
                 {% if template_data.seeker_user.experience_is_hidden %}
@@ -160,9 +159,9 @@
   </div>
 </div>
 
-                <hr>
                 {% endif %}
                 {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden or not template_data.seeker_user.education.all.count > 0 %}
+                <hr>
                 <h2 class="profile-section-header">Education</h2>
                 {% if template_data.seeker_user.education_is_hidden %}
                 <p><i>*Your education is hidden to others.</i></p>
@@ -246,11 +245,11 @@
   </div>
 </div>
 
-                <hr>
                 {% endif %}
 
 
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden or not template_data.seeker_user.links %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden and template_data.seeker_user.links %}
+                <hr>
                 <h2 class="profile-section-header">Links</h2>
                 {% if template_data.seeker_user.links_is_hidden and user.is_authenticated and user == template_data.profile_user %}
                 <p><i>*Your links are hidden to others.</i></p>
@@ -284,7 +283,7 @@
                 {% endif %}
                 </div>
                 {% endif %}
-                
+
                 {% if not template_data.seeker_user.skills and not user.is_authenticated and not user == template_data.profile_user%}
                 <hr>
                 <!--Eventually replace this with skills_is_hidden-->
@@ -373,7 +372,7 @@
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
                         <div style="display:flex;">
-                        <a href="https://{{ link }}">{{ link }}</a>
+                        <a href="{{ link }}">{{ link }}</a>
                         {% if user.is_authenticated and user == template_data.profile_user %}
                         <form method="POST" style="margin-left:auto;">
                             {% csrf_token %}
@@ -539,7 +538,7 @@
         <div class="modal-body">
           <div class="mb-3">
             <label for="grad-year-input" class="form-label">Graduation Year*</label>
-            <input class="form-control" id="grad-year-input" name="grad_year" type="number" max="3000" required></input>
+            <input class="form-control" id="grad-year-input" name="grad_year" type="number" min="0" max="3000" required></input>
           </div>
           <div class="mb-3">
             <label for="school-name-input" class="form-label">School Name*</label>
