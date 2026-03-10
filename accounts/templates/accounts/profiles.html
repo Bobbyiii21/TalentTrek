@@ -59,7 +59,9 @@
                 {% if template_data.profile_user.headline %}
                     <div style="display:flex;">
                         <h2 class="profile-section-header">Headline</h2>
+                    {% if user.is_authenticated and user == template_data.profile_user %}
                         <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                    {% endif %}
                     </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
@@ -284,7 +286,7 @@
                 </div>
                 {% endif %}
 
-                {% if not template_data.seeker_user.skills and not user.is_authenticated and not user == template_data.profile_user%}
+                {% if user.is_authenticated and user == template_data.profile_user or template_data.seeker_user.skills.all.count > 0 %}
                 <hr>
                 <!--Eventually replace this with skills_is_hidden-->
                 <h2 class="profile-section-header">Skills</h2>
@@ -302,6 +304,7 @@
                         {% endif %}
                         </div>
                     {% endfor %}
+                    {% if user.is_authenticated and user == template_data.profile_user %}
                     <form method="POST">
                         <div style="display:flex;margin-bottom:5px;">
                         {% csrf_token %}
@@ -313,7 +316,8 @@
                           </select>
                           </div>
                           <button type="submit" class="profile-hollow-btn" style="width:100%;">Add Skills</button>
-                    </form> 
+                    </form>
+                    {% endif %} 
                 </div>
                 {% endif %}
 
@@ -354,7 +358,9 @@
                 {% if template_data.profile_user.headline %}
                     <div style="display:flex;">
                         <h2 class="profile-section-header">Headline</h2>
-                        <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                        {% if user.is_authenticated and user == template_data.profile_user %}
+                            <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                        {% endif %}                    
                     </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>

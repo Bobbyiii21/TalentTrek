@@ -259,8 +259,8 @@ def profiles(request, user_link):
                 template_data['links'][:] = [item for item in template_data['links'] if item != to_remove]
 
             if request.POST['subfield'] == 'skill_add':
-                for skill in request.POST['skills']:
-                    seeker_user.skills.add(skill)
+                for skill in request.POST.getlist('skills'):
+                    seeker_user.skills.add(get_object_or_404(Skill, id=skill))
                 seeker_user.save()
                 
             if request.POST['subfield'] == 'skill_delete':
