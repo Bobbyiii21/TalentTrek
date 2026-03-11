@@ -51,8 +51,8 @@
             <h2>Conversation</h2>
             {% endif %}
             <div class="main-header-actions">
-                <button type="button" class="main-header-btn" aria-label="View profile" ><i class="fas fa-user"></i></button>
-                <button type="button" class="main-delete-btn" aria-label="Delete conversation"><i class="fas fa-trash"></i></button>
+                <a href="{% url 'accounts.profiles' user_link=template_data.other.TTUser.slugify_name %}"><button type="button" class="main-header-btn" aria-label="View profile"><i class="fas fa-user"></i></button></a>
+                <!--<button type="button" class="main-delete-btn" aria-label="Delete conversation"><i class="fas fa-trash"></i></button>-->
             </div>
         </div>
         <div class="main-chat">
