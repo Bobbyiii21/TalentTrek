@@ -7,6 +7,7 @@ from accounts.models import TTUser
 
 
 class ApplicationsTable(tables.Table):
+    job_title = tables.Column(verbose_name='Job Title', accessor='posting__job_title')
     applicant_name = tables.Column(accessor='applicant', verbose_name='Name',
         order_by=('applicant__first_name', 'applicant__last_name'))
     message = tables.Column(verbose_name='Message', accessor='message')
@@ -16,7 +17,7 @@ class ApplicationsTable(tables.Table):
     status = tables.TemplateColumn(
         verbose_name='Status',
         template_code='''
-        <form method="post" action="{% url 'applications.update_status' application_id=record.id context='posting_page' %}" class="d-inline">
+        <form method="post" action="{% url 'applications.update_status' application_id=record.id context='applications_page_table' %}" class="d-inline">
           {% csrf_token %}
           <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
             <option value="Applied" {% if record.status == "Applied" %}selected{% endif %}>Applied</option>
@@ -70,5 +71,6 @@ class ApplicationsTable(tables.Table):
     class Meta:
         model = Application
         fields = ('applicant_name', 'message', 'skills', 'location', 'resume', 'status')
+        sequence = ('job_title', '...')
         attrs = {'class': 'table table-striped table-bordered'}
         orderable = False
