@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Notification
 from django.contrib.auth.decorators import login_required
-from .notifications import update_seeker_notifications
-import ast
+
 
 def index(request):
     template_data = {}

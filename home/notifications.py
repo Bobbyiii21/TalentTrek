@@ -2,7 +2,6 @@ from django.urls import reverse
 from accounts.models import TTUser, JobSeeker, Recruiter
 from applications.models import Application
 from posting.models import Post
-from skills.models import Skill
 from .models import Notification
 
 #Note when making HTML message, pass formatted VIEW_URL into href of the <a>

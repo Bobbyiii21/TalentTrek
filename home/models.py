@@ -1,8 +1,5 @@
 from django.db import models
 from accounts.models import TTUser
-from posting.models import Post
-from applications.models import Application
-from django.utils import timezone
 
 class Notification(models.Model):
     id = models.AutoField(primary_key=True)
