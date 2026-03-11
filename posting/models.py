@@ -17,6 +17,8 @@ class Post(models.Model):
     country = models.CharField(max_length=255, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True, blank=True)
     location = models.CharField(max_length=255, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     salary_min = models.IntegerField(null=True, blank=True)
     salary_max = models.IntegerField(null=True, blank=True)
     JOB_TYPE_CHOICES = [

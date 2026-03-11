@@ -5,6 +5,7 @@ django-cities-light==3.10.2
 django-tables2==2.8.0
 pillow==12.1.0
 progressbar2==4.5.0
+python-dotenv==1.2.2
 python-utils==3.9.1
 pytz==2025.2
 sqlparse==0.5.5
