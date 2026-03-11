@@ -1,0 +1,69 @@
+{% load static %}
+
+<div class="card mb-3">
+  <div class="card-header">
+    <h6 style="margin-bottom: -0.25em;">{{ application.posting.job_title }}</h6>
+    <a href="#" role="button" data-bs-toggle="modal" data-bs-target="#infoModal{{ application.id }}" class="small" style="text-decoration: none;"><em>View Details</em></a>
+  </div>
+  <div class="card-body lh-sm">
+    <strong>Applicant:</strong>
+    {{ application.applicant.first_name }} {{ application.applicant.last_name }}
+    <p class="card-text" style="margin-bottom: 0.50em;"><small class="text-body-secondary"><em>Applied {{ application.date|date:"M d, Y" }}</em></small></p>
+    <form method="post" action="{% url 'applications.update_status' application_id=application.id context='applications_page' %}" class="d-inline">
+      {% csrf_token %}
+      <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option {% if application.status == 'Applied' %} selected {% endif %} value="Applied">Applied</option>
+          <option {% if application.status == 'Reviewed' %} selected {% endif %} value="Reviewed">Reviewed</option>
+          <option {% if application.status == 'Interview' %} selected {% endif %} value="Interview">Interview</option>
+          <option {% if application.status == 'Offer' %} selected {% endif %} value="Offer">Offer</option>
+          <option {% if application.status == 'Closed' %} selected {% endif %} value="Closed">Closed</option>
+      </select>
+    </form>
+  </div>
+</div>
+<div class="modal fade" id="infoModal{{ application.id }}" tabindex="-1" aria-labelledby="infoModalLabel {{ application.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" action="{% url 'applications.update_status' application_id=application.id context='applications_page' %}">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="infoModalLabel {{ application.id }}">
+                <strong>{{ application.posting.job_title }} at {{ application.posting.company_name }}</strong>
+            </h1>
+          </div>
+            <div class="modal-body">
+              <div class="container mb-3" style="display: flex; align-items: center;">
+                {% if application.applicant.pfp %}
+                    <img src="{{ application.applicant.pfp.url }}" class="img-fluid rounded"
+                         style="width: 50px; height: auto; clip-path: circle(); margin-right: 15px;" alt="Profile Picture">
+                {% else %}
+                    <img class="profile-picture" src="{% static 'img/default_pfp.png' %}"
+                         style="width: 50px; height: auto; clip-path: circle(); margin-right: 15px;" alt="Profile Picture"/>
+                {% endif %}
+                <a style="text-decoration: none; text-align: center;" class="h5" href="{% url 'accounts.profiles' user_link=application.applicant.slugify_name %}">{{ application.applicant.first_name }} {{ application.applicant.last_name }}</a>
+              </div>
+              <div style="margin-left: 12px;">
+                {% if application.message != "" %}
+                  <p>
+                    <strong>Application message:</strong><br>
+                    {{ application.message }}
+                  </p>
+                {% endif %}
+                <strong>Change Application Status:</strong>
+                <select class="form-select" aria-label="Change application status" name="status">
+                  <option {% if application.status == 'Applied' %} selected {% endif %} value="Applied">Applied</option>
+                  <option {% if application.status == 'Reviewed' %} selected {% endif %} value="Reviewed">Reviewed</option>
+                  <option {% if application.status == 'Interview' %} selected {% endif %} value="Interview">Interview</option>
+                  <option {% if application.status == 'Offer' %} selected {% endif %} value="Offer">Offer</option>
+                  <option {% if application.status == 'Closed' %} selected {% endif %} value="Closed">Closed</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn secondary-hover-btn" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn primary-hover-btn">Change Status</button>
+            </div>
+          </form>
+        </div>
+    </div>
+</div>
