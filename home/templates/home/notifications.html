@@ -27,7 +27,15 @@
                         <img src="{% static 'img/job_seeker.png' %}" class="profile-picture"  style="width:100px;height:100px;" alt="Notification Image"/>
                     {% endif %}
                     <div style="margin-left:5px; display:flex; flex-direction:column;">
-                        <p style="text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
+                        <div style="display:flex;">
+                            <p style="margin-left:auto;text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
+                            <form method="POST" style="margin-left:5px;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">notification_delete</textarea>
+                                <textarea name="notification-id" style="display:none;">{{ notification.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                        </div>
                         <p>{{ notification.message|safe }}</p>
                     </div>
                 </div>
@@ -48,7 +56,15 @@
                         <img src="{% static 'img/job_seeker.png' %}" class="profile-picture"  style="width:100px;height:100px;" alt="Notification Image"/>
                     {% endif %}
                     <div style="margin-left:5px; display:flex; flex-direction:column;">
-                        <p style="text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
+                        <div style="display:flex;">
+                            <p style="margin-left:auto;text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
+                            <form method="POST" style="margin-left:5px;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">notification_delete</textarea>
+                                <textarea name="notification-id" style="display:none;">{{ notification.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                        </div>
                         <p>{{ notification.message|safe }}</p>
                     </div>
                 </div>

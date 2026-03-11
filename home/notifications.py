@@ -23,19 +23,15 @@ def update_seeker_notifications(user: TTUser):
     if not seeker.skills: return
     seekerSkills = seeker.skills.all()
     postingPool = Post.objects.all()
-    postsToNotify = []
     for post in postingPool:
         if Application.objects.filter(applicant=user, posting=post): continue
         if len(post.skills.all()) == 0: continue
-        if calculate_fit(seekerSkills, post.skills.all(), 0.1): postsToNotify.append(post)
-    for post in postsToNotify:
         link = reverse('posting.post', kwargs={'id': post.id})
         try:
-            NotiToDelete = Notification.objects.get(recipient=user, viewslink=link)
-            NotiToDelete.delete()
+            Notification.objects.get(recipient=user, viewslink=link)
+            continue
         except:
-            pass
-        finally:
+            if not calculate_fit(seekerSkills, post.skills.all(), 0.1): continue
             notify(user, f'''Based on your profile, we recommend that you apply for the {post.job_title} position at {post.company_name}. <a href="VIEW_URL">Click here</a> to view details.''', link, post.image)
 
 def update_recruiter_notifications(user: TTUser):
@@ -44,23 +40,19 @@ def update_recruiter_notifications(user: TTUser):
     recruiter = Recruiter.objects.get(user=user)
     posts = Post.objects.filter(recruiter=recruiter)
     seekerPool = JobSeeker.objects.all()
-    seekersToNotify = []
     for seeker in seekerPool:
         if len(seeker.skills.all()) == 0: continue
         for post in posts:
             if Application.objects.filter(applicant=seeker.user, posting=post): continue
             if not post.skills: continue
-            postingSkills = post.skills.all()
-            if calculate_fit(seeker.skills.all(), postingSkills, 0.1): seekersToNotify.append([seeker.user, post])
-    for seeker, post in seekersToNotify:
-        link = reverse('accounts.profiles', kwargs={'user_link': str(seeker)})
-        try:
-            NotiToDelete = Notification.objects.get(recipient=user, viewslink=link)
-            NotiToDelete.delete()
-        except:
-            pass
-        finally:
-            notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.first_name} {seeker.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.pfp)
+            link = reverse('accounts.profiles', kwargs={'user_link': str(seeker)})
+            try:
+                Notification.objects.get(recipient=user, viewslink=link)
+                continue
+            except:
+                postingSkills = post.skills.all()
+                if not calculate_fit(seeker.skills.all(), postingSkills, 0.1): continue
+                notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.first_name} {seeker.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.pfp)
 
 
 
@@ -81,20 +73,16 @@ def update_post_notifications(post: Post):
     postingSkills = post.skills.all()
     link = reverse('posting.post', kwargs={'id': post.id})
     seekerPool = JobSeeker.objects.all()
-    usersToNotify = []
     for seeker in seekerPool:
         if Application.objects.filter(applicant=seeker.user, posting=post): continue
         if len(seeker.skills.all()) == 0: continue
-        # Won't check to notify if already applied or doesn't have any skills added
-        if calculate_fit(seeker.skills.all(), postingSkills, 0.5): usersToNotify.append(seeker.user)
-    for user in usersToNotify:
         try:
-            NotiToDelete = Notification.objects.get(recipient=user, viewslink=link)
-            NotiToDelete.delete()
+            Notification.objects.get(recipient=seeker.user, viewslink=link)
+            continue
         except:
-            pass
-        finally:
-            notify(user, f'''Based on your profile, we recommend that you apply for the {post.job_title} position at {post.company_name}. <a href="VIEW_URL">Click here</a> to view details.''', link, post.image)
+        # Won't check to notify if already applied or doesn't have any skills added
+            if not calculate_fit(seeker.skills.all(), postingSkills, 0.5): continue
+            notify(seeker.user, f'''Based on your profile, we recommend that you apply for the {post.job_title} position at {post.company_name}. <a href="VIEW_URL">Click here</a> to view details.''', link, post.image)
     
 def calculate_fit(seekerSkills, postingSkills, threshold):
     seekerList = []

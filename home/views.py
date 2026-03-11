@@ -17,10 +17,15 @@ def about(request):
 
 @login_required
 def notifications(request):
+    if request.method == 'POST':
+        if request.POST['subfield'] == 'notification_delete':
+            id = request.POST['notification-id']
+            noti_to_delete = Notification.objects.get(id=id)
+            noti_to_delete.delete()
     template_data = {}
     template_data['title'] = 'Notifications'
-    template_data['unread_notifications'] = Notification.objects.filter(recipient=request.user, read=False)
-    template_data['read_notifications'] = Notification.objects.filter(recipient=request.user, read=True)
+    template_data['unread_notifications'] = Notification.objects.filter(recipient=request.user, read=False).order_by('-date')
+    template_data['read_notifications'] = Notification.objects.filter(recipient=request.user, read=True).order_by('-date')
     #For Testing - if request.method == "POST": update_seeker_notifications(request.user)
     return render(request, 'home/notifications.html', {'template_data':template_data})
 
