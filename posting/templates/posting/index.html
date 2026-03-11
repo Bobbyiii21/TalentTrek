@@ -154,10 +154,16 @@
       </div>
 
       <!--Job Postings-->
-      <div class="col-md-6">
-        {% if template_data.my_postings %}
+  <div class="col-md-9">
+    {% if template_data.my_postings %}
+    <div style="display:flex;align-items:center;">
         <h4>My Posts</h4>
-        {% endif %} 
+        {% if template_data.is_recruiter %}
+          <a href="{% url 'posting.create' %}" class="profile-hollow-btn" style="margin-left:20px;">&#10010</a>
+        {% endif %}
+    </div>
+    {% else %}
+    {% endif %}
         {% for post in template_data.my_postings %}
         <div class="col-12 mb-3">
           <div class="card p-3 posting-card" data-post-id="{{ post.id }}">
@@ -367,6 +373,7 @@
   </div>
 </div>
 
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
 <!--Salary Filter JS-->
 <script>
   document.addEventListener("DOMContentLoaded", function () {

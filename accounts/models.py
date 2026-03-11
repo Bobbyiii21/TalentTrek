@@ -52,7 +52,6 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField("first name", max_length=31)
     last_name = models.CharField("last_name", max_length=31)
     email = models.EmailField("email address", max_length=127, unique=True)
-    link = models.SlugField(max_length=255, blank=True)
     pfp = models.ImageField(upload_to=get_pfp_path, height_field=None, width_field=None, blank=True)
     country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
     region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED

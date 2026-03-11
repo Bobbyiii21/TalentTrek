@@ -51,7 +51,7 @@ def update_recruiter_notifications(user: TTUser):
             except:
                 postingSkills = post.skills.all()
                 if not calculate_fit(seeker.skills.all(), postingSkills, 0.1): continue
-                notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.first_name} {seeker.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.pfp)
+                notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.user.pfp)
 
 
 

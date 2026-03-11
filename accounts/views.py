@@ -1,13 +1,36 @@
-from django.shortcuts import get_object_or_404, render
+import csv
+import re
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
-
-from .models import TTUser, JobSeeker, Recruiter
-from .forms import CustomUserCreationForm, CustomErrorList
-from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from .models import JobSeeker, Recruiter, Education, Experience
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import CustomUserCreationForm, CustomErrorList
+from .models import JobSeeker, Recruiter, Education, Experience, TTUser
 from skills.models import Skill
 import home.notifications as home_notif
+from posting.models import Post
+from applications.models import Application
+
+
+def normalize_link(url: str) -> str:
+    """Ensure URL has a scheme (https://) for safe use in href."""
+    u = (url or '').strip()
+    if not u:
+        return u
+    if 'https://' not in u:
+        if 'http://' not in u:
+            return f'https://{u}'
+        else:
+            return u.replace('http://', 'https://')
+    return u
+
+
+def validate_urls(urls: str) -> list[str]:
+    """Validate a string of comma-separated URLs. Returns an empty list if the URL is invalid."""
+    return_urls = re.findall(r'(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)', urls)
+    return [normalize_link(u) for u in return_urls]
+    
 
 @login_required
 def logout(request):
@@ -67,7 +90,7 @@ def onboard(request):
             if ('resume' in request.FILES):
                 job_seeker.resume = request.FILES['resume']
             if (request.POST['links'] and request.POST['links'].strip()):
-                job_seeker.links = request.POST['links'].strip()
+                job_seeker.links = ''.join(f"{link}," for link in validate_urls(request.POST['links'].strip()))
             request.user.save()
             job_seeker.save()
             home_notif.update_onboarded_user_notifications
@@ -82,7 +105,7 @@ def onboard(request):
             if (request.POST['company'] and request.POST['company'].strip()):
                 recruiter.company = request.POST['company'].strip()
             if (request.POST['links'] and request.POST['links'].strip()):
-                recruiter.links = request.POST['links'].strip()
+                recruiter.links = ''.join(f"{link}," for link in validate_urls(request.POST['links'].strip()))
             request.user.save()
             recruiter.save()
             home_notif.update_onboarded_user_notifications
@@ -108,18 +131,14 @@ def profiles(request, user_link):
         template_data['skills_options'] = Skill.objects.all().order_by('name')
         template_data['experience'] = seeker_user.experience.all()
         template_data['degree_choices'] = Education.DegreeType.choices
-        template_data['links'] = seeker_user.links.split(",")
-        template_data['links'].pop()
-        for link in template_data['links']:
-            link = link.strip()
+        t_links = [normalize_link(l.strip()) for l in seeker_user.links.split(",") if l.strip()]
+        template_data['links'] = t_links
         #find some way to put resume 
     elif template_data['is_recruiter']:
         recruiter_user = Recruiter.objects.get(user_id=id)
         template_data['recruiter_user'] = recruiter_user
-        template_data['links'] = recruiter_user.links.split(",")
-        template_data['links'].pop()
-        for link in template_data['links']:
-            link = link.strip()
+        t_links = [normalize_link(l.strip()) for l in recruiter_user.links.split(",") if l.strip()]
+        template_data['links'] = t_links
 
 
     if request.method == 'POST':
@@ -129,7 +148,10 @@ def profiles(request, user_link):
             user.save()
 
         if updated == 'pfp':
-            request.user.pfp = request.FILES['pfp_upload'][0]
+            if ('pfp_upload' in request.FILES):
+                user.pfp.delete()
+                user.pfp = request.FILES['pfp_upload']
+                user.save()
             
         elif user.is_seeker:
             if updated == 'hidden':
@@ -214,8 +236,7 @@ def profiles(request, user_link):
                 edit_experience.company_name = request.POST['company_name']
                 edit_experience.position_title = request.POST['position_title']
                 edit_experience.job_description = request.POST['job_description']
-                try: edit_experience.current_employee = bool(request.POST['current_employee'])
-                except: new_experience.current_employee = False
+                edit_experience.current_employee = bool(request.POST.get('current_employee', False))
                 edit_experience.start_date = request.POST['start_date']
                 if not edit_experience.current_employee:
                     edit_experience.end_date = request.POST['end_date']
@@ -232,18 +253,20 @@ def profiles(request, user_link):
                 return redirect('accounts.profiles', user_link=str(request.user))
 
             if request.POST['subfield'] == 'link_add':
-                seeker_user.links += f"{request.POST['link'].strip()},"
+                links = validate_urls(request.POST['link'])
+                seeker_user.links += ''.join(f"{link}," for link in links)
                 seeker_user.save()
-                template_data['links'].append(request.POST['link'].strip())
+                template_data['links'].extend(links)
 
             if request.POST['subfield'] == 'link_delete':
-                seeker_user.links = seeker_user.links.replace(f"{request.POST['link'].strip()},", '')
+                to_remove = request.POST['link'].strip()
+                seeker_user.links = seeker_user.links.replace(f"{to_remove},", '')
                 seeker_user.save()
-                template_data['links'].remove(request.POST['link'])
+                template_data['links'][:] = [item for item in template_data['links'] if item != to_remove]
 
             if request.POST['subfield'] == 'skill_add':
-                for skill in request.POST['skills']:
-                    seeker_user.skills.add(skill)
+                for skill in request.POST.getlist('skills'):
+                    seeker_user.skills.add(get_object_or_404(Skill, id=skill))
                 seeker_user.save()
                 home_notif.update_seeker_notifications(user)
                 
@@ -252,17 +275,28 @@ def profiles(request, user_link):
                 seeker_user.skills.remove(skill)
                 seeker_user.save()
 
+            if request.POST['subfield'] == 'resume_change':
+                if ('resume_upload' in request.FILES):
+                    seeker_user.resume.delete()
+                    seeker_user.resume = request.FILES['resume_upload']
+                    seeker_user.save()
+
+            if request.POST['subfield'] == 'resume_delete':
+                seeker_user.resume.delete()
+                seeker_user.save()
+
         elif user.is_recruiter:
             if request.POST['subfield'] == 'link_add':
-                recruiter_user.links += f"{request.POST['link'].strip()},"
+                links = validate_urls(request.POST['link'])
+                recruiter_user.links += ''.join(f"{link}," for link in links)
                 recruiter_user.save()
-                template_data['links'].append(request.POST['link'].strip())
+                template_data['links'].extend(links)
 
             if request.POST['subfield'] == 'link_delete':
-                recruiter_user.links = recruiter_user.links.replace(f"{request.POST['link'].strip()},", '')
+                to_remove = request.POST['link'].strip()
+                recruiter_user.links = recruiter_user.links.replace(f"{to_remove},", '')
                 recruiter_user.save()
-                template_data['links'].remove(request.POST['link'])
-
+                template_data['links'][:] = [item for item in template_data['links'] if item != to_remove]
 
     return render(request, 'accounts/profiles.html', {'template_data': template_data})
 
@@ -270,3 +304,110 @@ def index(request):
     profiles = TTUser.objects.all().order_by('first_name')
     template_data = {'profiles': profiles}
     return render(request, 'accounts/index.html', {'template_data': template_data})
+
+def export_csv(request):
+    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
+    all_users = TTUser.objects.all()
+    for ttuser in all_users:
+        row = []
+        row.append(ttuser.id)
+        row.append(f"{ttuser.first_name} {ttuser.last_name}")
+        row.append(ttuser.email)
+        if ttuser.is_seeker:
+            row.append("Job Seeker")
+            seeker = JobSeeker.objects.get(user_id=ttuser.id)
+            if ttuser.country:
+                row.append(ttuser.country)
+            else:
+                row.append("")
+            if ttuser.region:
+                row.append(ttuser.region)
+            else:
+                row.append("")
+            if ttuser.city:
+                row.append(ttuser.city)
+            else:
+                row.append("")
+            row.append(ttuser.date_joined)
+            row.append(ttuser.last_login)
+            row.append(bool(seeker.links))
+            row.append(bool(ttuser.pfp))
+            row.append(bool(ttuser.headline))
+            row.append(bool(seeker.education))
+            row.append(bool(seeker.experience))
+            row.append(bool(seeker.resume))
+            row.append(bool(seeker.skills))
+            row.append(len(Application.objects.filter(applicant=ttuser)))
+            row.append("") #Recruiter Company
+            row.append(0)
+            
+        elif ttuser.is_recruiter:
+            row.append("Recruiter")
+            recruiter = Recruiter.objects.get(user_id=ttuser.id)
+            if ttuser.country:
+                row.append(ttuser.country)
+            else:
+                row.append("")
+            if ttuser.region:
+                row.append(ttuser.region)
+            else:
+                row.append("")
+            if ttuser.city:
+                row.append(ttuser.city)
+            else:
+                row.append("")
+            row.append(ttuser.date_joined)
+            row.append(ttuser.last_login)
+            row.append(bool(recruiter.links))
+            row.append(bool(ttuser.pfp))
+            row.append(bool(ttuser.headline))
+            row.append(False) # Job Seeker stuff (including next 3)
+            row.append(False)
+            row.append(False)
+            row.append(False)
+            row.append(0)
+            row.append(recruiter.company) 
+            row.append(len(Post.objects.filter(recruiter=recruiter)))
+
+        else:
+            row.append('None')
+            if ttuser.country:
+                row.append(ttuser.country)
+            else:
+                row.append("")
+            if ttuser.region:
+                row.append(ttuser.region)
+            else:
+                row.append("")
+            if ttuser.city:
+                row.append(ttuser.city)
+            else:
+                row.append("")
+            row.append(ttuser.date_joined)
+            row.append(ttuser.last_login)
+            row.append(False) #Links
+            row.append(bool(ttuser.pfp))
+            row.append(bool(ttuser.headline))
+            row.append(False) # Job Seeker stuff (including next 3)
+            row.append(False)
+            row.append(False)
+            row.append(False)
+            row.append(0)
+            row.append("") # Recruiter Company
+            row.append(0) 
+
+        data.append(row)
+        print(row)
+
+    file_path = 'accounts/UserData.csv'
+    with open(file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
+    print(f'CSV file "{file_path}" created')
+    if request.user.is_superuser:
+        response = HttpResponse(open(file_path, 'rb'), content_type='text/csv')
+        response['content-Disposition'] = 'attachment; filename="userdata.csv"'
+        return response
+    return redirect('accounts.index')
+    
+    

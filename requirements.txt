@@ -3,6 +3,7 @@ Django==5.0
 django-autoslug==1.9.9
 django-cities-light==3.10.2
 django-tables2==2.8.0
+mysql-connector-python==9.6.0
 pillow==12.1.0
 progressbar2==4.5.0
 python-dotenv==1.2.2

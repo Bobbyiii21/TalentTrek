@@ -2,6 +2,7 @@ from django.db import models
 from accounts.models import TTUser
 from posting.models import Post
 
+# Need to update HTML text in apply dialogue if this is changed
 MAX_LENGTH = 1000
 
 class Application(models.Model):

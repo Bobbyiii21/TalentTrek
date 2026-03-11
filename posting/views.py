@@ -9,7 +9,9 @@ from accounts.models import Recruiter
 from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
-from home.notifications import update_seeker_notifications
+from home.notifications import update_post_notifications
+import csv
+from django.http import HttpResponse
 
 
 
@@ -232,4 +234,54 @@ def save_post(posting, request):
     skill_ids = request.POST.getlist('skills')
     if skill_ids:
         posting.skills.set(skill_ids)
-    update_seeker_notifications(posting)
+    update_post_notifications(posting)
+
+def export_csv(request):
+    data = [['ID', 'Recruiter Name', 'Company', 'Position Title', 'Country', 'Region', 'City', 'Postal Code', 'Date Posted', 'Salary Range', 'Job Type', 'Location Type', 'Visa Sponsorship', 'Skills Added', 'Applications Made']]
+    all_posts = Post.objects.all()
+    for post in all_posts:
+        row = []
+        row.append(post.id)
+        row.append(f"{post.recruiter.user.first_name} {post.recruiter.user.last_name}")
+        row.append(post.company_name)
+        row.append(post.job_title)
+        if post.country:
+            row.append(post.country)
+        else:
+            row.append("")
+        if post.state:
+            row.append(post.state)
+        else:
+            row.append("")
+        if post.city:
+            row.append(post.city)
+        else:
+            row.append("")
+        if post.postal_code:
+            row.append(post.postal_code)
+        else:
+            row.append("")
+        row.append("TBD")
+        if post.salary_min:
+            row.append(f"${post.salary_min}k - ${post.salary_max}k")
+        else:
+            row.append("")
+        row.append(post.job_type)
+        row.append(post.location_type)
+        row.append(post.visa_sponsorship)
+        row.append(bool(post.skills))
+        row.append(len(Application.objects.filter(posting=post)))
+
+        data.append(row)
+        print(row)
+
+    file_path = 'posting/JobPostingData.csv'
+    with open(file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
+    print(f'CSV file "{file_path}" created')
+    if request.user.is_superuser:
+        response = HttpResponse(open(file_path, 'rb'), content_type='text/csv')
+        response['content-Disposition'] = 'attachment; filename="jobpostingdata.csv"'
+        return response
+    return redirect('accounts.index')

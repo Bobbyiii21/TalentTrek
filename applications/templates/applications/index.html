@@ -1,41 +1,208 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load django_tables2 %}
 {% load static %}
-<div class="p-3">
-  <div class="container">
-    <div class="row mt-3">
-      <div class="col-md-6 mx-auto">
-        <h2>Applications</h2>
-        <hr />
-        {% if template_data.is_recruiter %}
-          <p>Coming soon!</p>
-        {% elif template_data.applications %}
-          {% for application in template_data.applications %}
-            <div style="padding: 0.5rem 0rem">
-              <div class="card">
-                <h5 class="card-header">
-                  <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-dark text-decoration-none">
-                    {{ application.posting.company_name }} - {{ application.posting.job_title }}
-                  </a>
-                </h5>
-                <div class="card-body">
-                  <p><em>Application to {{ application.posting.job_title }} at {{ application.posting.company_name }}</em></p>
-                  <p><strong>Status:</strong> {{ application.status }}</p>
-                  {% if application.message != '' %}
-                    <p><strong>Message:</strong> {{ application.message }}</p>
-                  {% endif %}
-                </div>
-                <div class="card-footer text-body-secondary">
-                  Applied {{ application.date }}
+
+{% if template_data.is_recruiter %} <!-- Recruiter --->
+  <div class="p-3">
+    <div class="container">
+      <div class="row mt-3">
+        <div class="col mx-auto" style="color: var(--secondary);">
+          <h2>Applications</h2>
+          <hr/>
+        </div>
+      </div>
+      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link {% if template_data.view_mode == 'board' %} active {% endif %}" id="pills-board-tab" data-bs-toggle="pill" data-bs-target="#pills-board" type="button" role="tab" aria-controls="pills-board" aria-selected="{% if template_data.view_mode == 'board' %} true {% else %} false {% endif %}">Board View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link {% if template_data.view_mode != 'board' %} active {% endif %}" id="pills-table-tab" data-bs-toggle="pill" data-bs-target="#pills-table" type="button" role="tab" aria-controls="pills-table" aria-selected="{% if template_data.view_mode != 'board' %} true {% else %} false {% endif %}">Table View</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade {% if template_data.view_mode == 'board' %} show active {% endif %}" id="pills-board" role="tabpanel" aria-labelledby="pills-board-tab" tabindex="0">
+          <div class="row mt-3">
+        <div class="col mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h5>Applied</h5>
+            </div>
+            <div class="card-body">
+              {% for application in template_data.applications_applied %}
+                {% include "applications/recruiter_application_list.html" %}
+              {% empty %}
+                <p class="small" style="margin-bottom: 0;"><em>No applications.</em></p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h5>Reviewed</h5>
+            </div>
+            <div class="card-body">
+              {% for application in template_data.applications_reviewed %}
+                {% include "applications/recruiter_application_list.html" %}
+              {% empty %}
+                <p class="small" style="margin-bottom: 0;"><em>No applications.</em></p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h5>Interview</h5>
+            </div>
+            <div class="card-body">
+              {% for application in template_data.applications_interview %}
+                {% include "applications/recruiter_application_list.html" %}
+              {% empty %}
+                <p class="small" style="margin-bottom: 0;"><em>No applications.</em></p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h5>Offer</h5>
+            </div>
+            <div class="card-body">
+              {% for application in template_data.applications_offer %}
+                {% include "applications/recruiter_application_list.html" %}
+              {% empty %}
+                <p class="small" style="margin-bottom: 0;"><em>No applications.</em></p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h5>Closed</h5>
+            </div>
+            <div class="card-body">
+              {% for application in template_data.applications_closed %}
+                {% include "applications/recruiter_application_list.html" %}
+              {% empty %}
+                <p class="small" style="margin-bottom: 0;"><em>No applications.</em></p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="tab-pane fade {% if template_data.view_mode != 'board' %} show active {% endif %}" id="pills-table" role="tabpanel" aria-labelledby="pills-table-tab" tabindex="0">
+          {% if template_data.table_access %}
+          <div class="m-3 col-12">
+            <form method="GET" action="{% url 'applications.index' view_mode='table' %}" class="row g-2 mb-3 align-items-end">
+              <div class="col-auto">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Name</span>
+                  <input type="text" class="form-control" name="search" value="{{ request.GET.search }}" placeholder="Search candidates">
                 </div>
               </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <p>You do not currently have any applications.</p>
-        {% endif %}
+              <div class="col-auto">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Job Title</span>
+                  <select name="job_title" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    {% for job_title in template_data.job_titles %}
+                      <option value="{{ job_title }}" {% if request.GET.job_title == job_title %} selected {% endif %}>{{ job_title }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Status</span>
+                  <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    <option value="Applied" {% if request.GET.status == "Applied" %}selected{% endif %}>Applied</option>
+                    <option value="Reviewed" {% if request.GET.status == "Reviewed" %}selected{% endif %}>Reviewed</option>
+                    <option value="Interview" {% if request.GET.status == "Interview" %}selected{% endif %}>Interview</option>
+                    <option value="Offer" {% if request.GET.status == "Offer" %}selected{% endif %}>Offer</option>
+                    <option value="Closed" {% if request.GET.status == "Closed" %}selected{% endif %}>Closed</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Skills</span>
+                  <select name="skills" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">All Skills</option>
+                    {% for skill in template_data.skills %}
+                      <option value="{{ skill.name }}" {% if request.GET.skills == skill.name %}selected{% endif %}>{{ skill.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Sort by</span>
+                  <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="posting__job_title" {% if request.GET.sort == "posting__job_title" or not request.GET.sort %}selected{% endif %}>Job Title (A-Z)</option>
+                    <option value="-posting__job_title" {% if request.GET.sort == "-posting__job_title" %}selected{% endif %}>Job Title (Z-A)</option>
+                    <option value="applicant__first_name" {% if request.GET.sort == "applicant__first_name" %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="-applicant__first_name" {% if request.GET.sort == "-applicant__first_name" %}selected{% endif %}>Name (Z-A)</option>
+                    <option value="status" {% if request.GET.sort == "status" %}selected{% endif %}>Status (A-Z)</option>
+                    <option value="-status" {% if request.GET.sort == "-status" %}selected{% endif %}>Status (Z-A)</option>
+                    <option value="message" {% if request.GET.sort == "message" %}selected{% endif %}>Message (A-Z)</option>
+                    <option value="-message" {% if request.GET.sort == "-message" %}selected{% endif %}>Message (Z-A)</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+            <hr />
+            {% if template_data.applications %}
+              {% render_table template_data.applications %}
+            {% else %}
+              <p><em>No applications.</em></p>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>
-</div>
+{% else %} <!-- Job Seeker --->
+  <div class="p-3">
+    <div class="container">
+      <div class="row mt-3">
+        <div class="col-md-6 mx-auto">
+          <h2>Applications</h2>
+          <hr />
+          {% if template_data.applications %}
+            {% for application in template_data.applications %}
+              <div style="padding: 0.5rem 0rem">
+                <div class="card">
+                  <h5 class="card-header">
+                    <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-dark text-decoration-none">
+                      {{ application.posting.company_name }} - {{ application.posting.job_title }}
+                    </a>
+                  </h5>
+                  <div class="card-body">
+                    <p><em>Application to {{ application.posting.job_title }} at {{ application.posting.company_name }}</em></p>
+                    <p><strong>Status:</strong> {{ application.status }}</p>
+                    {% if application.message != '' %}
+                      <p><strong>Message:</strong> {{ application.message }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="card-footer text-body-secondary">
+                    Applied {{ application.date }}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>You do not currently have any applications.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
 {% endblock content %}

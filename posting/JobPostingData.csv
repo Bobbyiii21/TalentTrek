@@ -1,0 +1,5 @@
+ID,Recruiter Name,Company,Position Title,Country,Region,City,Postal Code,Date Posted,Salary Range,Job Type,Location Type,Visa Sponsorship,Skills Added,Applications Made
+2,Mark Zuckerberg,Meta,Software Engineer,United States,CA,,,TBD,$110k - $250k,FT,HY,True,True,0
+3,Jeff Bezos,Amazon,Database Specialist,United States,GA,Atlanta,,TBD,$40k - $120k,FT,ON,False,True,0
+4,Clay Magouyrk,Oracle,Cloud Engineer,United States,IL,Chicago,,TBD,$89k - $171k,IN,RE,True,True,1
+5,Lebron James,Los Angeles Lakers,Mascot,,,,,TBD,$249k - $300k,FT,ON,True,True,0
