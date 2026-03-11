@@ -1,7 +1,7 @@
 from django.urls import reverse
 from accounts.models import TTUser, JobSeeker, Recruiter
 from applications.models import Application
-from posting.models import Post
+from posting.models import Post, Query
 from .models import Notification
 
 #Note when making HTML message, pass formatted VIEW_URL into href of the <a>
@@ -38,17 +38,22 @@ def update_recruiter_notifications(user: TTUser):
     if not user.is_recruiter: return
     recruiter = Recruiter.objects.get(user=user)
     posts = Post.objects.filter(recruiter=recruiter)
+    queries = Query.objects.filter(recruiter=recruiter)
     seekerPool = JobSeeker.objects.all()
     for seeker in seekerPool:
-        if len(seeker.skills.all()) == 0: continue
-        for post in posts:
-            if Application.objects.filter(applicant=seeker.user, posting=post): continue
-            if not post.skills: continue
-            link = reverse('accounts.profiles', kwargs={'user_link': str(seeker)})
-            try:
-                Notification.objects.get(recipient=user, viewslink=link)
-                continue
-            except:
+        link = reverse('accounts.profiles', kwargs={'user_link': str(seeker)})
+        try:
+            Notification.objects.get(recipient=user, viewslink=link)
+            continue
+        except:
+            for query in queries:
+                QUERY_STUFF
+                notify(user, f'''Based on a search query you saved, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a good fit for the {query.posting.job_title} position.''', link, seeker.user.pfp)
+            #Make sure somehow that you don't send a notification from the same user multiple times
+            if len(seeker.skills.all()) == 0: continue
+            for post in posts:
+                if Application.objects.filter(applicant=seeker.user, posting=post): continue
+                if not post.skills: continue
                 postingSkills = post.skills.all()
                 if not calculate_fit(seeker.skills.all(), postingSkills, 0.1): continue
                 notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.user.pfp)

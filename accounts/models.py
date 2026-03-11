@@ -1,6 +1,5 @@
 from django.db import models
 from cities_light.models import City, Country, Region #look up cities_light documentation if this isn't working, it hasn't been tested yet
-from datetime import date
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django.utils.text import slugify

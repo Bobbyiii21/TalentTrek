@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('state', models.CharField(blank=True, max_length=255)),
                 ('postal_code', models.CharField(blank=True, max_length=20)),
                 ('country', models.CharField(blank=True, max_length=255)),
-                ('date_posted', models.DateTimeField(auto_now_add=True, blank=True)),
+                ('date_posted', models.DateTimeField(auto_now_add=True, blank=True, null=True)),
                 ('location', models.CharField(blank=True, max_length=255)),
                 ('salary_min', models.IntegerField(blank=True, null=True)),
                 ('salary_max', models.IntegerField(blank=True, null=True)),
@@ -38,4 +38,15 @@ class Migration(migrations.Migration):
                 ('skills', models.ManyToManyField(blank=True, related_name='posts', to='skills.skill')),
             ],
         ),
+        migrations.CreateModel(
+            name='Query',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('education_level', models.CharField(choices=[('HIGHSCHOOL', 'High School'), ('CERTIFICATE', 'Certificate'), ('ASSOCIATES', "Associate's"), ('BACHELORS', "Bachelor's"), ('MASTERS', "Master's"), ('DOCTORATE', 'Doctorate')], max_length=15, blank=True)),
+                ('recruiter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounts.recruiter')),
+                ('posting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='posting.post')),
+                ('skills', models.ManyToManyField(blank=True, to='skills.skill')),
+                ('distance', models.IntegerField(blank=True)),
+            ]
+        )
     ]
