@@ -8,6 +8,7 @@ from accounts.models import Recruiter
 from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
+from home.notifications import update_post_notifications
 import csv
 from django.http import HttpResponse
 
@@ -224,6 +225,7 @@ def save_post(posting, request):
     skill_ids = request.POST.getlist('skills')
     if skill_ids:
         posting.skills.set(skill_ids)
+    update_post_notifications(posting)
 
 def export_csv(request):
     data = [['ID', 'Recruiter Name', 'Company', 'Position Title', 'Country', 'Region', 'City', 'Postal Code', 'Date Posted', 'Salary Range', 'Job Type', 'Location Type', 'Visa Sponsorship', 'Skills Added', 'Applications Made']]

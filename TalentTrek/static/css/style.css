@@ -38,6 +38,13 @@ html, body {
   color: var(--accent) !important;
 }
 
+.navbar a.navbar-brand {
+  height: 45px;
+  width: 45px;
+  margin-right: 5px;
+  padding: 0;
+}
+
 .bg-dark {
   background-color: #2E2E2E !important;
 }
@@ -113,6 +120,10 @@ html, body {
   box-shadow:0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
+#account-options:hover {
+  color: var(--accent);
+}
+
 .secondary-hover-btn {
   background-color: var(--secondary);
   border: none;
@@ -149,8 +160,8 @@ html, body {
     margin-bottom: 4px;
     margin-left: 8px;
     vertical-align: middle;
-    width: 30px;
-    height: 30px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -176,3 +187,42 @@ html, body {
 .select2-container {
     width: 100% !important;
 }
+
+.notification-button {
+  anchor-name: --notif-anchor;
+  margin-right: 5px;
+}
+
+.notification-popup {
+  border: var(--secondary-light) 1px solid;
+  border-radius: 0.375rem;
+  background-color: white;
+  position:absolute;
+  position-anchor: --notif-anchor;
+  top: anchor(--notif-anchor bottom);
+  left: anchor(--notif-anchor center);
+  transform: translateX(-50%);
+  width: 320px;
+  padding: 10px;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.notification-amount {
+  position: absolute;
+  border: 1px white solid;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+  width: 20px;
+  height: 20px;
+  top: anchor(--notif-anchor bottom);
+  left: anchor(--notif-anchor right);
+  transform: translate(-20px, -20px);
+  text-align: center;
+}
+
+.notification-popup.hidden {
+  display: none;
+}
+

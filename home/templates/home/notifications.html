@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load humanize %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3" style="color: var(--secondary);">
+        <h2>Notifications</h2>
+        <!--Testing button
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Generate Job Posting Notification</button>
+        </form>-->
+        <hr />
+      </div>
+    </div>
+    <h5>Unread Notifications</h5>
+    <div style="display:flex;flex-wrap:wrap;">
+        {% for notification in template_data.unread_notifications %}
+        <div class="col-12 mb-3" style="flex:1;margin:10px;">
+            <div class="card p-3" style="height:100%">
+                <div style="display: flex; align-items: center;">
+                    {% if notification.image %}
+                        <img src="{{ notification.image.url }}" class="profile-picture" style="width:100px;height:100px;" alt="Notification Image">
+                    {% else %}
+                        <img src="{% static 'img/job_seeker.png' %}" class="profile-picture"  style="width:100px;height:100px;" alt="Notification Image"/>
+                    {% endif %}
+                    <div style="margin-left:5px; display:flex; flex-direction:column;">
+                        <div style="display:flex;">
+                            <p style="margin-left:auto;text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
+                            <form method="POST" style="margin-left:5px;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">notification_delete</textarea>
+                                <textarea name="notification-id" style="display:none;">{{ notification.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                        </div>
+                        <p>{{ notification.message|safe }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>Read Notifications</h5>
+    <div style="display:flex;flex-wrap:wrap">
+        {% for notification in template_data.read_notifications %}
+        <div class="col-12 mb-3" style="flex:1;margin:10px;">
+            <div class="card p-3">
+                <div style="display: flex; align-items: center;">
+                    {% if notification.image %}
+                        <img src="{{ notification.image.url }}" class="profile-picture" style="width:100px;height:100px;" alt="Notification Image">
+                    {% else %}
+                        <img src="{% static 'img/job_seeker.png' %}" class="profile-picture"  style="width:100px;height:100px;" alt="Notification Image"/>
+                    {% endif %}
+                    <div style="margin-left:5px; display:flex; flex-direction:column;">
+                        <div style="display:flex;">
+                            <p style="margin-left:auto;text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
+                            <form method="POST" style="margin-left:5px;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">notification_delete</textarea>
+                                <textarea name="notification-id" style="display:none;">{{ notification.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                        </div>
+                        <p>{{ notification.message|safe }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock content %}

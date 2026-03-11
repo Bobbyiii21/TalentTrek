@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import CustomUserCreationForm, CustomErrorList
 from .models import JobSeeker, Recruiter, Education, Experience, TTUser
 from skills.models import Skill
+import home.notifications as home_notif
 from posting.models import Post
 from applications.models import Application
 
@@ -54,6 +55,8 @@ def login(request, just_registered=False):
             return render(request, 'accounts/login.html', {'template_data': template_data})
         else:
             auth_login(request, user)
+            home_notif.update_seeker_notifications(user)
+            home_notif.update_recruiter_notifications(user)
             return redirect('home.index')
 
 def register(request):
@@ -67,6 +70,7 @@ def register(request):
         if form.is_valid():
             form.save()
             login(request, just_registered=True)
+            home_notif.update_unsupported_user_notifications(request.user)
             return redirect('accounts.onboard')
         else:
             template_data['form'] = form
@@ -89,7 +93,8 @@ def onboard(request):
                 job_seeker.links = ''.join(f"{link}," for link in validate_urls(request.POST['links'].strip()))
             request.user.save()
             job_seeker.save()
-        else:
+            home_notif.update_onboarded_user_notifications
+        elif (request.POST['user_type'] == 'recruiter'):
             recruiter = Recruiter()
             recruiter.user = request.user
             request.user.is_recruiter = True 
@@ -103,6 +108,7 @@ def onboard(request):
                 recruiter.links = ''.join(f"{link}," for link in validate_urls(request.POST['links'].strip()))
             request.user.save()
             recruiter.save()
+            home_notif.update_onboarded_user_notifications
         return redirect('accounts.profiles', user_link=str(request.user))
     else:
         template_data = {}
@@ -262,6 +268,7 @@ def profiles(request, user_link):
                 for skill in request.POST.getlist('skills'):
                     seeker_user.skills.add(get_object_or_404(Skill, id=skill))
                 seeker_user.save()
+                home_notif.update_seeker_notifications(user)
                 
             if request.POST['subfield'] == 'skill_delete':
                 skill = Skill.objects.get(id=request.POST['id'])
