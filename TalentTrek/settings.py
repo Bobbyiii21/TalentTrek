@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'skills',
     'home',
     'posting',
-    'profiles',
     'cities_light',
     'applications',
 ]

@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<!--this should really be cleaned up and formatted lol-->
 <div class="p-3 mt-4">
   <div class="container">
     <div class="row justify-content-center">
@@ -9,18 +8,18 @@
         <div>
             <div class="container" style="display: flex; align-items: center;">
                 {% if template_data.profile_user.pfp %}
-                    <img src="{{ template_data.profile_user.pfp.url }}" class="img-fluid rounded" style="width: 100px; height: auto; clip-path: circle();">
+                    <img src="{{ template_data.profile_user.pfp.url }}" class="profile-picture" style="width: 100px; height: 100px; clip-path: circle();">
                 {% else %}
-                    <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
+                    <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture" style="width: 100px; height: 100px; clip-path: circle();"/>
                 {% endif %}
-                <!--{% if user.is_authenticated and user == template_data.profile_user %}
-                <form method="POST">
+                {% if user.is_authenticated and user == template_data.profile_user %}
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <textarea name="subfield" style="display:none;">pfp</textarea>
-                    <label for="pfp_upload">&#9998</label>
-                    <input type="file" name="pfp_upload" accept=".jpg, .jpeg, .png" required style="display:none;" />
+                    <input type="file" name="pfp_upload" id="pfp_upload" accept="image/*" required style="display:none;" onchange="this.form.submit()" />
+                    <label for="pfp_upload" class="profile-edit-btn" style="margin-right:25px;">&#9998</label>
                 </form>
-                {% endif %}-->
+                {% endif %}
                 <h4 style="text-align: center;">{{ template_data.profile_user.first_name }} {{ template_data.profile_user.last_name }}</h4>
                 {% if user.is_authenticated and user == template_data.profile_user %}
                     {% if user.is_seeker %}
@@ -34,7 +33,6 @@
                 {% endif %}
             </div>
 
-            <hr>
             <!--
             {% if template_data.is_seeker %}
                 <h5>Job Seeker</h5>
@@ -47,34 +45,47 @@
             <p>{{ template_data.profile_user.email }}</p>-->
 
         </div>
+            <hr>
         <div id="profile-info">
         {% if template_data.is_seeker %}
+            {% if template_data.seeker_user.account_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user %}
+                <p><i>*Only your name and email is visible.</i></p><hr>
+                {% else %}
+                <p>This account's details are hidden.</p>
+                {% endif %}
+            {% endif %}
             {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.account_is_hidden %}
                 {% if template_data.profile_user.headline %}
                     <div style="display:flex;">
                         <h2 class="profile-section-header">Headline</h2>
+                    {% if user.is_authenticated and user == template_data.profile_user %}
                         <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                    {% endif %}
                     </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
                     </div>
-                    <hr>
                 {% elif user.is_authenticated and user == template_data.profile_user %}
                     <div style="display:flex;">
                         <h2 class="profile-section-header">Headline</h2>
                         <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:auto;">Edit Headline</button>
                     </div>
-                    <hr>
                 {% endif %}
 
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.experience_is_hidden and template_data.seeker_user.experience.all.count > 0 %}
+                    <hr>
+
                 <h2 class="profile-section-header">Experience</h2>
+                {% if template_data.seeker_user.experience_is_hidden %}
+                <p><i>*Your experience is hidden to others.</i></p>
+                {% endif %}
                 <div class="profile-info-box">
                     {% for exp in template_data.experience %}
                         <div style="display: flex;">
                             <p><b>{{ exp.company_name }}</b>
                             {% if user.is_authenticated and user == template_data.profile_user %}
-                            <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#editExperienceModal">&#9998</button>
+                            <button type="button" class="profile-edit-btn edit-experience-btn" data-bs-toggle="modal" data-bs-target="#editExperienceModal" data-exp-id="{{ exp.id }}" data-company-name="{{ exp.company_name }}" data-position-title="{{ exp.position_title }}" data-job-description="{{ exp.job_description }}" data-current-employee="{% if exp.current_employee %}true{% else %}false{% endif %}" data-start-date="{% if exp.start_date %}{{ exp.start_date|date:'Y-m-d' }}{% endif %}" data-end-date="{% if exp.end_date %}{{ exp.end_date|date:'Y-m-d' }}{% endif %}">&#9998</button>
                             {% endif %}</p>
                             {% if not exp.current_employee %}
                                 <p style="margin-left: auto;">{{ exp.start_date }} - {{ exp.end_date }}</p>
@@ -82,132 +93,63 @@
                                 <p style="margin-left: auto;">{{ exp.start_date }} - Present</p>
                             {% endif %}
                         </div>
+                        <div style="display:flex;">
                             <p><i>{{ exp.position_title }}</i></p>
-                        
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <form method="POST" style="margin-left:auto;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">experience_remove</textarea>
+                                <textarea name="experience_id" style="display:none;">{{ exp.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                            {% endif %}
+                        </div>
                             <p>Description: {{ exp.job_description }}</p>
                         {% if not forloop.last %}    
                         <hr>
                         {% elif user.is_authenticated and user == template_data.profile_user %}
                         <hr><button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addExperienceModal" style="margin-left:auto; width:100%;margin-top:0px;margin-bottom:10px;">Add Experience</button>
                         {% endif %}
-<div class="modal fade" id="editExperienceModal" data-bs-backdrop="static" data-bs-keyboard="false"
-    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3" style="display:none;">
-            <label for="subfield" class="form-label"></label>
-            <textarea class="form-control" name="subfield">experience_edit</textarea>
-            <textarea class="form-control" name="id">{{ exp.id }}</textarea>
-        </div>
-        <div class="modal-header">
-        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Editing Experience</strong></h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-        <div class="mb-3">
-            <label for="company_name" class="form-label">Company Name*</label>
-            <textarea class="form-control" id="company-name-input" name="company_name" rows="2" maxlength="63" required>{{ exp.company_name }}</textarea>
-            <span style="color:crimson;" id="company-name-errmsg"></span>
-        </div>
-        <div class="mb-3">
-            <label for="position_title" class="form-label">Position Title*</label>
-            <textarea class="form-control" id="position-title-input" name="position_title" rows="2" maxlength="63" required>{{ exp.position_title }}</textarea>
-            <span style="color:crimson;" id="position-title-errmsg"></span>
-        </div>
-        <div class="mb-3">
-            <label for="job_description" class="form-label">Job Description</label>
-            <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511">{{ exp.job_description }}</textarea>
-            <span style="color:crimson;" id="job-description-errmsg"></span>
-        </div>
-            <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()"> Current Employee*<br /><br />
-        <div class="mb-3">
-            <label for="start_date" class="form-label">Start Date*</label>
-            <input type="date" id="start-date-input" name="start_date" value="{{ exp.start_date }}" required>
-        </div>
-        <div class="mb-3" id="experience-end-date-container" style="display:block;">
-            <label for="end_date" class="form-label">End Date*</label>
-            <input type="date" id="end-date-input" name="end_date" value="{{ exp.end_date }}">
-        </div> 
-    </div>
-        <div class="modal-footer">
-        <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="primary-hover-btn">Save</button>
-        </div>
-    </form>
-    </div>
-</div>
-</div>
                     {% endfor %}
                     {% if user.is_authenticated and user == template_data.profile_user and not template_data.experience %}
                         <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addExperienceModal" style="margin-left:auto; width:100%;">Add Experience</button>
                     {% endif %}
                 </div>
-                <hr>
-                {% endif %}
 
-
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden %}
-                <h2 class="profile-section-header">Education</h2>
-                <div class="profile-info-box">
-                    {% for edu in template_data.education %}
-                        <div style="display: flex;">
-                            <p><b>{{ edu.school_name }}</b>
-                            {% if user.is_authenticated and user == template_data.profile_user %}
-                            <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#editEducationModal">&#9998</button>
-                            {% endif %}
-                            </p>
-                            <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
-                        </div>
-                            <p>Degree: {{ edu.get_degree_display }}</p>
-                            {% if edu.degree_name %}
-                            <p>Name: {{ edu.degree_name }}</p>
-                            {% endif %}
-                        {% if not forloop.last %}    
-                        <hr>
-                        {% elif user.is_authenticated and user == template_data.profile_user %}
-                        <hr><button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addEducationModal" style="margin-left:auto; width:100%;margin-top:0px;margin-bottom:10px;">Add Education</button>
-                        {% endif %}
-<div class="modal fade" id="editEducationModal" data-bs-backdrop="static" data-bs-keyboard="false"
-      tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+<div class="modal fade" id="editExperienceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editExperienceModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="POST">
         {% csrf_token %}
-          <div class="mb-3" style="display:none;">
-              <label for="subfield" class="form-label"></label>
-              <textarea class="form-control" name="subfield">education_edit</textarea>
-              <textarea class="form-control" name="id">{{ edu.id }}</textarea>
-          </div>
+        <div class="mb-3" style="display:none;">
+          <textarea class="form-control" name="subfield">experience_edit</textarea>
+          <input type="hidden" name="id" id="edit-experience-id" value="">
+        </div>
         <div class="modal-header">
-        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Adding Education to profile</strong></h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h1 class="modal-title fs-5" id="editExperienceModalLabel"><strong>Editing Experience</strong></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="grad_year" class="form-label">Graduation Year*</label>
-            <textarea class="form-control" id="grad-year-input" name="grad_year" rows="1" maxlength="4" required>{{ edu.grad_year }}</textarea>
-            <span style="color:crimson;" id="grad-year-errmsg"></span>
+            <label for="edit-company-name" class="form-label">Company Name*</label>
+            <textarea class="form-control" id="edit-company-name" name="company_name" rows="2" maxlength="63" required></textarea>
           </div>
           <div class="mb-3">
-            <label for="school_name" class="form-label">School Name*</label>
-            <textarea class="form-control" id="school-name-input" name="school_name" rows="2" maxlength="63" required>{{ edu.school_name }}</textarea>
-            <span style="color:crimson;" id="school-name-errmsg"></span>
+            <label for="edit-position-title" class="form-label">Position Title*</label>
+            <textarea class="form-control" id="edit-position-title" name="position_title" rows="2" maxlength="63" required></textarea>
           </div>
           <div class="mb-3">
-            <label for="degree" class="form-label">Degree Level*</label>
-            <select name="degree" class="filter-selectbox" required>
-            {% for value, label in template_data.degree_choices %}
-            <option value="{{ value }}">{{ label }}</option>
-            {% endfor %}
-            </select>
+            <label for="edit-job-description" class="form-label">Job Description</label>
+            <textarea class="form-control" id="edit-job-description" name="job_description" rows="4" maxlength="511"></textarea>
           </div>
+          <input type="checkbox" id="edit-current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDateEdit()"> Current Employee*<br /><br />
           <div class="mb-3">
-            <label for="degree_name" class="form-label">Degree Name</label>
-            <textarea class="form-control" id="degree_name-input" name="degree_name" rows="2" maxlength="63">{{ edu.degree_name }}</textarea>
-            <span style="color:crimson;" id="degree-name-errmsg"></span>
-            </select>
+            <label for="edit-start-date" class="form-label">Start Date*</label>
+            <input type="date" id="edit-start-date" name="start_date" required>
+          </div>
+          <div class="mb-3" id="edit-experience-end-date-container" style="display:block;">
+            <label for="edit-end-date" class="form-label">End Date*</label>
+            <input type="date" id="edit-end-date" name="end_date">
           </div>
         </div>
         <div class="modal-footer">
@@ -218,22 +160,106 @@
     </div>
   </div>
 </div>
+
+                {% endif %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.education_is_hidden or not template_data.seeker_user.education.all.count > 0 %}
+                <hr>
+                <h2 class="profile-section-header">Education</h2>
+                {% if template_data.seeker_user.education_is_hidden %}
+                <p><i>*Your education is hidden to others.</i></p>
+                {% endif %}
+                <div class="profile-info-box">
+                    {% for edu in template_data.education %}
+                        <div style="display: flex;">
+                            <p><b>{{ edu.school_name }}</b>
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <button type="button" class="profile-edit-btn edit-education-btn" data-bs-toggle="modal" data-bs-target="#editEducationModal" data-edu-id="{{ edu.id }}" data-grad-year="{{ edu.grad_year }}" data-school-name="{{ edu.school_name }}" data-degree="{{ edu.degree }}" data-degree-name="{{ edu.degree_name }}">&#9998</button>
+                            {% endif %}
+                            </p>
+                            <p style="margin-left: auto;">Graduation Year: {{ edu.grad_year }}</p>
+                        </div>
+                        <div style="display:flex;">
+                            <p>Degree: {{ edu.get_degree_display }}</p>
+                            {% if user.is_authenticated and user == template_data.profile_user %}
+                            <form method="POST" style="margin-left:auto;">
+                                {% csrf_token %}
+                                <textarea name="subfield" style="display:none;">education_remove</textarea>
+                                <textarea name="education_id" style="display:none;">{{ edu.id }}</textarea>
+                                <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                            {% if edu.degree_name %}
+                            <p>Name: {{ edu.degree_name }}</p>
+                            {% endif %}
+                        {% if not forloop.last %}    
+                        <hr>
+                        {% elif user.is_authenticated and user == template_data.profile_user %}
+                        <hr><button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addEducationModal" style="margin-left:auto; width:100%;margin-top:0px;margin-bottom:10px;">Add Education</button>
+                        {% endif %}
                     {% endfor %}
                     {% if user.is_authenticated and user == template_data.profile_user and not template_data.education %}
                         <button type="button" class="profile-hollow-btn" data-bs-toggle="modal" data-bs-target="#addEducationModal" style="margin-left:auto; width:100%;">Add Education</button>
                     {% endif %}
                 </div>
-                <hr>
+
+<div class="modal fade" id="editEducationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editEducationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3" style="display:none;">
+          <textarea class="form-control" name="subfield">education_edit</textarea>
+          <input type="hidden" name="id" id="edit-education-id" value="">
+        </div>
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="editEducationModalLabel"><strong>Editing Education</strong></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="edit-grad-year" class="form-label">Graduation Year*</label>
+            <input type="number" class="form-control" id="edit-grad-year" name="grad_year" max="3000" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-school-name" class="form-label">School Name*</label>
+            <textarea class="form-control" id="edit-school-name" name="school_name" rows="2" maxlength="63" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="edit-degree" class="form-label">Degree Level*</label>
+            <select name="degree" id="edit-degree" class="filter-selectbox" required>
+              {% for value, label in template_data.degree_choices %}
+              <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="edit-degree-name" class="form-label">Degree Name</label>
+            <textarea class="form-control" id="edit-degree-name" name="degree_name" rows="2" maxlength="63"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="primary-hover-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
                 {% endif %}
 
 
-                <!--resume here-->
-                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden %}
+                {% if user.is_authenticated and user == template_data.profile_user or not template_data.seeker_user.links_is_hidden and template_data.seeker_user.links %}
+                <hr>
                 <h2 class="profile-section-header">Links</h2>
+                {% if template_data.seeker_user.links_is_hidden and user.is_authenticated and user == template_data.profile_user %}
+                <p><i>*Your links are hidden to others.</i></p>
+                {% endif %}
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
                         <div style="display:flex;">
-                        <a href="https://{{ link }}">{{ link }}</a>
+                        <a href="{{ link }}" target="_blank">{{ link }}</a>
                         {% if user.is_authenticated and user == template_data.profile_user %}
                         <form method="POST" style="margin-left:auto;">
                             {% csrf_token %}
@@ -253,16 +279,16 @@
                 <form method="POST"><div style="display:flex;">
                     {% csrf_token %}
                     <textarea name="subfield" style="display:none;">link_add</textarea>
-                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;"required>
+                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;width:100%;"required>
                     <button type="submit" class="profile-check-btn" style="color:green;margin-left:0">&#10010</button>
-                </div></form>      
+                </div></form>
                 {% endif %}
                 </div>
                 {% endif %}
+
+                {% if user.is_authenticated and user == template_data.profile_user or template_data.seeker_user.skills.all.count > 0 %}
                 <hr>
-                
                 <!--Eventually replace this with skills_is_hidden-->
-                {% if True %}
                 <h2 class="profile-section-header">Skills</h2>
                 <div class="profile-info-box">
                     {% for skill in template_data.skills %}
@@ -278,6 +304,7 @@
                         {% endif %}
                         </div>
                     {% endfor %}
+                    {% if user.is_authenticated and user == template_data.profile_user %}
                     <form method="POST">
                         <div style="display:flex;margin-bottom:5px;">
                         {% csrf_token %}
@@ -289,22 +316,41 @@
                           </select>
                           </div>
                           <button type="submit" class="profile-hollow-btn" style="width:100%;">Add Skills</button>
-                    </form> 
+                    </form>
+                    {% endif %} 
                 </div>
                 {% endif %}
 
                 {% if template_data.seeker_user.resume %}
-                <hr>
-                <a href="{{ template_data.seeker_user.resume.url }}" download><h4 class="profile-section-header">Resume</h4></a>
+                    <hr>
+                    <div style="align-items:center;display:flex;">
+                    <a href="{{ template_data.seeker_user.resume.url }}" download><h4 class="profile-section-header">Resume</h4></a>
+                    {% if user.is_authenticated and user == template_data.profile_user %}
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <textarea name="subfield" style="display:none;">resume_change</textarea>
+                        <input type="file" name="resume_upload" id="resume_upload" accept=".doc,.docx,.pdf" required style="display:none;" onchange="this.form.submit()"/>
+                        <label for="resume_upload" class="profile-edit-btn" style="margin-right:25px;">&#9998</label>
+                    </form>
+                    <form method="POST" style="margin-left:auto;">
+                        {% csrf_token %}
+                        <textarea name="subfield" style="display:none;">resume_delete</textarea>
+                        <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+                    </form>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    {% if user.is_authenticated and user == template_data.profile_user %}
+                        <hr>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <textarea name="subfield" style="display:none;">resume_change</textarea>
+                            <input type="file" name="resume_upload" id="resume_upload" accept=".doc,.docx,.pdf" required style="display:none;" onchange="this.form.submit()" />
+                            <label for="resume_upload" class="profile-hollow-btn" style="width:100%;">Add Resume</label>
+                        </form>
+                    {% endif %}
                 {% endif %}
             {% endif %}
-            {% if template_data.seeker_user.account_is_hidden %}
-                <p>This account's details are hidden.</p>
-            {% endif %}
-
-
-
-
 
 
         {% elif template_data.is_recruiter %}
@@ -312,7 +358,9 @@
                 {% if template_data.profile_user.headline %}
                     <div style="display:flex;">
                         <h2 class="profile-section-header">Headline</h2>
-                        <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                        {% if user.is_authenticated and user == template_data.profile_user %}
+                            <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#headlineModal" style="margin-left:-5px;">&#9998</button>
+                        {% endif %}                    
                     </div>
                     <div class="profile-info-box">
                         <p>{{ template_data.profile_user.headline }}</p>
@@ -325,12 +373,12 @@
                     </div>
                     <hr>
                 {% endif %}
-            {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden %}
+            {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden and template_data.recruiter_user.links %}
                 <h2 class="profile-section-header">Links</h2>
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
                         <div style="display:flex;">
-                        <a href="https://{{ link }}">{{ link }}</a>
+                        <a href="{{ link }}">{{ link }}</a>
                         {% if user.is_authenticated and user == template_data.profile_user %}
                         <form method="POST" style="margin-left:auto;">
                             {% csrf_token %}
@@ -388,10 +436,10 @@
             <form method="POST">
                 {% csrf_token %}
                 <textarea class="form-control" name="subfield" style="display:none;">hidden</textarea>
-                <input type="checkbox" id="profile" value="profile" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Only show my name and email to employers.<br /><br />
-                <input type="checkbox" id="profile" value="education" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Hide my education.<br /><br />
-                <input type="checkbox" id="profile" value="experience" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Hide my experience.<br /><br />
-                <input type="checkbox" id="profile" value="links" name="hidden" style="accent-color: #548060;margin-right: 5px;"> Hide my links.<br /><br />
+                <input type="checkbox" id="privacy-profile" value="profile" name="hidden" style="accent-color: #548060;margin-right: 5px;" {% if template_data.is_seeker and template_data.seeker_user.account_is_hidden %}checked{% endif %}> Only show my name and email to employers.<br /><br />
+                <input type="checkbox" id="privacy-education" value="education" name="hidden" style="accent-color: #548060;margin-right: 5px;" {% if template_data.is_seeker and template_data.seeker_user.education_is_hidden %}checked{% endif %}> Hide my education.<br /><br />
+                <input type="checkbox" id="privacy-experience" value="experience" name="hidden" style="accent-color: #548060;margin-right: 5px;" {% if template_data.is_seeker and template_data.seeker_user.experience_is_hidden %}checked{% endif %}> Hide my experience.<br /><br />
+                <input type="checkbox" id="privacy-links" value="links" name="hidden" style="accent-color: #548060;margin-right: 5px;" {% if template_data.is_seeker and template_data.seeker_user.links_is_hidden %}checked{% endif %}> Hide my links.<br /><br />
                 <div class="modal-footer">
                     <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="primary-hover-btn">Save Changes</button>
@@ -430,7 +478,7 @@
 
 
 <div class="modal fade" id="addExperienceModal" data-bs-backdrop="static" data-bs-keyboard="false"
-    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+    tabindex="-1" aria-labelledby="applyExperienceModalLabel" aria-hidden="true">
 <div class="modal-dialog">
     <div class="modal-content">
     <form method="POST">
@@ -440,32 +488,32 @@
             <textarea class="form-control" name="subfield">experience_add</textarea>
         </div>
         <div class="modal-header">
-        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Adding Experience to profile</strong></h1>
+        <h1 class="modal-title fs-5" id="applyExperienceModalLabel"><strong>Adding Experience to profile</strong></h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
         <div class="mb-3">
-            <label for="company_name" class="form-label">Company Name*</label>
+            <label for="company-name-input" class="form-label">Company Name*</label>
             <textarea class="form-control" id="company-name-input" name="company_name" rows="2" maxlength="63" required></textarea>
             <span style="color:crimson;" id="company-name-errmsg"></span>
         </div>
         <div class="mb-3">
-            <label for="position_title" class="form-label">Position Title*</label>
+            <label for="position-title-input" class="form-label">Position Title*</label>
             <textarea class="form-control" id="position-title-input" name="position_title" rows="2" maxlength="63" required></textarea>
             <span style="color:crimson;" id="position-title-errmsg"></span>
         </div>
         <div class="mb-3">
-            <label for="job_description" class="form-label">Job Description</label>
+            <label for="job-description-input" class="form-label">Job Description</label>
             <textarea class="form-control" id="job-description-input" name="job_description" rows="4" maxlength="511"></textarea>
             <span style="color:crimson;" id="job-description-errmsg"></span>
         </div>
             <input type="checkbox" id="current-employee" value="True" name="current_employee" style="accent-color: #548060;" onclick="hideEndDate()"> Current Employee*<br /><br />
         <div class="mb-3">
-            <label for="start_date" class="form-label">Start Date*</label>
+            <label for="start-date-input" class="form-label">Start Date*</label>
             <input type="date" id="start-date-input" name="start_date" value="2025-02-19" required>
         </div>
         <div class="mb-3" id="experience-end-date-container" style="display:block;">
-            <label for="end_date" class="form-label">End Date*</label>
+            <label for="end-date-input" class="form-label">End Date*</label>
             <input type="date" id="end-date-input" name="end_date" value="2025-03-01">
         </div> 
     </div>
@@ -480,32 +528,31 @@
 
 
 <div class="modal fade" id="addEducationModal" data-bs-backdrop="static" data-bs-keyboard="false"
-      tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+      tabindex="-1" aria-labelledby="applyEducationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <form method="POST">
         {% csrf_token %}
           <div class="mb-3" style="display:none;">
-              <label for="subfield" class="form-label"></label>
+              <label class="form-label"></label>
               <textarea class="form-control" name="subfield">education_add</textarea>
           </div>
         <div class="modal-header">
-        <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Adding Education to profile</strong></h1>
+        <h1 class="modal-title fs-5" id="applyEducationModalLabel"><strong>Adding Education to profile</strong></h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="grad_year" class="form-label">Graduation Year*</label>
-            <textarea class="form-control" id="grad-year-input" name="grad_year" rows="1" maxlength="4" required></textarea>
-            <span style="color:crimson;" id="grad-year-errmsg"></span>
+            <label for="grad-year-input" class="form-label">Graduation Year*</label>
+            <input class="form-control" id="grad-year-input" name="grad_year" type="number" min="0" max="3000" required></input>
           </div>
           <div class="mb-3">
-            <label for="school_name" class="form-label">School Name*</label>
+            <label for="school-name-input" class="form-label">School Name*</label>
             <textarea class="form-control" id="school-name-input" name="school_name" rows="2" maxlength="63" required></textarea>
             <span style="color:crimson;" id="school-name-errmsg"></span>
           </div>
           <div class="mb-3">
-            <label for="degree" class="form-label">Degree Level*</label>
+            <label class="form-label">Degree Level*</label>
             <select name="degree" class="filter-selectbox" required>
             {% for value, label in template_data.degree_choices %}
             <option value="{{ value }}">{{ label }}</option>
@@ -513,7 +560,7 @@
             </select>
           </div>
           <div class="mb-3">
-            <label for="degree_name" class="form-label">Degree Name</label>
+            <label for="degree_name-input" class="form-label">Degree Name</label>
             <textarea class="form-control" id="degree_name-input" name="degree_name" rows="2" maxlength="63"></textarea>
             <span style="color:crimson;" id="degree-name-errmsg"></span>
             </select>
@@ -540,84 +587,48 @@
 </script>
 
 <script>
-
-  // FOR grad_year input
-  const gradYearTextarea = document.getElementById("grad-year-input");
-  const gradYearErrMsg = document.getElementById("grad-year-errmsg");
-
-  // Add an input event listener
-  gradYearTextarea.addEventListener("input", function(e) {
-    // Remove any non-numeric characters (except for potential leading - or .)
-    const numericValue = this.value.replace(/[^\d.-]/g, ''); 
-    
-    // Update the textarea value
-    this.value = numericValue;
-    
-    // Display an error message if non-numeric characters were present
-    if (this.value !== e.data) { // Simple check if the input was modified
-      gradYearErrMsg.textContent = "Only numbers are allowed.";
-    } else {
-      gradYearErrMsg.textContent = "";
-    }
-  });
-  // For mobile devices, the inputmode attribute helps bring up the numeric keyboard
-  gradYearTextarea.setAttribute("inputmode", "numeric"); //
-
   // For toggling EndDate when creating experience
   function hideEndDate() {
     var currentEmployee = document.getElementById("current-employee");
     var endDate = document.getElementById("experience-end-date-container");
     if (currentEmployee.checked == true) {
-        endDate.style= "display:none;";
+        endDate.style.display = "none";
     } else {
-        endDate.style= "display:block;";
+        endDate.style.display = "block";
     }
   }
-/*const educationSection = document.querySelector("#education-section");
-const addEducationBtn = document.querySelector("#add-education-button");
 
-
-const addNewButtonCSS = "border: 1px solid var(--accent); border-radius: 0.375rem; color: var(--accent); padding: 0.375rem 0.75rem; text-align: center; text-decoration: none; display: inline-block; font-size: 1rem; cursor: default;"
-const xButtonCSS =   "color: crimson; border: none; background-color: rgba(0,0,0,0)"
-const shortTextInputCSS = "margin: 5px; border-radius: 0.375rem;"
-
-let educationCount = 0;
-
-addEducationBtn.addEventListener("click", () => {
-    debugger;
-    if (educationCount >= 5) {return;}
-    var newInstance = document.createElement("div");
-    newInstance.id = "education"+educationCount+"new";
-    var gradYear = document.createElement("input");
-    gradYear.type = "text";
-    gradYear.name = "gradYear"+educationCount;
-    gradYear.id = "education"+educationCount+"gradYear";
-    gradYear.style = shortTextInputCSS;
-    newInstance.appendChild(gradYear);
-    var xButton = document.createElement("button");
-    xButton.style = xButtonCSS;
-    xButton.id = "education"+educationCount+"button";
-    xButton.innerHTML = "&#10006";
-    xButton.addEventListener('click', education_xButtonHandler);
-    newInstance.appendChild(xButton);
-    var br = document.createElement("br");
-    newInstance.appendChild(br);
-    educationSection.append(newInstance);
-    educationCount++;
-    if (educationCount == 5) {
-        addEducationBtn.innerHTML = "Max number of educations";
+  function hideEndDateEdit() {
+    var currentEmployee = document.getElementById("edit-current-employee");
+    var container = document.getElementById("edit-experience-end-date-container");
+    if (currentEmployee && container) {
+      container.style.display = currentEmployee.checked ? "none" : "block";
     }
-});
+  }
 
-function education_xButtonHandler(event) {
-    debugger;
-    let buttonIndex = this.id.charCodeAt(9) - '0'.charCodeAt(0);
-    console.log(buttonIndex);
-    educationCount--;
-    document.querySelector("#education"+{buttonIndex}+"new").remove();
-    addLinkBtn.innerHTML = " &#10010 Add Education";
-}*/
+  document.getElementById("editExperienceModal").addEventListener("show.bs.modal", function (e) {
+    var button = e.relatedTarget;
+    if (!button || !button.classList.contains("edit-experience-btn")) return;
+    document.getElementById("edit-experience-id").value = button.getAttribute("data-exp-id") || "";
+    document.getElementById("edit-company-name").value = button.getAttribute("data-company-name") || "";
+    document.getElementById("edit-position-title").value = button.getAttribute("data-position-title") || "";
+    document.getElementById("edit-job-description").value = button.getAttribute("data-job-description") || "";
+    var currentEmployee = button.getAttribute("data-current-employee") === "true";
+    document.getElementById("edit-current-employee").checked = currentEmployee;
+    document.getElementById("edit-start-date").value = button.getAttribute("data-start-date") || "";
+    document.getElementById("edit-end-date").value = button.getAttribute("data-end-date") || "";
+    hideEndDateEdit();
+  });
 
+  document.getElementById("editEducationModal").addEventListener("show.bs.modal", function (e) {
+    var button = e.relatedTarget;
+    if (!button || !button.classList.contains("edit-education-btn")) return;
+    document.getElementById("edit-education-id").value = button.getAttribute("data-edu-id") || "";
+    document.getElementById("edit-grad-year").value = button.getAttribute("data-grad-year") || "";
+    document.getElementById("edit-school-name").value = button.getAttribute("data-school-name") || "";
+    document.getElementById("edit-degree").value = button.getAttribute("data-degree") || "";
+    document.getElementById("edit-degree-name").value = button.getAttribute("data-degree-name") || "";
+  });
 </script>
 
 {% endblock content %}

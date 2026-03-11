@@ -4,12 +4,43 @@
 <div class="p-3">
   <div class="container">
     <div class="row mt-3">
-      <div class="col mx-auto mb-3" style="color: var(--secondary);">
+      <div class="col mx-auto mb-3" style="display: flex;">
         <h2>Profiles</h2>
-        <hr />
+        {% if user.is_authenticated and user.is_superuser %}
+        <p style="margin-left:auto;"><a href="{% url 'accounts.export_csv' %}" class="primary-hover-btn" download="JobPostingData.csv">Get User Data</a></p>
+        {% endif %}
       </div>
+      <hr />
     </div>
+    {% if user.is_authenticated %}
+    <div class="col-12 mb-3">
+        <div class="card p-3">
+            <div class="container" style="display: flex; align-items: center;">
+              <a href="{% url 'accounts.profiles' user_link=user.slugify_name %}" style="display: flex; align-items: center;color:inherit;text-decoration:none;">
+                {% if user.pfp %}
+                    <img src="{{ user.pfp.url }}" class="profile-picture" style="width:100px;height:100px;" alt="Profile Picture">
+                {% else %}
+                    <img src="{% static 'img/default_pfp.png' %}" class="profile-picture"  style="width:100px;height:100px;" alt="Profile Picture"/>
+                {% endif %}
+
+                <h4 style="text-align:center;margin-left:25px;"><b>{{ user.first_name }} {{ user.last_name }}</b></h4>
+                </a>
+            </div>
+            <div style="margin-left: 25px;">
+            {% if user.is_recruiter %}
+                <h5><b>Recruiter</b></h5>
+            {% elif user.is_seeker %}
+                <h5><b>Job Seeker</b></h5>
+            {% endif %}
+
+            <p>{{ user.headline }}</p>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {% endif %}
     {% for profile in template_data.profiles %}
+    {% if user != profile %}
     <div class="col-12 mb-3">
         <div class="card p-3">
             <div class="container" style="display: flex; align-items: center;">
@@ -22,15 +53,14 @@
 
                 <h4 style="text-align:center;margin-left:25px;"><b>{{ profile.first_name }} {{ profile.last_name }}</b></h4>
                 </a>
-                {% if user.is_authenticated and user == profile %}
-                {% elif user.is_authenticated %}
+                {% if user.is_authenticated %}
                 <div style="margin-left: auto; display: flex; flex-direction: column; gap: 10px;">
                     <a class="primary-hover-btn" href="{% url 'chat.create_room' participant_id=profile.id %}" style="margin-left: auto;"><i class="fas fa-message"></i></a>
-                    <a class="primary-hover-btn" href="mailto:{{ template_data.profile_user.email }}" style="margin-left: auto;"><i class="fas fa-envelope"></i></a>
+                    <a class="primary-hover-btn" href="mailto:{{ profile.email }}" style="margin-left: auto;"><i class="fas fa-envelope"></i></a>
                 </div>
                 {% endif %}
             </div>
-
+            <div style="margin-left: 25px;">
             {% if profile.is_recruiter %}
                 <h5><b>Recruiter</b></h5>
             {% elif profile.is_seeker %}
@@ -38,15 +68,10 @@
             {% endif %}
 
             <p>{{ profile.headline }}</p>
+            </div>
         </div>
     </div>
-
-
-
-
-{% endfor %}
+    {% endfor %}
+    </div>
 </div>
-</div>
-
-
 {% endblock content %}
