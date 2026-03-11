@@ -7,5 +7,6 @@ urlpatterns = [
     path('login/', views.login, name='accounts.login'),
     path('logout/', views.logout, name='accounts.logout'),
     path('onboard/', views.onboard, name='accounts.onboard'),
+    path('export_csv/', views.export_csv, name='accounts.export_csv'),
     path('<str:user_link>/', views.profiles, name='accounts.profiles'),
 ]
