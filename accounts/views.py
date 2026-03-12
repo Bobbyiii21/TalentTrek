@@ -2,11 +2,13 @@ import csv
 import re
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomUserCreationForm, CustomErrorList
 from .models import JobSeeker, Recruiter, Education, Experience, TTUser
+from .tables import RecruiterViewTable
 from skills.models import Skill
 import home.notifications as home_notif
 from posting.models import Post
@@ -325,6 +327,39 @@ def index(request):
     profiles = TTUser.objects.all().order_by('first_name')
     template_data = {'profiles': profiles}
     return render(request, 'accounts/index.html', {'template_data': template_data})
+
+def build_filter_queryset(request):
+    """Filter job seekers by GET params (search, skills, sort)."""
+    queryset = JobSeeker.objects.all()
+    search = request.GET.get('search', '').strip()
+    skills_filter = request.GET.get('skills', '').strip()
+    if search:
+        queryset = queryset.filter(
+            Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search)
+        )
+    if skills_filter:
+        queryset = queryset.filter(skills__name=skills_filter)
+    sort_param = request.GET.get('sort', 'user__first_name')
+    SORT_MAP = {
+        'user__first_name': ('user__first_name', 'user__last_name'),
+        '-user__first_name': ('-user__first_name', '-user__last_name'),
+    }
+    order_by = SORT_MAP.get(sort_param, ('user__first_name', 'user__last_name'))
+    queryset = queryset.order_by(*order_by).distinct()
+    distance_filter = request.GET.get('distance', 'worldwide').strip()
+    if distance_filter != 'worldwide':
+        queryset = None
+    return queryset
+
+
+def recruiter_view(request):
+    queryset = build_filter_queryset(request)
+    template_data = {
+        'table_data': RecruiterViewTable(queryset),
+        'title': 'Recruiter View',
+        'skills': Skill.objects.all().order_by('name'),
+    }
+    return render(request, 'accounts/table.html', {'template_data': template_data})
 
 def export_csv(request):
     data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
