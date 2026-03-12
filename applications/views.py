@@ -35,7 +35,7 @@ def index(request, view_mode=None):
              if application.posting.job_title not in template_data['job_titles']:
                  template_data['job_titles'].append(application.posting.job_title)
 
-        if view_mode is None or view_mode not in ('board', 'table'):
+        if view_mode is None or view_mode not in ('board', 'table', 'map'):
             template_data['view_mode'] = 'board'
         else:
             template_data['view_mode'] = view_mode

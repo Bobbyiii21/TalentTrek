@@ -14,12 +14,23 @@
       </div>
       <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link {% if template_data.view_mode == 'board' %} active {% endif %}" id="pills-board-tab" data-bs-toggle="pill" data-bs-target="#pills-board" type="button" role="tab" aria-controls="pills-board" aria-selected="{% if template_data.view_mode == 'board' %} true {% else %} false {% endif %}">Board View</button>
+          <button class="nav-link {% if template_data.view_mode == 'board' %} active {% endif %}" id="pills-board-tab" data-bs-toggle="pill" data-bs-target="#pills-board" type="button" role="tab" aria-controls="pills-board" aria-selected="{% if template_data.view_mode == 'board' %} true {% else %} false {% endif %}" onclick="pills_board_map_hide()">Board View</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link {% if template_data.view_mode != 'board' %} active {% endif %}" id="pills-table-tab" data-bs-toggle="pill" data-bs-target="#pills-table" type="button" role="tab" aria-controls="pills-table" aria-selected="{% if template_data.view_mode != 'board' %} true {% else %} false {% endif %}">Table View</button>
+          <button class="nav-link {% if template_data.view_mode != 'board' and template_data.view_mode != 'map' %} active {% endif %}" id="pills-table-tab" data-bs-toggle="pill" data-bs-target="#pills-table" type="button" role="tab" aria-controls="pills-table" aria-selected="{% if template_data.view_mode != 'board' and template_data.view_mode != 'map' %} true {% else %} false {% endif %}" onclick="pills_board_map_hide()">Table View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link {% if template_data.view_mode == 'map' %} active {% endif %}" id="pills-map-tab" data-bs-toggle="pill" data-bs-target="#pills-map" type="button" role="tab" aria-controls="pills-map" aria-selected="{% if template_data.view_mode == 'map' %} true {% else %} false {% endif %}" onclick="pills_board_map_show()">Map View</button>
         </li>
       </ul>
+      <script>
+        function pills_board_map_show() {
+          document.querySelector('#pills-board-map').classList.add('active', 'show');
+        };
+        function pills_board_map_hide() {
+          document.querySelector('#pills-board-map').classList.remove('active', 'show');
+        };
+      </script>
       <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade {% if template_data.view_mode == 'board' %} show active {% endif %}" id="pills-board" role="tabpanel" aria-labelledby="pills-board-tab" tabindex="0">
           <div class="row mt-3">
@@ -95,7 +106,7 @@
         </div>
       </div>
         </div>
-        <div class="tab-pane fade {% if template_data.view_mode != 'board' %} show active {% endif %}" id="pills-table" role="tabpanel" aria-labelledby="pills-table-tab" tabindex="0">
+        <div class="tab-pane fade {% if template_data.view_mode != 'board' and template_data.view_mode != 'map' %} show active {% endif %}" id="pills-table" role="tabpanel" aria-labelledby="pills-table-tab" tabindex="0">
           {% if template_data.table_access %}
           <div class="m-3 col-12">
             <form method="GET" action="{% url 'applications.index' view_mode='table' %}" class="row g-2 mb-3 align-items-end">
@@ -165,11 +176,8 @@
           </div>
           {% endif %}
         </div>
-      </div>
-    </div>
-  </div>
-      <div class="col-md-4" style="flex:2;">
-        <div class="sticky" style="top: 1rem">
+        <div class="tab-pane fade {% if template_data.view_mode == 'map' %} show active {% endif %}" id="pills-board-map" role="tabpanel" aria-labelledby="pills-map-tab" tabindex="0">
+      <div class="col-md-4">
           <h5>Job Locations</h5>
           <div
             id="job-map"
@@ -185,8 +193,12 @@
             Click a marker to see job details. Hover over a job card to
             highlight it on the map.
           </p>
-        </div>
       </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
 {% else %} <!-- Job Seeker --->
   <div class="p-3">
     <div class="container">
@@ -279,7 +291,7 @@
       const marker = new AdvancedMarkerElement({
         position,
         map,
-        title: seeker.name,
+        name: seeker.name,
         content: pin,
       });
 
@@ -311,6 +323,15 @@
     } else {
       map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
     }
+
+    /**const markers = locations.map((location) => {
+      return new google.maps.Marker({
+        position: location,
+        map: map
+      })                 
+    });*/
+
+    //new markerClusterer.MarkerClusterer({map, markers})
 
     map.addListener("gmp-click", function () {
       if (activeInfoWindow) activeInfoWindow.close();
