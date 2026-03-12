@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Case, When, IntegerField, Value
 from applications.views import apply
+from django.conf import settings
 
 from skills.models import Skill
-from accounts.models import Recruiter
+from accounts.models import Recruiter, JobSeeker
 from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
@@ -86,14 +87,10 @@ def index(request):
         'filter_salary_max': salary_max,
         'filter_use_salary': use_salary,
         'is_recruiter': is_recruiter,
+        'google_api_key': settings.GOOGLE_API_KEY,
     }
 
     return render(request, 'posting/index.html', {'template_data': template_data})
-
-    template_data['title'] = 'Postings'
-    template_data['postings'] = postings
-    return render(request, 'posting/index.html',
-                  {'template_data': template_data})
     
 def build_filter_queryset(request, post):
     queryset = Application.objects.filter(posting=post)
@@ -123,11 +120,31 @@ def build_filter_queryset(request, post):
 def post(request, id):
     post = get_object_or_404(Post, id=id)
 
+    is_seeker = False
+    user_details_hidden = False
+
+    user = None
+    
+    if request.user.is_authenticated: 
+        if JobSeeker.objects.filter(user=request.user).exists():
+            user = JobSeeker.objects.filter(user=request.user)[0]
+            if (user.account_is_hidden or user.education_is_hidden or user.experience_is_hidden or user.links_is_hidden):
+                user_details_hidden = True
+    print(user_details_hidden)
+
     template_data = {
         'title': f"{post.company_name} - {post.job_title}",
         'post': post,
         'id': id,
+        'is_seeker': is_seeker,
+        'user': user,
+        'user_details_hidden': user_details_hidden,
     }
+    
+    print(template_data['user'].account_is_hidden)
+    print(template_data['user'].experience_is_hidden)
+    print(template_data['user'].education_is_hidden)
+    print(template_data['user'].links_is_hidden)
 
     # --
     template_data['skills'] = Skill.objects.all()
@@ -146,6 +163,7 @@ def post(request, id):
 def create(request):
     recruiter = get_object_or_404(Recruiter, user=request.user)
 
+    print(request.POST)
     if request.method == 'POST':
         if request.POST.get('job_title', '').strip():
             posting = Post()
@@ -161,6 +179,7 @@ def create(request):
         'skills': skills,
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
+        'google_api_key': settings.GOOGLE_API_KEY,
     })
 
 
@@ -181,6 +200,7 @@ def edit(request, id):
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
         'editing': True,
+        'google_api_key': settings.GOOGLE_API_KEY,
     })
 
 
@@ -212,13 +232,19 @@ def save_post(posting, request):
     posting.state = request.POST.get('state', '').strip().upper()
     posting.postal_code = request.POST.get('postal_code', '').strip()
     posting.country = request.POST.get('country', '').strip().title()
+    posting.latitude = request.POST.get('latitude')
+    posting.longitude = request.POST.get('longitude')
+    posting.latitude = float(posting.latitude) if posting.latitude else None
+    posting.longitude = float(posting.longitude) if posting.longitude else None
 
     if not posting.country:
         posting.location = 'No location specified'
+    elif not posting.state:
+        posting.location = posting.country.title()
     elif posting.state and not posting.city:
-        posting.location = f"{posting.state}, {posting.country}"
+        posting.location = f"{posting.state.title()}, {posting.country.title()}"
     elif posting.city:
-        posting.location = f"{posting.city}, {posting.state}"
+        posting.location = f"{posting.city.title()}, {posting.state.title()}"
 
     posting.save()
 
