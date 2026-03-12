@@ -7,7 +7,7 @@
   <div class="container">
     <div class="row mt-3">
       <div class="col-12">
-        <h2>Candidate Pool</h2>
+        <h2>{{ template_data.title }}</h2>
         <hr />
 
         <form method="GET" action="" class="row g-2 mb-3 align-items-end">
@@ -26,6 +26,22 @@
 
           <div class="col-auto">
             <div class="input-group input-group-sm">
+              <!-- <span class="input-group-text">Skills</span> -->
+              <select name="skills" id="skills" class="form-select" multiple onchange="this.form.submit()">
+                <option value="">All Skills</option>
+                {% for skill in template_data.skills %}
+                  <option
+                    value="{{ skill.id }}"
+                    {% if skill.id|stringformat:"s" in template_data.skills_filter %}selected{% endif %}
+                  >
+                    {{ skill.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <!-- <div class="col-auto">
+            <div class="input-group input-group-sm">
               <span class="input-group-text">Skills</span>
               <select
                 name="skills"
@@ -43,7 +59,7 @@
                 {% endfor %}
               </select>
             </div>
-          </div>
+          </div> -->
 
           <div class="col-auto">
             <div class="input-group input-group-sm">
@@ -98,8 +114,8 @@
                 >
                   Within 100 miles
                 </option>
-                <option value="worldwide"
-                        {% if request.GET.distance == "worldwide" or not request.GET.distance %}selected{% endif %}
+                <option value="67000"
+                        {% if request.GET.distance == "67000" or not request.GET.distance %}selected{% endif %}
                 >
                 Worldwide
                 </option>
@@ -107,10 +123,10 @@
             </div>
           </div>
         </form>
-        <a href="">
-          <button>
-          </button>
-        </a>
+        <form method="POST">
+          {% csrf_token %}
+          <button type="submit" class="primary-hover-btn">Save Query</button>
+        </form>
 
         <hr />
 
@@ -121,6 +137,21 @@
         {% endif %}
       </div>
     </div>
+    <div class="row">
+      Saved Queries here...
+    </div>
   </div>
 </div>
+<script>
+  window.addEventListener('load', function () {
+    $("#skills").select2({
+      placeholder: "Skills...",
+      allowClear: true,
+      width: "resolve",
+      height: "2px",
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {% endblock content %}

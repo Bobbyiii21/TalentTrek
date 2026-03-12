@@ -11,7 +11,7 @@ from .models import JobSeeker, Recruiter, Education, Experience, TTUser
 from .tables import RecruiterViewTable
 from skills.models import Skill
 import home.notifications as home_notif
-from posting.models import Post
+from posting.models import Post, Query
 from applications.models import Application
 from TalentTrek import settings
 
@@ -332,13 +332,13 @@ def build_filter_queryset(request):
     """Filter job seekers by GET params (search, skills, sort)."""
     queryset = JobSeeker.objects.all()
     search = request.GET.get('search', '').strip()
-    skills_filter = request.GET.get('skills', '').strip()
+    skills_filter = [s for s in request.GET.getlist('skills') if s.strip()]
     if search:
         queryset = queryset.filter(
             Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search)
         )
     if skills_filter:
-        queryset = queryset.filter(skills__name=skills_filter)
+        queryset = queryset.filter(skills__id__in=skills_filter)
     sort_param = request.GET.get('sort', 'user__first_name')
     SORT_MAP = {
         'user__first_name': ('user__first_name', 'user__last_name'),
@@ -346,19 +346,30 @@ def build_filter_queryset(request):
     }
     order_by = SORT_MAP.get(sort_param, ('user__first_name', 'user__last_name'))
     queryset = queryset.order_by(*order_by).distinct()
-    distance_filter = request.GET.get('distance', 'worldwide').strip()
-    if distance_filter != 'worldwide':
-        queryset = None
+    distance_filter = request.GET.get('distance', '67000').strip()
     return queryset
 
-
+@login_required
 def recruiter_view(request):
+    if not request.user.is_recruiter: return redirect('accounts.index')
+    recruiter = Recruiter.objects.get(user=request.user)
     queryset = build_filter_queryset(request)
+    # hold values of skills filter in a variable
     template_data = {
         'table_data': RecruiterViewTable(queryset),
         'title': 'Recruiter View',
         'skills': Skill.objects.all().order_by('name'),
     }
+    template_data['skills_filter'] = [s for s in request.GET.getlist('skills') if s.strip()]
+    if request.method == 'POST':
+        query = Query()
+        skills_list = request.POST.getlist('skills')
+        for skill in skills_list:
+            query.skills.add(get_object_or_404(Skill, id=skill))
+        query.distance = request.POST.get('distance', '67000').strip()
+        query.recruiter = recruiter
+        query.save()
+    template_data['queries'] = Query.objects.filter(recruiter=recruiter)
     return render(request, 'accounts/table.html', {'template_data': template_data})
 
 def export_csv(request):

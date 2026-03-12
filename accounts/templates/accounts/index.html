@@ -6,9 +6,14 @@
     <div class="row mt-3">
       <div class="col mx-auto mb-3" style="display: flex;">
         <h2>Profiles</h2>
+        <div style="display: flex; flex-direction: column; margin-left: auto;">
         {% if user.is_authenticated and user.is_superuser %}
         <p style="margin-left:auto;"><a href="{% url 'accounts.export_csv' %}" class="primary-hover-btn" download="JobPostingData.csv">Get User Data</a></p>
         {% endif %}
+        {% if user.is_authenticated and user.is_recruiter or user.is_superuser %}
+        <p style="margin-left:auto;"><a href="{% url 'accounts.recruiter_view' %}" class="primary-hover-btn">Enter Recruiter View</a></p>
+        {% endif %}
+        </div>
       </div>
       <hr />
     </div>

@@ -64,7 +64,7 @@ class Post(models.Model):
 class Query(models.Model):
     id = models.AutoField(primary_key=True)
     recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE)
-    posting = models.ForeignKey(Post, on_delete=models.CASCADE)
-    education_level = models.CharField(Education.DegreeType.choices, max_length=15, blank=True)
     skills = models.ManyToManyField(Skill, blank=True)
     distance = models.IntegerField(blank=True)
+    #def __str__(self):
+    #    return f"{skill.name for skill in self.skills.all()} and {f"{str(distance)} miles away." if distance < 25000 else "worldwide"}."
