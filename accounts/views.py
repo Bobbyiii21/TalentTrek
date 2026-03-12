@@ -2,14 +2,16 @@ import csv
 import re
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomUserCreationForm, CustomErrorList
 from .models import JobSeeker, Recruiter, Education, Experience, TTUser
+from .tables import RecruiterViewTable
 from skills.models import Skill
 import home.notifications as home_notif
-from posting.models import Post
+from posting.models import Post, Query
 from applications.models import Application
 from TalentTrek import settings
 
@@ -305,6 +307,8 @@ def profiles(request, user_link):
             if request.POST['subfield'] == 'resume_delete':
                 seeker_user.resume.delete()
                 seeker_user.save()
+                
+            home_notif.update_seeker_notifications(user)
 
         elif user.is_recruiter:
             if request.POST['subfield'] == 'link_add':
@@ -319,12 +323,63 @@ def profiles(request, user_link):
                 recruiter_user.save()
                 template_data['links'][:] = [item for item in template_data['links'] if item != to_remove]
 
+
     return render(request, 'accounts/profiles.html', {'template_data': template_data,         'google_api_key': settings.GOOGLE_API_KEY,})
 
 def index(request):
     profiles = TTUser.objects.all().order_by('first_name')
     template_data = {'profiles': profiles}
     return render(request, 'accounts/index.html', {'template_data': template_data})
+
+def build_filter_queryset(request):
+    """Filter job seekers by GET params (search, skills, sort)."""
+    queryset = JobSeeker.objects.all()
+    search = request.GET.get('search', '').strip()
+    skills_filter = [s for s in request.GET.getlist('skills') if s.strip()]
+    if search:
+        queryset = queryset.filter(
+            Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search)
+        )
+    if skills_filter:
+        queryset = queryset.filter(skills__id__in=skills_filter)
+    sort_param = request.GET.get('sort', 'user__first_name')
+    SORT_MAP = {
+        'user__first_name': ('user__first_name', 'user__last_name'),
+        '-user__first_name': ('-user__first_name', '-user__last_name'),
+    }
+    order_by = SORT_MAP.get(sort_param, ('user__first_name', 'user__last_name'))
+    queryset = queryset.order_by(*order_by).distinct()
+    distance_filter = request.GET.get('distance', '67000').strip()
+    return queryset
+
+@login_required
+def recruiter_view(request):
+    if not (request.user.is_recruiter or request.user.is_superuser): return redirect('accounts.index')
+    recruiter = Recruiter.objects.get(user=request.user)
+    queryset = build_filter_queryset(request)
+    # hold values of skills filter in a variable
+    template_data = {
+        'table_data': RecruiterViewTable(queryset),
+        'title': 'Recruiter View',
+        'skills': Skill.objects.all().order_by('name'),
+    }
+    template_data['skills_filter'] = [s for s in request.GET.getlist('skills') if s.strip()]
+    if request.method == 'POST':
+        if request.POST['subfield'] == 'query_add':
+            render(request, 'accounts/table.html', {'template_data': template_data})
+            query = Query()
+            query.recruiter = recruiter
+            query.distance = request.GET['distance']
+            query.save()
+            skills_list = request.GET.getlist('skills')
+            for skill in skills_list:
+                query.skills.add(get_object_or_404(Skill, id=skill))
+            query.save()
+        elif request.POST['subfield'] == 'query_delete':
+            query = get_object_or_404(Query, id=request.POST['query_id'])
+            query.delete()
+    template_data['queries'] = Query.objects.filter(recruiter=recruiter)
+    return render(request, 'accounts/table.html', {'template_data': template_data})
 
 def export_csv(request):
     data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
