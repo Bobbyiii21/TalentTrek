@@ -50,7 +50,7 @@
                   <img class="profile-picture-navbar" {% if not user.pfp %} src="{% static 'img/default_pfp.png' %}"{% else %} src="{{ user.pfp.url }}" {% endif %}
                        alt="Profile Picture"/>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" style="transform:translateX(-33%);">
                   <li><a class="dropdown-item" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">My Profile</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" style="color: bs-danger" href="{% url 'accounts.logout' %}">Logout</a></li>

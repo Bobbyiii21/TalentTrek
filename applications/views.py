@@ -23,6 +23,7 @@ def index(request, view_mode=None):
             template_data['skills'] = Skill.objects.all()
             queryset = build_filter_queryset(request, request.user)
             template_data['applications'] = ApplicationsTable(queryset)
+            template_data['applicants'] = queryset
 
         recruiter_applications = Application.objects.filter(posting__recruiter__user=request.user).order_by('-date')
 

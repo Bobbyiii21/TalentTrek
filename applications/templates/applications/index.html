@@ -168,6 +168,25 @@
       </div>
     </div>
   </div>
+      <div class="col-md-4" style="flex:2;">
+        <div class="sticky" style="top: 1rem">
+          <h5>Job Locations</h5>
+          <div
+            id="job-map"
+            style="
+              height: 600px;
+              width: 100%;
+              border-radius: 8px;
+              border: 1px solid #dee2e6;
+            "
+          ></div>
+          <p class="text-muted small mt-2">
+            <i class="bi bi-info-circle"></i>
+            Click a marker to see job details. Hover over a job card to
+            highlight it on the map.
+          </p>
+        </div>
+      </div>
 {% else %} <!-- Job Seeker --->
   <div class="p-3">
     <div class="container">
@@ -205,4 +224,137 @@
     </div>
   </div>
 {% endif %}
+
+
+<!--Google Maps JS-->
+<script>
+  const applicants = [
+
+    {% for seeker in template_data.applicants %}
+      {% if seeker.applicant.latitude and seeker.applicant.longitude %}
+      {
+        id: {{ seeker.applicant.id }},
+        name: "{{ seeker.applicant.first_name|escapejs }} {{ seeker.applicant.last_name|escapejs }}",
+        location: "{{ seeker.applicant.location|escapejs }}",
+        lat: {{ seeker.applicant.latitude }},
+        lng: {{ seeker.applicant.longitude }},
+        url: "{% url 'accounts.profiles' user_link=seeker.applicant.slugify_name %}",
+      },
+      {% endif %}
+    {% endfor %}
+  ];
+
+  let map;
+  let markers = {};
+  let activeInfoWindow = null;
+
+  async function initMap() {
+    const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+    const defaultCenter = { lat: 39.5, lng: -98.35 };
+
+    map = new Map(document.getElementById("job-map"), {
+      zoom: 4,
+      center: defaultCenter,
+      mapId: "job_postings_map",
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+    });
+
+    if (applicants.length === 0) return;
+
+    const bounds = new google.maps.LatLngBounds();
+
+    applicants.forEach(function (seeker) {
+      const position = { lat: seeker.lat, lng: seeker.lng };
+
+      const pin = new PinElement({
+        background: "#0d6efd",
+        borderColor: "#0a4fb4",
+        glyphColor: "#ffffff",
+      });
+
+      const marker = new AdvancedMarkerElement({
+        position,
+        map,
+        title: seeker.name,
+        content: pin,
+      });
+
+      const infoContent = `
+        <div style="max-width: 220px; font-family: inherit;">
+          <strong style="font-size: 0.95rem;">
+            <a href="${seeker.url}" style="color: #0d6efd; text-decoration: none;">${seeker.name}</a>
+          </strong>
+          <p style="margin: 0 0 2px; font-size: 0.8rem; color: #888;">${seeker.location}</p>
+        </div>
+      `;
+
+      const infoWindow = new InfoWindow({ content: infoContent });
+
+      marker.addListener("gmp-click", function () {
+        if (activeInfoWindow) activeInfoWindow.close();
+        infoWindow.open(map, marker);
+        activeInfoWindow = infoWindow;
+        highlightCard(seeker.id);
+      });
+
+      markers[seeker.id] = { marker, pin, infoWindow };
+      bounds.extend(position);
+    });
+
+    if (applicants.length === 1) {
+      map.setCenter({ lat: applicants[0].lat, lng: applicants[0].lng });
+      map.setZoom(10);
+    } else {
+      map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
+    }
+
+    map.addListener("gmp-click", function () {
+      if (activeInfoWindow) activeInfoWindow.close();
+      clearCardHighlight();
+    });
+
+    document.querySelectorAll(".posting-card").forEach(function (card) {
+      const postId = parseInt(card.dataset.postId);
+
+      card.addEventListener("mouseenter", function () {
+        if (markers[postId]) {
+          markers[postId].pin.classList.add("marker-bounce");
+        }
+      });
+      card.addEventListener("mouseleave", function () {
+        if (markers[postId]) {
+          markers[postId].pin.classList.remove("marker-bounce");
+        }
+      });
+    });
+  }
+
+  function highlightCard(postId) {
+    clearCardHighlight();
+    const card = document.querySelector(`.posting-card[data-post-id="${postId}"]`);
+    if (card) {
+      card.style.outline = "2px solid #0d6efd";
+      card.style.boxShadow = "0 0 0 4px rgba(13,110,253,0.15)";
+      card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+  function clearCardHighlight() {
+    document.querySelectorAll(".posting-card").forEach(function (c) {
+      c.style.outline = "";
+      c.style.boxShadow = "";
+    });
+  }
+
+  window.initMap = initMap;
+</script>
+
+<script
+  src="https://maps.googleapis.com/maps/api/js?key={{ template_data.google_api_key }}&callback=initMap&loading=async"
+  async
+  defer
+></script>
 {% endblock content %}
