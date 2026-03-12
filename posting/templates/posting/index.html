@@ -3,16 +3,16 @@
 <div class="p-3">
   <div class="container-fluid">
     <div class="row mt-3">
-      <div class="col mx-auto mb-3" style="color: var(--secondary)">
+      <!--div class="col mx-auto mb-3" style="color: var(--secondary)">
         {% if template_data.is_recruiter %}
-        <a href="{% url 'posting.create' %}">Create a Job Posting</a>
+          <a href="{% url 'posting.create' %}">Create a Job Posting</a>
         {% endif %}
-      </div>
+      </div-->
     </div>
-    <div class="row">
+    <div class="row justify-content-center">
       <!--Filters -->
-      <div class="col-md-2 mb-3">
-        <h5>Filters</h5>
+      <div class="col-md-2 mb-3 mt-3">
+        <h4>Filters</h4>
         <form method="GET">
           <!--Search Filter-->
           <div class="mb-3">
@@ -154,16 +154,17 @@
       </div>
 
       <!--Job Postings-->
-  <div class="col-md-9">
+  <div class="col-md-8">
     {% if template_data.my_postings %}
-    <div style="display:flex;align-items:center;">
-        <h4>My Posts</h4>
+    <div style="display: flex; align-items: center;">
+        <h4 class="mt-1">My Posts</h4>
         {% if template_data.is_recruiter %}
-          <a href="{% url 'posting.create' %}" class="profile-hollow-btn" style="margin-left:20px;">&#10010</a>
+          <a href="{% url 'posting.create' %}" class="profile-hollow-btn ms-3">&#10010</a>
         {% endif %}
     </div>
     {% else %}
     {% endif %}
+      {% if template_data.is_recruiter %}
         {% for post in template_data.my_postings %}
         <div class="col-12 mb-3">
           <div class="card p-3 posting-card" data-post-id="{{ post.id }}">
@@ -251,8 +252,9 @@
           </div>
         </div>
         {% empty %}
-        <p>No postings found.</p>
+          <p>No postings found.</p>
         {% endfor %}
+        {% endif %}
 
         <h4>Posts</h4>
         {% for post in template_data.postings %} 

@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('state', models.CharField(blank=True, max_length=255)),
                 ('postal_code', models.CharField(blank=True, max_length=20)),
                 ('country', models.CharField(blank=True, max_length=255)),
-                ('date_posted', models.DateTimeField(auto_now_add=True, blank=True)),
+                ('date_posted', models.DateTimeField(auto_now_add=True, blank=True, null=True)),
                 ('location', models.CharField(blank=True, max_length=255)),
                 ('salary_min', models.IntegerField(blank=True, null=True)),
                 ('salary_max', models.IntegerField(blank=True, null=True)),

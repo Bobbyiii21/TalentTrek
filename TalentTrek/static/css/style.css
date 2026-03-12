@@ -6,22 +6,30 @@
   --primary-dark: #324c39;
   --secondary: #0f1d0c;
   --secondary-light: #596e55;
-  --accent: #6c92c0;
-  --accent-light: #afc7e4;
-  --accent-dark: #5b6e86;
+  --accent: #c7a07b;
+  --accent-light: #ffd79e;
+  --accent-dark: #946847;
 }
 
-html, body {
+html {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
+
 .main-content {
     flex: 1;
 }
 
 .bg-index {
-  background: url("/static/img/background.jpg") no-repeat fixed;
+  background: url("/static/img/forest_banner.jpg") no-repeat fixed;
   background-size: 100% auto;
   background-color: var(--primary);
 }
@@ -29,6 +37,35 @@ html, body {
 .homepage-banner {
   color: var(--text);
   text-align: center;
+  background-image: url('/static/img/forest_banner.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-banner-logged-in {
+  color: var(--text);
+  text-align: center;
+  background-image: url('/static/img/forest_banner.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-text{
+    font-size: 22.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.navbar {
+    --bs-navbar-bg: none;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
 }
 
 .navbar a.nav-link {
@@ -144,6 +181,28 @@ html, body {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
+.join-hover-btn {
+  background-color: var(--accent-dark);
+  border: none;
+  border-radius: 0.375rem;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.join-hover-btn:hover {
+  background-color: var(--accent-light);
+  border: var(--accent);
+  color: var(--accent-dark);
+  box-shadow: 0px 0px 16px 0 var(--accent-light);
+}
+
 .hollow-btn {
   border: 1px solid var(--accent);
   border-radius: 0.375rem;
@@ -154,6 +213,15 @@ html, body {
   display: inline-block;
   font-size: 1rem;
   cursor: default;
+}
+
+.profile-picture-navbar {
+    margin-top: 5px;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .profile-picture {
@@ -190,7 +258,6 @@ html, body {
 
 .notification-button {
   anchor-name: --notif-anchor;
-  margin-right: 5px;
 }
 
 .notification-popup {
@@ -225,6 +292,7 @@ html, body {
 .notification-popup.hidden {
   display: none;
 }
+
 /* The host element itself */
 gmp-place-autocomplete {
   display: block;
