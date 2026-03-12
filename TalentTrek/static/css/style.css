@@ -93,9 +93,21 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.cal-sans-regular {
+  font-family: "Cal Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 36pt;
+  letter-spacing: 3%;
+}
+
+.banner-text-shadow {
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
 .navbar {
     --bs-navbar-bg: none;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+    background: linear-gradient(45deg, var(--primary), var(--primary-dark)) !important;
 }
 
 .navbar a.nav-link {

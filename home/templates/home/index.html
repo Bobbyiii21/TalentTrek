@@ -2,17 +2,21 @@
 {% block content %}
 {% load static %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap" rel="stylesheet">
+
 {% if user.is_authenticated %}
   <header class="masthead homepage-banner-logged-in py-4">
     <div class="container d-flex align-items-center flex-column pt-2">
-      <h1 style="filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));">Welcome back, {{ user.first_name }}!</h1>
-      <p style="filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));"><em>You have <strong>{{ template_data.notifications.count }}</strong> unread notification{% if template_data.notifications.count != 1 %}s{% endif %}.</em></p>
+      <h1 class="cal-sans-regular banner-text-shadow">Welcome back, {{ user.first_name }}!</h1>
+      <p class="banner-text-shadow"><em>You have <strong>{{ template_data.notifications.count }}</strong> unread notification{% if template_data.notifications.count != 1 %}s{% endif %}.</em></p>
     </div>
   </header>
 {% else %}
   <header class="masthead homepage-banner py-4">
     <div class="container flex-column">
-      <img class="my-3" src="{% static 'img/TTWordmark.png' %}" width="400px" style="filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));">
+      <img class="my-3 banner-text-shadow" src="{% static 'img/TTWordmark.png' %}" width="400px">
       <p class="banner-text"><em>Follow the trail to your new adventure!</em></p>
       <a class="join-hover-btn mt-4" href="{% url 'accounts.register' %}">Join Today!</a>
     </div>

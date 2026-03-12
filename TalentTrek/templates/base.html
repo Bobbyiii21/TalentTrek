@@ -75,11 +75,11 @@
     <div class="notification-popup hidden" onmouseover="this.classList.remove('hidden');" onmouseleave="notificationsHover()">
       <textarea id="has-unread-notifications" style="display:none;">{% if base_data_notifications %}True{% else %}False{% endif %}</textarea>
       {% for notification in base_data_notifications %}
-        <div style="display: flex; align-items: center;">
+        <div class="px-2" style="display: flex; align-items: center;">
           {% if notification.image %}
               <img src="{{ notification.image.url }}" class="profile-picture" style="width:4vw;height:4vw;" alt="Notification Image">
           {% else %}
-              <img src="{% static 'img/job_seeker.png' %}" class="profile-picture"  style="width:4vw;height:4vw;" alt="Notification Image"/>
+              <img src="{% static 'img/job_seeker.png' %}" class="profile-picture" style="width:4vw;height:4vw;" alt="Notification Image"/>
           {% endif %}
           <div style="margin-left:5px; display:flex; flex-direction:column;">
               <p style="text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>
