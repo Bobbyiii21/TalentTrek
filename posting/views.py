@@ -5,7 +5,7 @@ from applications.views import apply
 from django.conf import settings
 
 from skills.models import Skill
-from accounts.models import Recruiter
+from accounts.models import Recruiter, JobSeeker
 from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
@@ -91,11 +91,6 @@ def index(request):
     }
 
     return render(request, 'posting/index.html', {'template_data': template_data})
-
-    template_data['title'] = 'Postings'
-    template_data['postings'] = postings
-    return render(request, 'posting/index.html',
-                  {'template_data': template_data})
     
 def build_filter_queryset(request, post):
     queryset = Application.objects.filter(posting=post)
@@ -125,11 +120,31 @@ def build_filter_queryset(request, post):
 def post(request, id):
     post = get_object_or_404(Post, id=id)
 
+    is_seeker = False
+    user_details_hidden = False
+
+    user = None
+    
+    if request.user.is_authenticated: 
+        if JobSeeker.objects.filter(user=request.user).exists():
+            user = JobSeeker.objects.filter(user=request.user)[0]
+            if (user.account_is_hidden or user.education_is_hidden or user.experience_is_hidden or user.links_is_hidden):
+                user_details_hidden = True
+    print(user_details_hidden)
+
     template_data = {
         'title': f"{post.company_name} - {post.job_title}",
         'post': post,
         'id': id,
+        'is_seeker': is_seeker,
+        'user': user,
+        'user_details_hidden': user_details_hidden,
     }
+    
+    print(template_data['user'].account_is_hidden)
+    print(template_data['user'].experience_is_hidden)
+    print(template_data['user'].education_is_hidden)
+    print(template_data['user'].links_is_hidden)
 
     # --
     template_data['skills'] = Skill.objects.all()

@@ -325,6 +325,30 @@
                   ></textarea>
                   <div class="form-text">Max. 1000 characters</div>
                 </div>
+                {% if template_data.user_details_hidden %}
+                  <b style="color: red">Notice: Employers cannot see your entire profile.</b><br />
+                  <div style="color:red; padding:10px">Currently hidden from employers:</div>
+                  <ul style="line-height: 10px">
+                    {% if template_data.user.account_is_hidden %}
+                    <li style="color: red"><i style="color: red">Profile Headline</li></p>
+                    <li style="color: red"><i style="color: red">Your Skills</li></p>
+                    <li style="color: red"><i style="color: red">Your Resume</li></p>
+                    {% endif %}
+                    {% if template_data.user.account_is_hidden or template_data.user.education_is_hidden %}
+                    <li style="color: red"><i style="color: red">Your Education</li></p>
+                    {% endif %}
+                    {% if template_data.user.account_is_hidden or template_data.user.experience_is_hidden %}
+                    <li style="color: red"><i style="color: red">Your Experience</li></p>
+                    {% endif %}
+                    {% if template_data.user.account_is_hidden or template_data.user.links_is_hidden %}
+                    <li style="color: red"><i style="color: red">Your Links</li></p>
+                    {% endif %}
+                  </ul>
+                  <i style="color: grey">
+                    If you wish to make these elements visible to employers, go to: [Your Profile]→Edit Privacy. 
+                    You may continue without making elements public. Employers will always be able to see your name and email.
+                  </i>
+                {% endif %}
               </div>
 
               <div class="modal-footer">
