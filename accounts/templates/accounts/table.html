@@ -10,7 +10,8 @@
         <h2>{{ template_data.title }}</h2>
         <hr />
 
-        <form method="GET" action="" class="row g-2 mb-3 align-items-end">
+        <form method="GET" action="" >
+          <div class="row g-2 mb-3 align-items-end">
           <div class="col-auto">
             <div class="input-group input-group-sm">
               <span class="input-group-text">Name</span>
@@ -24,22 +25,6 @@
             </div>
           </div>
 
-          <div class="col-auto">
-            <div class="input-group input-group-sm">
-              <!-- <span class="input-group-text">Skills</span> -->
-              <select name="skills" id="skills" class="form-select" multiple onchange="this.form.submit()">
-                <option value="">All Skills</option>
-                {% for skill in template_data.skills %}
-                  <option
-                    value="{{ skill.id }}"
-                    {% if skill.id|stringformat:"s" in template_data.skills_filter %}selected{% endif %}
-                  >
-                    {{ skill.name }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
           <!-- <div class="col-auto">
             <div class="input-group input-group-sm">
               <span class="input-group-text">Skills</span>
@@ -90,7 +75,6 @@
               <select
                 name="distance"
                 class="form-select form-select-sm"
-                onchange="this.form.submit()"
               >
                 <option value="10"
                         {% if request.GET.distance == "10"  %}
@@ -122,10 +106,32 @@
               </select>
             </div>
           </div>
+        </div>
+        <div class="row g-2 mb-3 align-items-end">
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <!-- <span class="input-group-text">Skills</span> -->
+              <select name="skills" id="skills" class="form-select" multiple>
+                {% for skill in template_data.skills %}
+                  <option
+                    value="{{ skill.id }}"
+                    {% if skill.id|stringformat:"s" in template_data.skills_filter %}selected{% endif %}
+                  >
+                    {{ skill.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-auto" style="anchor-name:--filter-anchor;">
+            <button type="submit" class="primary-hover-btn">Apply Filter</button>
+          </div>
+        </div>
         </form>
-        <form method="POST">
+        <form method="POST" style="position:absolute; position-anchor:--filter-anchor; top:anchor(--filter-anchor top); left:anchor(--filter-anchor right); margin-left:5px;">
           {% csrf_token %}
-          <button type="submit" class="primary-hover-btn">Save Query</button>
+          <textarea name="subfield" style="display:none;">query_add</textarea>
+          <button type="submit" class="secondary-hover-btn">Save Query</button>
         </form>
 
         <hr />
@@ -137,8 +143,34 @@
         {% endif %}
       </div>
     </div>
+    <hr>
     <div class="row">
-      Saved Queries here...
+      <h4>My Queries</h4>
+      <table style="border-collapse:collapse; border:1px solid gray;">
+        <tr style="border-collapse:collapse; border:1px solid gray;">
+          <th>Skills</th>
+          <th>Location</th>
+          <th></th>
+        </tr>
+        {% for query in template_data.queries %}
+        <tr>
+          <td>
+            {% for skill in query.skills.all %}
+            {{ skill.name }}
+            {% if not forloop.last %},{% endif %}
+            {% endfor %}
+          </td>
+          <td>{% if query.distance > 25000 %}Worldwide{% else %}Within {{ query.distance }} miles{% endif %}</td>
+          <td><form method="POST">
+            {% csrf_token %}
+            <textarea name="subfield" style="display:none;">query_delete</textarea>
+            <textarea name="query_id" style="display:none;">{{ query.id }}</textarea>
+            <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+          </form></td>
+        </tr>
+        {% endfor %}
+      </table>
+
     </div>
   </div>
 </div>

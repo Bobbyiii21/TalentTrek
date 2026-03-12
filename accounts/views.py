@@ -351,7 +351,7 @@ def build_filter_queryset(request):
 
 @login_required
 def recruiter_view(request):
-    if not request.user.is_recruiter: return redirect('accounts.index')
+    if not (request.user.is_recruiter or request.user.is_superuser): return redirect('accounts.index')
     recruiter = Recruiter.objects.get(user=request.user)
     queryset = build_filter_queryset(request)
     # hold values of skills filter in a variable
@@ -362,13 +362,18 @@ def recruiter_view(request):
     }
     template_data['skills_filter'] = [s for s in request.GET.getlist('skills') if s.strip()]
     if request.method == 'POST':
-        query = Query()
-        skills_list = request.POST.getlist('skills')
-        for skill in skills_list:
-            query.skills.add(get_object_or_404(Skill, id=skill))
-        query.distance = request.POST.get('distance', '67000').strip()
-        query.recruiter = recruiter
-        query.save()
+        if request.POST['subfield'] == 'query_add':
+            query = Query()
+            query.recruiter = recruiter
+            query.distance = request.GET['distance'].strip()
+            query.save()
+            skills_list = request.GET.getlist('skills')
+            for skill in skills_list:
+                query.skills.add(get_object_or_404(Skill, id=skill))
+            query.save()
+        elif request.POST['subfield'] == 'query_delete':
+            query = get_object_or_404(Query, id=request.POST['query_id'])
+            query.delete()
     template_data['queries'] = Query.objects.filter(recruiter=recruiter)
     return render(request, 'accounts/table.html', {'template_data': template_data})
 

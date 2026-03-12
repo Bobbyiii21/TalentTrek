@@ -3,6 +3,7 @@ from accounts.models import TTUser, JobSeeker, Recruiter
 from applications.models import Application
 from posting.models import Post, Query
 from .models import Notification
+from .distance import longlatdistance
 
 #Note when making HTML message, pass formatted VIEW_URL into href of the <a>
 def notify(user: TTUser, message: str, link: str, image: str = ""):
@@ -98,3 +99,10 @@ def calculate_fit(seekerSkills, postingSkills, threshold):
         if skill.name in seekerList: matches += 1
         else: uniqueSkills += 1
     return threshold <= (matches / uniqueSkills)
+
+def matches_query(seeker: JobSeeker, query: Query):
+    query_skills = query.skills.all
+    for skill in query_skills:
+        if skill not in seeker.skills.all: return False
+    return longlatdistance(seeker, query.recruiter) <= query.distance
+    
