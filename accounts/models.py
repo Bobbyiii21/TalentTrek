@@ -1,5 +1,4 @@
 from django.db import models
-from cities_light.models import City, Country, Region #look up cities_light documentation if this isn't working, it hasn't been tested yet
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django.utils.text import slugify
@@ -52,9 +51,14 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField("last_name", max_length=31)
     email = models.EmailField("email address", max_length=127, unique=True)
     pfp = models.ImageField(upload_to=get_pfp_path, height_field=None, width_field=None, blank=True)
-    country = models.ForeignKey(Country, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
-    region = models.ForeignKey(Region, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED
-    city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True) #UNTESTED 
+    street = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
+    postal_code = models.CharField(max_length=20, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     date_joined = models.DateTimeField("date joined", default=timezone.now)
     headline = models.TextField(max_length=1023, blank=True)
     is_seeker = models.BooleanField(default=False)

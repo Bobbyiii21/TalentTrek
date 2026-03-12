@@ -6,6 +6,7 @@ django-tables2==2.8.0
 mysql-connector-python==9.6.0
 pillow==12.1.0
 progressbar2==4.5.0
+python-dotenv==1.2.2
 python-utils==3.9.1
 pytz==2025.2
 sqlparse==0.5.5

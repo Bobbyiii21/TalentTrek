@@ -225,4 +225,39 @@ html, body {
 .notification-popup.hidden {
   display: none;
 }
+/* The host element itself */
+gmp-place-autocomplete {
+  display: block;
+  width: 100%;
+  background-color: #fff;       /* white background */
+  border: 1px solid #ced4da;   /* light gray border like other inputs */
+  border-radius: 0.375rem;
+  padding: 0;                   /* optional */
+  box-sizing: border-box;
+  color: #212529;               /* text color */
+}
 
+/* The inner input */
+gmp-place-autocomplete::part(input) {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #212529;              /* text color */
+  background-color: transparent; /* let host element handle bg */
+  border: none;                 /* host element handles border */
+  border-radius: 0;
+}
+
+/* Placeholder color */
+gmp-place-autocomplete::part(input)::placeholder {
+  color: #6c757d;
+  opacity: 1;
+}
+
+/* Focus state for the host wrapper */
+gmp-place-autocomplete:focus-within {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}

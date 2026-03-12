@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Case, When, IntegerField, Value
 from applications.views import apply
+from django.conf import settings
 
 from skills.models import Skill
 from accounts.models import Recruiter
@@ -86,6 +87,7 @@ def index(request):
         'filter_salary_max': salary_max,
         'filter_use_salary': use_salary,
         'is_recruiter': is_recruiter,
+        'google_api_key': settings.GOOGLE_API_KEY,
     }
 
     return render(request, 'posting/index.html', {'template_data': template_data})
@@ -146,6 +148,7 @@ def post(request, id):
 def create(request):
     recruiter = get_object_or_404(Recruiter, user=request.user)
 
+    print(request.POST)
     if request.method == 'POST':
         if request.POST.get('job_title', '').strip():
             posting = Post()
@@ -161,6 +164,7 @@ def create(request):
         'skills': skills,
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
+        'google_api_key': settings.GOOGLE_API_KEY,
     })
 
 
@@ -181,6 +185,7 @@ def edit(request, id):
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
         'editing': True,
+        'google_api_key': settings.GOOGLE_API_KEY,
     })
 
 
@@ -212,13 +217,19 @@ def save_post(posting, request):
     posting.state = request.POST.get('state', '').strip().upper()
     posting.postal_code = request.POST.get('postal_code', '').strip()
     posting.country = request.POST.get('country', '').strip().title()
+    posting.latitude = request.POST.get('latitude')
+    posting.longitude = request.POST.get('longitude')
+    posting.latitude = float(posting.latitude) if posting.latitude else None
+    posting.longitude = float(posting.longitude) if posting.longitude else None
 
     if not posting.country:
         posting.location = 'No location specified'
+    elif not posting.state:
+        posting.location = posting.country.title()
     elif posting.state and not posting.city:
-        posting.location = f"{posting.state}, {posting.country}"
+        posting.location = f"{posting.state.title()}, {posting.country.title()}"
     elif posting.city:
-        posting.location = f"{posting.city}, {posting.state}"
+        posting.location = f"{posting.city.title()}, {posting.state.title()}"
 
     posting.save()
 

@@ -20,7 +20,14 @@
                     <label for="pfp_upload" class="profile-edit-btn" style="margin-right:25px;">&#9998</label>
                 </form>
                 {% endif %}
-                <h4 style="text-align: center;">{{ template_data.profile_user.first_name }} {{ template_data.profile_user.last_name }}</h4>
+                <div style="display:grid;">
+                <h4 style="text-align: left;">{{ template_data.profile_user.first_name }} {{ template_data.profile_user.last_name }}</h4>
+                <p>Location: <i>{{ template_data.profile_user.location }}</i>
+                    {% if user.is_authenticated and user == template_data.profile_user %}
+                        <button type="button" class="profile-edit-btn" data-bs-toggle="modal" data-bs-target="#locationModal" style="margin-left:-5px;">&#9998</button>
+                    {% endif %}</p>
+                </div>
+
                 {% if user.is_authenticated and user == template_data.profile_user %}
                     {% if user.is_seeker %}
                     <button type="button" class="primary-hover-btn" data-bs-toggle="modal" data-bs-target="#hiddenModal" style="margin-left:auto;">Edit Privacy</button>
@@ -32,12 +39,6 @@
                 </div>
                 {% endif %}
             </div>
-
-            <!--
-            {% if template_data.is_seeker %}
-                <h5>Job Seeker</h5>
-            {% endif %}
-            -->
             {% if template_data.is_recruiter %}
                 <h5>Recruiter at <b>{{ template_data.recruiter_user.company }}</b></h5>
             {% endif %}
@@ -575,6 +576,41 @@
   </div>
 </div>
 
+<div class="modal fade" id="locationModal" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Change Location</strong></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div id="autocomplete-container" class="mb-2"></div>
+                <div class="mb-3" style="display:none;">
+                    <label class="form-label"></label>
+                    <textarea class="form-control" name="subfield">location</textarea>
+                </div>
+                <div>
+                    <input type="hidden" name="street" id="street" />
+                    <input type="hidden" name="city" id="city" />
+                    <input type="hidden" name="state" id="state" />
+                    <input type="hidden" name="postal_code" id="postal_code" />
+                    <input type="hidden" name="country" id="country" />
+                    <input type="hidden" name="latitude" id="latitude" />
+                    <input type="hidden" name="longitude" id="longitude" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="secondary-hover-btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="primary-hover-btn">Submit</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
   $(document).ready(function () {
@@ -630,5 +666,13 @@
     document.getElementById("edit-degree-name").value = button.getAttribute("data-degree-name") || "";
   });
 </script>
+
+<script
+  src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places&callback=initAutocomplete"
+  async
+  defer
+></script>
+
+<script src="{% static 'js/location.js' %}"></script>
 
 {% endblock content %}
