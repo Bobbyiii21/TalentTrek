@@ -2,16 +2,9 @@
 
 <div class="p-3">
   <div class="container-fluid">
-    <div class="row mt-3">
-      <div class="col mx-auto mb-3" style="color: var(--secondary)">
-        {% if template_data.is_recruiter %}
-        <a href="{% url 'posting.create' %}">Create a Job Posting</a>
-        {% endif %}
-      </div>
-    </div>
-    <div class="row">
+    <div class="row mt-3" style="display:flex;">
       <!--Filters -->
-      <div class="col-md-2 mb-3">
+      <div class="col-md-2 mb-3" style="flex:1;">
         <h5>Filters</h5>
         <form method="GET">
           <!--Search Filter-->
@@ -154,7 +147,7 @@
       </div>
 
       <!--Job Postings-->
-  <div class="col-md-9">
+  <div class="col-md-9" style="flex:4;">
     {% if template_data.my_postings %}
     <div style="display:flex;align-items:center;">
         <h4>My Posts</h4>
@@ -350,7 +343,7 @@
       </div>
 
       <!--Map Column-->
-      <div class="col-md-4">
+      <div class="col-md-4" style="flex:3;">
         <div class="sticky-top" style="top: 1rem">
           <h5>Job Locations</h5>
           <div

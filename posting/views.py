@@ -224,10 +224,12 @@ def save_post(posting, request):
 
     if not posting.country:
         posting.location = 'No location specified'
+    elif not posting.state:
+        posting.location = posting.country.title()
     elif posting.state and not posting.city:
-        posting.location = f"{posting.state}, {posting.country}"
+        posting.location = f"{posting.state.title()}, {posting.country.title()}"
     elif posting.city:
-        posting.location = f"{posting.city}, {posting.state}"
+        posting.location = f"{posting.city.title()}, {posting.state.title()}"
 
     posting.save()
 

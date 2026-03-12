@@ -53,7 +53,7 @@
                 <button type="button" class="btn profile-btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" onmouseover="this.style.color='white'">
                   <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
-                <ul class="dropdown-menu" style="z-index:5;position:absolute;position-anchor: --settings-anchor;top: anchor(--settings-anchor bottom);left: anchor(--settings-anchor center);transform: translateX(-50%);">
+                <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">My Profile</a></li>
                   <li><a class="dropdown-item" href="{% url 'applications.index' %}">My Applications</a></li>
                   <li><a class="dropdown-item" href="{% url 'chat.index' %}">Messages</a></li>

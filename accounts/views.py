@@ -11,6 +11,7 @@ from skills.models import Skill
 import home.notifications as home_notif
 from posting.models import Post
 from applications.models import Application
+from TalentTrek import settings
 
 
 def normalize_link(url: str) -> str:
@@ -152,6 +153,26 @@ def profiles(request, user_link):
                 user.pfp.delete()
                 user.pfp = request.FILES['pfp_upload']
                 user.save()
+
+        if updated == 'location':
+            user.street = request.POST.get('street', '').strip()
+            user.city = request.POST.get('city', '').strip().title()
+            user.state = request.POST.get('state', '').strip().upper()
+            user.postal_code = request.POST.get('postal_code', '').strip()
+            user.country = request.POST.get('country', '').strip().title()
+            user.latitude = request.POST.get('latitude')
+            user.longitude = request.POST.get('longitude')
+            user.latitude = float(user.latitude) if user.latitude else None
+            user.longitude = float(user.longitude) if user.longitude else None
+            if not user.country:
+                user.location = 'No location specified'
+            elif not user.state:
+                user.location = user.country.title()
+            elif user.state and not user.city:
+                user.location = f"{user.state.title()}, {user.country.title()}"
+            elif user.city:
+                user.location = f"{user.city.title()}, {user.state.title()}"
+            user.save()
             
         elif user.is_seeker:
             if updated == 'hidden':
@@ -298,7 +319,7 @@ def profiles(request, user_link):
                 recruiter_user.save()
                 template_data['links'][:] = [item for item in template_data['links'] if item != to_remove]
 
-    return render(request, 'accounts/profiles.html', {'template_data': template_data})
+    return render(request, 'accounts/profiles.html', {'template_data': template_data,         'google_api_key': settings.GOOGLE_API_KEY,})
 
 def index(request):
     profiles = TTUser.objects.all().order_by('first_name')
