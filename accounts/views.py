@@ -9,8 +9,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import CustomUserCreationForm, CustomErrorList
 from .models import JobSeeker, Recruiter, Education, Experience, TTUser
 from .tables import RecruiterViewTable
+from django.db.models import ExpressionWrapper, FloatField
 from skills.models import Skill
 import home.notifications as home_notif
+from home.distance import longlatdistance
 from posting.models import Post, Query
 from applications.models import Application
 from TalentTrek import settings
@@ -349,7 +351,6 @@ def build_filter_queryset(request):
     }
     order_by = SORT_MAP.get(sort_param, ('user__first_name', 'user__last_name'))
     queryset = queryset.order_by(*order_by).distinct()
-    distance_filter = request.GET.get('distance', '67000').strip()
     return queryset
 
 @login_required
@@ -358,8 +359,18 @@ def recruiter_view(request):
     recruiter = Recruiter.objects.get(user=request.user)
     queryset = build_filter_queryset(request)
     # hold values of skills filter in a variable
+    
+    seekers = list(queryset)
+    for seeker in seekers:
+        seeker.distance = longlatdistance(recruiter.user, seeker.user)
+        
+    filtered_seekers = [
+    s for s in seekers
+    if s.distance is not None and s.distance <= int(request.GET.get('distance', '67000').strip())
+    ]
+    
     template_data = {
-        'table_data': RecruiterViewTable(queryset),
+        'table_data': RecruiterViewTable(filtered_seekers),
         'title': 'Recruiter View',
         'skills': Skill.objects.all().order_by('name'),
     }
