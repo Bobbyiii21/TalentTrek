@@ -4,7 +4,7 @@
   <div class="container-fluid">
     <div class="row mt-3" style="display:flex;">
       <!--Filters -->
-      <div class="col-md-2 mb-3" style="flex:1;">
+      <div class="col-md-2 mb-3" style="flex:1.5;">
         <h5>Filters</h5>
         <form method="GET">
           <!--Search Filter-->
@@ -24,7 +24,7 @@
           </div>
           <!--Distance Filter-->
           <div class="mb-3">
-            <label class="form-label">Distance from Me:</label>
+            <label class="form-label">Distance from Me/Commute Radius:</label>
             <select class="form-select" name="distance_between">
               <option value="">Any</option>
               {% for value, label in template_data.distance_choices %}

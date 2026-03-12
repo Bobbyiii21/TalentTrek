@@ -1,5 +1,3 @@
-from math import cos, sqrt
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Case, When, IntegerField, Value
@@ -12,6 +10,7 @@ from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
 from home.notifications import update_post_notifications
+from home.distance import longlatdistance
 import csv
 from django.http import HttpResponse
 
@@ -54,9 +53,9 @@ def index(request):
         posting_list = []
         for posting in postings:
             if not request.user.is_anonymous and posting.latitude and posting.longitude:
-                if ok_distance_between(request.user, posting.latitude, posting.longitude, distance_between):
-                    posting_list.append(posting.id)      
-                postings = postings.filter(pk__in=posting_list)
+                if longlatdistance(request.user, posting) <= int(distance_between):
+                    posting_list.append(posting.id) 
+        postings = postings.filter(pk__in=posting_list)
 
     if job_type:
         postings = postings.filter(job_type=job_type)
@@ -308,12 +307,3 @@ def export_csv(request):
         response['content-Disposition'] = 'attachment; filename="jobpostingdata.csv"'
         return response
     return redirect('accounts.index')
-
-def ok_distance_between(user, lat2, long2, value):
-    d_lat = 69.1 * (user.latitude - lat2)
-    d_long = 69.1 * ((user.longitude * cos(user.latitude)) - (long2 * cos(lat2)))
-    distance = sqrt(d_lat ** 2 + d_long ** 2)
-    print(distance <= int(value))
-    print(distance)
-    print(value)
-    return(distance <= int(value))
