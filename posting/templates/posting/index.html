@@ -20,12 +20,17 @@
           <!--Location Filter-->
           <div class="mb-3">
             <label class="form-label">Location:</label>
-            <input
-              type="text"
-              class="form-control"
-              name="location"
-              value="{{ request.GET.location }}"
-            />
+            <input type="text" class="form-control" name="location" value="{{ request.GET.location }}"/>
+          </div>
+          <!--Distance Filter-->
+          <div class="mb-3">
+            <label class="form-label">Distance from Me:</label>
+            <select class="form-select" name="distance_between">
+              <option value="">Any</option>
+              {% for value, label in template_data.distance_choices %}
+                <option value="{{ value }}" {% if template_data.filter_distance_choices %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
           </div>
           <!--Job Type Filter-->
           <div class="mb-3">
@@ -243,8 +248,9 @@
             </div>
           </div>
         </div>
-        {% empty %}
-        <p>No postings found.</p>
+        {% if empty %}
+          <p>No postings found.</p>
+        {% endif %}
         {% endfor %}
 
         <h4>Posts</h4>

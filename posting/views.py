@@ -1,3 +1,5 @@
+from math import cos, sqrt
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Case, When, IntegerField, Value
@@ -20,6 +22,7 @@ def index(request):
 
     search = request.GET.get('search', '').strip()
     location_search = request.GET.get('location', '').strip()
+    distance_between = request.GET.get('distance_between')
     job_type = request.GET.get('job_type')
     location_type = request.GET.get('location_type')
     visa = request.GET.get('visa')
@@ -46,6 +49,14 @@ def index(request):
             Q(state__icontains=location_search) |
             Q(country__icontains=location_search)
         )
+
+    if distance_between:
+        posting_list = []
+        for posting in postings:
+            if not request.user.is_anonymous and posting.latitude and posting.longitude:
+                if ok_distance_between(request.user, posting.latitude, posting.longitude, distance_between):
+                    posting_list.append(posting.id)      
+                postings = postings.filter(pk__in=posting_list)
 
     if job_type:
         postings = postings.filter(job_type=job_type)
@@ -80,6 +91,7 @@ def index(request):
         'other_postings': other_postings,
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
+        'distance_choices': [('10', '10 Miles'), ('30', '30 Miles'), ('50', '50 Miles'), ('100', '100 Miles'),],
         'filter_job_type': job_type,
         'filter_location_type': location_type,
         'filter_visa': visa,
@@ -130,7 +142,6 @@ def post(request, id):
             user = JobSeeker.objects.filter(user=request.user)[0]
             if (user.account_is_hidden or user.education_is_hidden or user.experience_is_hidden or user.links_is_hidden):
                 user_details_hidden = True
-    print(user_details_hidden)
 
     template_data = {
         'title': f"{post.company_name} - {post.job_title}",
@@ -140,11 +151,6 @@ def post(request, id):
         'user': user,
         'user_details_hidden': user_details_hidden,
     }
-    
-    print(template_data['user'].account_is_hidden)
-    print(template_data['user'].experience_is_hidden)
-    print(template_data['user'].education_is_hidden)
-    print(template_data['user'].links_is_hidden)
 
     # --
     template_data['skills'] = Skill.objects.all()
@@ -302,3 +308,12 @@ def export_csv(request):
         response['content-Disposition'] = 'attachment; filename="jobpostingdata.csv"'
         return response
     return redirect('accounts.index')
+
+def ok_distance_between(user, lat2, long2, value):
+    d_lat = 69.1 * (user.latitude - lat2)
+    d_long = 69.1 * ((user.longitude * cos(user.latitude)) - (long2 * cos(lat2)))
+    distance = sqrt(d_lat ** 2 + d_long ** 2)
+    print(distance <= int(value))
+    print(distance)
+    print(value)
+    return(distance <= int(value))
