@@ -10,6 +10,7 @@ class RecruiterViewTable(tables.Table):
         order_by=('user__first_name', 'user__last_name'))
     skills = tables.Column(accessor='user', verbose_name='Skills')
     location = tables.Column(accessor='user', verbose_name='Location')
+    distance = tables.Column(accessor='distance', verbose_name='Distance')
     resume = tables.Column(accessor='user', verbose_name='Resume')
     email = tables.TemplateColumn(
         verbose_name='Email',
@@ -51,9 +52,19 @@ class RecruiterViewTable(tables.Table):
         except Exception:
             pass
         return 'No resume available'
-
+    
+    def render_distance(self, value):
+        if value is None:
+            return "No distance available"
+        elif value == 67000:
+            return None
+        try:
+            return f"{int(value)} miles away"
+        except Exception:
+            return "No distance available"
+        
     class Meta:
         model = JobSeeker
-        fields = ('name', 'skills', 'location', 'resume', 'email', 'message')
+        fields = ('name', 'skills', 'location', 'distance', 'resume', 'email', 'message')
         attrs = {'class': 'table table-striped table-bordered'}
         orderable = False
