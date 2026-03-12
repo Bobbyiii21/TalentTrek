@@ -204,14 +204,14 @@
     <div class="container">
       <div class="row mt-3">
         <div class="col-md-6 mx-auto">
-          <h2>Applications</h2>
+          <h2>My Applications</h2>
           <hr />
           {% if template_data.applications %}
             {% for application in template_data.applications %}
               <div style="padding: 0.5rem 0rem">
                 <div class="card">
                   <h5 class="card-header">
-                    <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-dark text-decoration-none">
+                    <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-decoration-none">
                       {{ application.posting.company_name }} - {{ application.posting.job_title }}
                     </a>
                   </h5>

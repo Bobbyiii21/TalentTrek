@@ -18,8 +18,8 @@
     <!-- Header -->
     <nav class="p-1.5 navbar navbar-dark navbar-gradient navbar-expand-lg">
       <div class="container align-items-center">
-        <a class="navbar-brand mt-2" href="{% url 'home.index' %}">
-          <img src="{% static 'img/TTLogo_white_outline.svg' %}" alt="logo" height="30" />
+        <a class="navbar-brand mt-2 navbar-logo" href="{% url 'home.index' %}">
+          <img  src="{% static 'img/TTLogo_white_outline.svg' %}" alt="logo" height="30" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
           aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,18 +66,20 @@
     </nav>
     <!-- Notification Popup and Amount bubble -->
     {% if base_data_notifications_amount > 0 %}
-    <div class="notification-amount" onmouseover="notificationsHover()" onmouseout="notificationsHover()"><p style="transform:translateY(-5px);">{{ base_data_notifications_amount }}</p></div>
+    <div class="notification-amount" onmouseover="notificationsHover()" onmouseout="notificationsHover()">
+      <p style="transform:translateY(-3px);">{{ base_data_notifications_amount }}</p>
+    </div>
     {% endif %}
 
     {% if user.is_authenticated %}
     <div class="notification-popup hidden" onmouseover="this.classList.remove('hidden');" onmouseleave="notificationsHover()">
       <textarea id="has-unread-notifications" style="display:none;">{% if base_data_notifications %}True{% else %}False{% endif %}</textarea>
       {% for notification in base_data_notifications %}
-        <div style="display: flex; align-items: center;">
+        <div class="px-2" style="display: flex; align-items: center;">
           {% if notification.image %}
               <img src="{{ notification.image.url }}" class="profile-picture" style="width:4vw;height:4vw;" alt="Notification Image">
           {% else %}
-              <img src="{% static 'img/job_seeker.png' %}" class="profile-picture"  style="width:4vw;height:4vw;" alt="Notification Image"/>
+              <img src="{% static 'img/job_seeker.png' %}" class="profile-picture" style="width:4vw;height:4vw;" alt="Notification Image"/>
           {% endif %}
           <div style="margin-left:5px; display:flex; flex-direction:column;">
               <p style="text-align:right;color:grey;">{{ notification.date|naturaltime }}</p>

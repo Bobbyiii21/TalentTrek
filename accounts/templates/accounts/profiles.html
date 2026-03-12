@@ -4,7 +4,7 @@
 <div class="p-3 mt-4">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-8">
+      <div class="col-md-8" style="align-items: center;">
         <div>
             <div class="container" style="display: flex; align-items: center;">
                 {% if template_data.profile_user.pfp %}
@@ -259,7 +259,7 @@
                 {% endif %}
                 <div class="profile-info-box">
                     {% for link in template_data.links %}
-                        <div style="display:flex;">
+                        <div style="display:flex; align-items:center; justify-content:center;">
                         <a href="{{ link }}" target="_blank">{{ link }}</a>
                         {% if user.is_authenticated and user == template_data.profile_user %}
                         <form method="POST" style="margin-left:auto;">
@@ -279,8 +279,8 @@
                 {% if user.is_authenticated and user == template_data.profile_user %}
                 <form method="POST"><div style="display:flex;">
                     {% csrf_token %}
-                    <textarea name="subfield" style="display:none;">link_add</textarea>
-                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;width:100%;"required>
+                    <textarea name="subfield" style="display:none;"">link_add</textarea>
+                    <input class="link-input ps-2" placeholder="Add a new link..." type="text" name="link"required>
                     <button type="submit" class="profile-check-btn" style="color:green;margin-left:0">&#10010</button>
                 </div></form>
                 {% endif %}
@@ -364,7 +364,7 @@
                         {% endif %}                    
                     </div>
                     <div class="profile-info-box">
-                        <p>{{ template_data.profile_user.headline }}</p>
+                        <p class="mt-1">{{ template_data.profile_user.headline }}</p>
                     </div>
                     <hr>
                 {% elif user.is_authenticated and user == template_data.profile_user %}
@@ -376,7 +376,7 @@
                 {% endif %}
             {% if user.is_authenticated and user == template_data.profile_user or not template_data.recruiter_user.links_is_hidden and template_data.recruiter_user.links %}
                 <h2 class="profile-section-header">Links</h2>
-                <div class="profile-info-box">
+                <div class="profile-info-box pt-3">
                     {% for link in template_data.links %}
                         <div style="display:flex;">
                         <a href="{{ link }}">{{ link }}</a>
@@ -399,7 +399,7 @@
                 <form method="POST"><div style="display:flex;">
                     {% csrf_token %}
                     <textarea name="subfield" style="display:none;">link_add</textarea>
-                    <input type="text" name="link" style="margin:5px; border-radius:0.375rem;"required>
+                    <input class="link-input ps-2" placeholder="Add a new link..." type="text" name="link" required>
                     <button type="submit" class="profile-check-btn" style="color:green;margin-left:0">&#10010</button>
                 </div></form>      
                 {% endif %}
@@ -454,7 +454,7 @@
 
 <div class="modal fade" id="headlineModal" data-bs-backdrop="static" data-bs-keyboard="false"
     tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
             <h1 class="modal-title fs-5" id="applyModalLabel"><strong>Edit Headline</strong></h1>

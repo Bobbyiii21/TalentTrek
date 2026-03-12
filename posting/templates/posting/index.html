@@ -501,8 +501,8 @@
       const position = { lat: post.lat, lng: post.lng };
 
       const pin = new PinElement({
-        background: post.isMine ? "#ff6b35" : "#0d6efd",
-        borderColor: post.isMine ? "#cc4a1a" : "#0a4fb4",
+        background: post.isMine ? "#ff6b35" : "var(--accent-dark)", //#0d6efd
+        borderColor: post.isMine ? "#cc4a1a" : "var(--accent)", //#0a4fb4
         glyphColor: "#ffffff",
       });
 
@@ -516,11 +516,11 @@
       const infoContent = `
         <div style="max-width: 220px; font-family: inherit;">
           <strong style="font-size: 0.95rem;">
-            <a href="${post.url}" style="color: #0d6efd; text-decoration: none;">${post.title}</a>
+            <a href="${post.url}" style="color: var(--accent-dark); text-decoration: none;">${post.title}</a>
           </strong>
           <p style="margin: 4px 0 2px; font-size: 0.85rem; color: #555;">${post.company}</p>
           <p style="margin: 0 0 2px; font-size: 0.8rem; color: #888;">${post.location}</p>
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #0d6efd;">${post.salary}</p>
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--primary);">${post.salary}</p>
         </div>
       `;
 
