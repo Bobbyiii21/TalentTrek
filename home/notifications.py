@@ -33,6 +33,16 @@ def update_seeker_notifications(user: TTUser):
         except:
             if not calculate_fit(seekerSkills, post.skills.all(), 0.1): continue
             notify(user, f'''Based on your profile, we recommend that you apply for the {post.job_title} position at {post.company_name}. <a href="VIEW_URL">Click here</a> to view details.''', link, post.image)
+    queryPool = Query.objects.all()
+    link = reverse('accounts.profiles', kwargs={'user_link': str(user)})
+    for query in queryPool:
+        try:
+            Notification.objects.get(recipient=query.recruiter.user, viewslink=link)
+            continue
+        except:
+            if not matches_query(seeker, query): continue
+            notify(query.recruiter.user, f'''Based on a search query you saved, <a href="VIEW_URL">{user.first_name} {user.last_name}</a> is a viable candidate.''', link, user.pfp)
+
 
 def update_recruiter_notifications(user: TTUser):
     #Recommend job seekers to hire
@@ -47,10 +57,14 @@ def update_recruiter_notifications(user: TTUser):
             Notification.objects.get(recipient=user, viewslink=link)
             continue
         except:
+            query_notified = False
             for query in queries:
-                QUERY_STUFF
-                notify(user, f'''Based on a search query you saved, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a good fit for the {query.posting.job_title} position.''', link, seeker.user.pfp)
+                if not matches_query(seeker, query): continue
+                notify(user, f'''Based on a search query you saved, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a viable candidate.''', link, seeker.user.pfp)
+                query_notified = True
+                break
             #Make sure somehow that you don't send a notification from the same user multiple times
+            if query_notified: continue
             if len(seeker.skills.all()) == 0: continue
             for post in posts:
                 if Application.objects.filter(applicant=seeker.user, posting=post): continue
@@ -58,6 +72,7 @@ def update_recruiter_notifications(user: TTUser):
                 postingSkills = post.skills.all()
                 if not calculate_fit(seeker.skills.all(), postingSkills, 0.1): continue
                 notify(user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a good fit for the {post.job_title} position.''', link, seeker.user.pfp)
+                break
 
 
 
@@ -69,7 +84,7 @@ def update_unsupported_user_notifications(user: TTUser):
     notify(user, f'''You haven't unlocked all features of Talent Trek. <a href="VIEW_URL">Click here</a> to finish setting up your account.''', reverse('accounts.onboard'))
 
 def update_onboarded_user_notifications(user: TTUser):
-    notiToDelete = Notification.objects.filter(recipient=user, viewslink=reverse('accounts.onboard'))
+    notiToDelete = Notification.objects.get(recipient=user, viewslink=reverse('accounts.onboard'))
     notiToDelete.delete()
 
 #Sends multiple Job Seekers notifications about a single posting
@@ -101,8 +116,9 @@ def calculate_fit(seekerSkills, postingSkills, threshold):
     return threshold <= (matches / uniqueSkills)
 
 def matches_query(seeker: JobSeeker, query: Query):
-    query_skills = query.skills.all
-    for skill in query_skills:
-        if skill not in seeker.skills.all: return False
-    return longlatdistance(seeker, query.recruiter) <= query.distance
+    for skill in query.skills.all():
+        if skill not in seeker.skills.all(): return False
+    if not seeker.user.location: return False
+    #print(f"Distance: {longlatdistance(seeker.user, query.recruiter.user)}")
+    return longlatdistance(seeker.user, query.recruiter.user) <= query.distance
     

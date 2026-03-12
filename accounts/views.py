@@ -307,6 +307,8 @@ def profiles(request, user_link):
             if request.POST['subfield'] == 'resume_delete':
                 seeker_user.resume.delete()
                 seeker_user.save()
+                
+            home_notif.update_seeker_notifications(user)
 
         elif user.is_recruiter:
             if request.POST['subfield'] == 'link_add':
@@ -320,6 +322,7 @@ def profiles(request, user_link):
                 recruiter_user.links = recruiter_user.links.replace(f"{to_remove},", '')
                 recruiter_user.save()
                 template_data['links'][:] = [item for item in template_data['links'] if item != to_remove]
+
 
     return render(request, 'accounts/profiles.html', {'template_data': template_data,         'google_api_key': settings.GOOGLE_API_KEY,})
 
@@ -363,9 +366,10 @@ def recruiter_view(request):
     template_data['skills_filter'] = [s for s in request.GET.getlist('skills') if s.strip()]
     if request.method == 'POST':
         if request.POST['subfield'] == 'query_add':
+            render(request, 'accounts/table.html', {'template_data': template_data})
             query = Query()
             query.recruiter = recruiter
-            query.distance = request.GET['distance'].strip()
+            query.distance = request.GET['distance']
             query.save()
             skills_list = request.GET.getlist('skills')
             for skill in skills_list:

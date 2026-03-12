@@ -128,11 +128,6 @@
           </div>
         </div>
         </form>
-        <form method="POST" style="position:absolute; position-anchor:--filter-anchor; top:anchor(--filter-anchor top); left:anchor(--filter-anchor right); margin-left:5px;">
-          {% csrf_token %}
-          <textarea name="subfield" style="display:none;">query_add</textarea>
-          <button type="submit" class="secondary-hover-btn">Save Query</button>
-        </form>
 
         <hr />
 
@@ -141,6 +136,11 @@
         {% else %}
           <p>No candidates match your filters.</p>
         {% endif %}
+        <form method="POST">
+          {% csrf_token %}
+          <textarea name="subfield" style="display:none;">query_add</textarea>
+          <button type="submit" class="secondary-hover-btn">Save Current Query</button>
+        </form>
       </div>
     </div>
     <hr>
@@ -155,6 +155,7 @@
         {% for query in template_data.queries %}
         <tr>
           <td>
+            {% if query.skills.all.count == 0 %}None{% endif %}
             {% for skill in query.skills.all %}
             {{ skill.name }}
             {% if not forloop.last %},{% endif %}

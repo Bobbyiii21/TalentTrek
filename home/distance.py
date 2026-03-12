@@ -6,6 +6,8 @@ def longlatdistance(obj1, obj2):
         lon1 = obj1.longitude
         lat2 = obj2.latitude
         lon2 = obj2.longitude
+        if not (isinstance(lat1, float) and isinstance(lon1, float) and isinstance(lat2, float) and isinstance(lon2, float)):
+            return 67000
     except:
         return 67000
     r = 3959
