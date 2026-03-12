@@ -9,9 +9,9 @@
         {% endif %}
       </div-->
     </div>
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" style="display:flex;">
       <!--Filters -->
-      <div class="col-md-2 mb-3 mt-3">
+      <div class="col-md-2 mb-3 mt-3" style="flex:1.5;">
         <h4>Filters</h4>
         <form method="GET">
           <!--Search Filter-->
@@ -159,7 +159,7 @@
       </div>
 
       <!--Job Postings-->
-  <div class="col-md-8">
+  <div class="col-md-8" style="flex:2.5;">
     {% if template_data.my_postings %}
     <div style="display: flex; align-items: center;">
         <h4 class="mt-1">My Posts</h4>
@@ -358,8 +358,8 @@
       </div>
 
       <!--Map Column-->
-      <div class="col-md-4" style="flex:3;">
-        <div class="sticky-top" style="top: 1rem">
+      <div class="col-md-4" style="flex:2;">
+        <div class="sticky" style="top: 1rem">
           <h5>Job Locations</h5>
           <div
             id="job-map"
