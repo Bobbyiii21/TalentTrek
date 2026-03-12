@@ -28,6 +28,9 @@ def index(request):
     use_salary = request.GET.get('use_salary')
     salary_min = request.GET.get('salary_min')
     salary_max = request.GET.get('salary_max')
+    skill_ids = request.GET.getlist('skills')
+    if skill_ids:
+        postings = postings.filter(skills__id__in=skill_ids).distinct()
 
     if search:
         postings = postings.annotate(
@@ -99,6 +102,8 @@ def index(request):
         'filter_use_salary': use_salary,
         'is_recruiter': is_recruiter,
         'google_api_key': settings.GOOGLE_API_KEY,
+        'skills': Skill.objects.all().order_by('name'),
+        'filter_skills': skill_ids,
     }
 
     return render(request, 'posting/index.html', {'template_data': template_data})
