@@ -33,16 +33,7 @@ class ApplicationsTable(tables.Table):
 
     def render_location(self, value):
         try:
-            if value.city and value.region and value.country:
-                return value.city.name + ', ' + value.region.name + ', ' + value.country.name
-            elif value.city and value.region:
-                return value.city.name + ', ' + value.region.name
-            elif value.city and value.country:
-                return value.city.name + ', ' + value.country.name
-            elif value.region and value.country:
-                return value.region.name + ', ' + value.country.name
-            else:
-                return 'No location available'
+            return value.location.replace('None','No location available')
         except Exception:
             return 'No location available'
 

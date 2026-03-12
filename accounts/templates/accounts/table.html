@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load django_tables2 %}
+{% load static %}
+
+{% block content %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-12">
+        <h2>{{ template_data.title }}</h2>
+        <hr />
+
+        <form method="GET" action="" >
+          <div class="row g-2 mb-3 align-items-end">
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Name</span>
+              <input
+                type="text"
+                class="form-control"
+                name="search"
+                value="{{ request.GET.search }}"
+                placeholder="Search candidates"
+              >
+            </div>
+          </div>
+
+          <!-- <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Skills</span>
+              <select
+                name="skills"
+                class="form-select form-select-sm"
+                onchange="this.form.submit()"
+              >
+                <option value="">All Skills</option>
+                {% for skill in template_data.skills %}
+                  <option
+                    value="{{ skill.name }}"
+                    {% if request.GET.skills == skill.name %}selected{% endif %}
+                  >
+                    {{ skill.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div> -->
+
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Sort by</span>
+              <select
+                name="sort"
+                class="form-select form-select-sm"
+                onchange="this.form.submit()"
+              >
+                <option value="user__first_name"
+                        {% if request.GET.sort == "user__first_name" or not request.GET.sort %}
+                          selected
+                        {% endif %}
+                >
+                  Name (A–Z)
+                </option>
+                <option value="-user__first_name"
+                        {% if request.GET.sort == "-user__first_name" %}selected{% endif %}
+                >
+                  Name (Z–A)
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">Location</span>
+              <select
+                name="distance"
+                class="form-select form-select-sm"
+              >
+                <option value="10"
+                        {% if request.GET.distance == "10"  %}
+                          selected
+                        {% endif %}
+                >
+                  Within 10 miles
+                </option>
+                <option value="30"
+                        {% if request.GET.distance == "30" %}selected{% endif %}
+                >
+                  Within 30 miles
+                </option>
+                <option value="50"
+                        {% if request.GET.distance == "50" %}selected{% endif %}
+                >
+                  Within 50 miles
+                </option>
+                <option value="100"
+                        {% if request.GET.distance == "100" %}selected{% endif %}
+                >
+                  Within 100 miles
+                </option>
+                <option value="67000"
+                        {% if request.GET.distance == "67000" or not request.GET.distance %}selected{% endif %}
+                >
+                Worldwide
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row g-2 mb-3 align-items-end">
+          <div class="col-auto">
+            <div class="input-group input-group-sm">
+              <!-- <span class="input-group-text">Skills</span> -->
+              <select name="skills" id="skills" class="form-select" multiple>
+                {% for skill in template_data.skills %}
+                  <option
+                    value="{{ skill.id }}"
+                    {% if skill.id|stringformat:"s" in template_data.skills_filter %}selected{% endif %}
+                  >
+                    {{ skill.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-auto" style="anchor-name:--filter-anchor;">
+            <button type="submit" class="primary-hover-btn">Apply Filter</button>
+          </div>
+        </div>
+        </form>
+
+        <hr />
+
+        {% if template_data.table_data %}
+          {% render_table template_data.table_data %}
+        {% else %}
+          <p>No candidates match your filters.</p>
+        {% endif %}
+        <form method="POST">
+          {% csrf_token %}
+          <textarea name="subfield" style="display:none;">query_add</textarea>
+          <button type="submit" class="secondary-hover-btn">Save Current Query</button>
+        </form>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <h4>My Queries</h4>
+      <table style="border-collapse:collapse; border:1px solid gray;">
+        <tr style="border-collapse:collapse; border:1px solid gray;">
+          <th>Skills</th>
+          <th>Location</th>
+          <th></th>
+        </tr>
+        {% for query in template_data.queries %}
+        <tr>
+          <td>
+            {% if query.skills.all.count == 0 %}None{% endif %}
+            {% for skill in query.skills.all %}
+            {{ skill.name }}
+            {% if not forloop.last %},{% endif %}
+            {% endfor %}
+          </td>
+          <td>{% if query.distance > 25000 %}Worldwide{% else %}Within {{ query.distance }} miles{% endif %}</td>
+          <td><form method="POST">
+            {% csrf_token %}
+            <textarea name="subfield" style="display:none;">query_delete</textarea>
+            <textarea name="query_id" style="display:none;">{{ query.id }}</textarea>
+            <button type="submit" style="color:crimson; border:none; background-color:rgba(0,0,0,0);margin-left:auto;">&#10005</button>
+          </form></td>
+        </tr>
+        {% endfor %}
+      </table>
+
+    </div>
+  </div>
+</div>
+<script>
+  window.addEventListener('load', function () {
+    $("#skills").select2({
+      placeholder: "Skills...",
+      allowClear: true,
+      width: "resolve",
+      height: "2px",
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock content %}

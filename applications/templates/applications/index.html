@@ -14,12 +14,23 @@
       </div>
       <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link {% if template_data.view_mode == 'board' %} active {% endif %}" id="pills-board-tab" data-bs-toggle="pill" data-bs-target="#pills-board" type="button" role="tab" aria-controls="pills-board" aria-selected="{% if template_data.view_mode == 'board' %} true {% else %} false {% endif %}">Board View</button>
+          <button class="nav-link {% if template_data.view_mode == 'board' %} active {% endif %}" id="pills-board-tab" data-bs-toggle="pill" data-bs-target="#pills-board" type="button" role="tab" aria-controls="pills-board" aria-selected="{% if template_data.view_mode == 'board' %} true {% else %} false {% endif %}" onclick="pills_board_map_hide()">Board View</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link {% if template_data.view_mode != 'board' %} active {% endif %}" id="pills-table-tab" data-bs-toggle="pill" data-bs-target="#pills-table" type="button" role="tab" aria-controls="pills-table" aria-selected="{% if template_data.view_mode != 'board' %} true {% else %} false {% endif %}">Table View</button>
+          <button class="nav-link {% if template_data.view_mode != 'board' and template_data.view_mode != 'map' %} active {% endif %}" id="pills-table-tab" data-bs-toggle="pill" data-bs-target="#pills-table" type="button" role="tab" aria-controls="pills-table" aria-selected="{% if template_data.view_mode != 'board' and template_data.view_mode != 'map' %} true {% else %} false {% endif %}" onclick="pills_board_map_hide()">Table View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link {% if template_data.view_mode == 'map' %} active {% endif %}" id="pills-map-tab" data-bs-toggle="pill" data-bs-target="#pills-map" type="button" role="tab" aria-controls="pills-map" aria-selected="{% if template_data.view_mode == 'map' %} true {% else %} false {% endif %}" onclick="pills_board_map_show()">Map View</button>
         </li>
       </ul>
+      <script>
+        function pills_board_map_show() {
+          document.querySelector('#pills-board-map').classList.add('active', 'show');
+        };
+        function pills_board_map_hide() {
+          document.querySelector('#pills-board-map').classList.remove('active', 'show');
+        };
+      </script>
       <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade {% if template_data.view_mode == 'board' %} show active {% endif %}" id="pills-board" role="tabpanel" aria-labelledby="pills-board-tab" tabindex="0">
           <div class="row mt-3">
@@ -95,7 +106,7 @@
         </div>
       </div>
         </div>
-        <div class="tab-pane fade {% if template_data.view_mode != 'board' %} show active {% endif %}" id="pills-table" role="tabpanel" aria-labelledby="pills-table-tab" tabindex="0">
+        <div class="tab-pane fade {% if template_data.view_mode != 'board' and template_data.view_mode != 'map' %} show active {% endif %}" id="pills-table" role="tabpanel" aria-labelledby="pills-table-tab" tabindex="0">
           {% if template_data.table_access %}
           <div class="m-3 col-12">
             <form method="GET" action="{% url 'applications.index' view_mode='table' %}" class="row g-2 mb-3 align-items-end">
@@ -165,22 +176,42 @@
           </div>
           {% endif %}
         </div>
+        <div class="tab-pane fade {% if template_data.view_mode == 'map' %} show active {% endif %}" id="pills-board-map" role="tabpanel" aria-labelledby="pills-map-tab" tabindex="0">
+      <div class="col-md-4">
+          <h5>Job Locations</h5>
+          <div
+            id="job-map"
+            style="
+              height: 600px;
+              width: 100%;
+              border-radius: 8px;
+              border: 1px solid #dee2e6;
+            "
+          ></div>
+          <p class="text-muted small mt-2">
+            <i class="bi bi-info-circle"></i>
+            Click a marker to see job details. Hover over a job card to
+            highlight it on the map.
+          </p>
+      </div>
+      </div>
       </div>
     </div>
   </div>
+
 {% else %} <!-- Job Seeker --->
   <div class="p-3">
     <div class="container">
       <div class="row mt-3">
         <div class="col-md-6 mx-auto">
-          <h2>Applications</h2>
+          <h2>My Applications</h2>
           <hr />
           {% if template_data.applications %}
             {% for application in template_data.applications %}
               <div style="padding: 0.5rem 0rem">
                 <div class="card">
                   <h5 class="card-header">
-                    <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-dark text-decoration-none">
+                    <a href="{% url 'posting.post' id=application.posting.id %}" class="job-title text-decoration-none">
                       {{ application.posting.company_name }} - {{ application.posting.job_title }}
                     </a>
                   </h5>
@@ -205,4 +236,145 @@
     </div>
   </div>
 {% endif %}
+
+
+<!--Google Maps JS-->
+<script>
+  const applicants = [
+
+    {% for seeker in template_data.applicants %}
+      {% if seeker.applicant.latitude and seeker.applicant.longitude %}
+      {
+        id: {{ seeker.applicant.id }},
+        name: "{{ seeker.applicant.first_name|escapejs }} {{ seeker.applicant.last_name|escapejs }}",
+        location: "{{ seeker.applicant.location|escapejs }}",
+        lat: {{ seeker.applicant.latitude }},
+        lng: {{ seeker.applicant.longitude }},
+        url: "{% url 'accounts.profiles' user_link=seeker.applicant.slugify_name %}",
+      },
+      {% endif %}
+    {% endfor %}
+  ];
+  //console.log(applicants);
+
+  let map;
+  let markers = {};
+  let activeInfoWindow = null;
+
+  async function initMap() {
+    const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+    const defaultCenter = { lat: 39.5, lng: -98.35 };
+
+    map = new Map(document.getElementById("job-map"), {
+      zoom: 4,
+      center: defaultCenter,
+      mapId: "job-map",
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+    });
+
+    if (applicants.length === 0) return;
+
+    const bounds = new google.maps.LatLngBounds();
+
+    applicants.forEach(function (seeker) {
+      const position = { lat: seeker.lat, lng: seeker.lng };
+
+      const pin = new PinElement({
+        background: "#0d6efd",
+        borderColor: "#0a4fb4",
+        glyphColor: "#ffffff",
+      });
+
+      const marker = new AdvancedMarkerElement({
+        position,
+        map,
+        title: seeker.name,
+        content: pin,
+      });
+
+      const infoContent = `
+        <div style="max-width: 220px; font-family: inherit;">
+          <strong style="font-size: 0.95rem;">
+            <a href="${seeker.url}" style="color: #0d6efd; text-decoration: none;">${seeker.name}</a>
+          </strong>
+          <p style="margin: 0 0 2px; font-size: 0.8rem; color: #888;">${seeker.location}</p>
+        </div>
+      `;
+
+      const infoWindow = new InfoWindow({ content: infoContent });
+
+      marker.addListener("gmp-click", function () {
+        if (activeInfoWindow) activeInfoWindow.close();
+        infoWindow.open(map, marker);
+        activeInfoWindow = infoWindow;
+        highlightCard(seeker.id);
+      });
+
+      markers[seeker.id] = { marker, pin, infoWindow };
+      bounds.extend(position);
+    });
+
+    if (applicants.length === 1) {
+      map.setCenter({ lat: applicants[0].lat, lng: applicants[0].lng });
+      map.setZoom(10);
+    } else {
+      map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
+    }
+
+    new markerClusterer.MarkerClusterer({ 
+      map, 
+      markers: Object.values(markers).map(m => m.marker),
+    });
+
+    map.addListener("gmp-click", function () {
+      if (activeInfoWindow) activeInfoWindow.close();
+      clearCardHighlight();
+    });
+
+    document.querySelectorAll(".posting-card").forEach(function (card) {
+      const postId = parseInt(card.dataset.postId);
+
+      card.addEventListener("mouseenter", function () {
+        if (markers[postId]) {
+          markers[postId].pin.classList.add("marker-bounce");
+        }
+      });
+      card.addEventListener("mouseleave", function () {
+        if (markers[postId]) {
+          markers[postId].pin.classList.remove("marker-bounce");
+        }
+      });
+    });
+  }
+
+  function highlightCard(postId) {
+    clearCardHighlight();
+    const card = document.querySelector(`.posting-card[data-post-id="${postId}"]`);
+    if (card) {
+      card.style.outline = "2px solid #0d6efd";
+      card.style.boxShadow = "0 0 0 4px rgba(13,110,253,0.15)";
+      card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+  function clearCardHighlight() {
+    document.querySelectorAll(".posting-card").forEach(function (c) {
+      c.style.outline = "";
+      c.style.boxShadow = "";
+    });
+  }
+
+  window.initMap = initMap;
+</script>
+
+<script
+  src="https://maps.googleapis.com/maps/api/js?key={{ template_data.google_api_key }}&callback=initMap&loading=async"
+  async
+  defer
+></script>
+
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 {% endblock content %}

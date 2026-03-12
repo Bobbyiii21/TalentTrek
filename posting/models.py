@@ -1,6 +1,6 @@
 from django.db import models
 from skills.models import Skill
-from accounts.models import Recruiter
+from accounts.models import Recruiter, Education
 import os
 from django.utils.text import slugify
 
@@ -60,3 +60,11 @@ class Post(models.Model):
         super().save(*args, **kwargs)
     def __str__(self):
         return str(self.id) + ' - ' + self.company_name + ' - ' + self.job_title
+
+class Query(models.Model):
+    id = models.AutoField(primary_key=True)
+    recruiter = models.ForeignKey(Recruiter, on_delete=models.CASCADE)
+    skills = models.ManyToManyField(Skill, blank=True)
+    distance = models.IntegerField(blank=True)
+    #def __str__(self):
+    #    return f"{skill.name for skill in self.skills.all()} and {f"{str(distance)} miles away." if distance < 25000 else "worldwide"}."

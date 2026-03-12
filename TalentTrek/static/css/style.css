@@ -1,27 +1,65 @@
 :root {
   --text: #ffffff;
+
+
   --background: #010104;
+
+
   --primary-light: #91b69a;
+
   --primary: #548060;
+  --bs-primary: #548060;
+  --bs-primary-rgb: 84, 128, 96;
+
   --primary-dark: #324c39;
+
   --secondary: #0f1d0c;
   --secondary-light: #596e55;
-  --accent: #6c92c0;
-  --accent-light: #afc7e4;
-  --accent-dark: #5b6e86;
+
+  --accent: #c7a07b;
+  --accent-light: #ffd79e;
+  --accent-dark: #946847;
 }
 
-html, body {
+.btn-primary {
+   --bs-btn-bg: var(--primary);
+   --bs-btn-border-color: var(--primary);
+   --bs-btn-hover-bg: var(--primary-dark);
+   --bs-btn-hover-border-color: var(--primary-dark);
+}
+
+.form-range {
+  /* Changes the handle color */
+  --bs-range-thumb-bg: var(--primary);
+
+  /* Changes the handle color when you click/focus it */
+  --bs-range-thumb-focus-box-shadow: 0 0 0 0.25rem rgba(111, 66, 203, 0.25);
+  --bs-range-thumb-active-bg: var(--primary-dark);
+}
+
+a {
+  color: var(--accent-dark)
+}
+
+html {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
+
 .main-content {
     flex: 1;
 }
 
 .bg-index {
-  background: url("/static/img/background.jpg") no-repeat fixed;
+  background: url("/static/img/forest_banner.jpg") no-repeat fixed;
   background-size: 100% auto;
   background-color: var(--primary);
 }
@@ -29,6 +67,47 @@ html, body {
 .homepage-banner {
   color: var(--text);
   text-align: center;
+  background-image: url('/static/img/forest_banner.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-banner-logged-in {
+  color: var(--text);
+  text-align: center;
+  background-image: url('/static/img/forest_banner.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-text{
+    font-size: 22.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cal-sans-regular {
+  font-family: "Cal Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 36pt;
+  letter-spacing: 3%;
+}
+
+.banner-text-shadow {
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.navbar {
+    --bs-navbar-bg: none;
+    background: linear-gradient(45deg, var(--primary), var(--primary-dark)) !important;
 }
 
 .navbar a.nav-link {
@@ -43,6 +122,11 @@ html, body {
   width: 45px;
   margin-right: 5px;
   padding: 0;
+}
+
+.navbar-logo:hover {
+  transition: all 0.3s;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .bg-dark {
@@ -124,6 +208,44 @@ html, body {
   color: var(--accent);
 }
 
+.job-title {
+  color: var(--accent-dark);
+  cursor: pointer;
+}
+
+.job-title:hover {
+  color: var(--accent);
+  filter: drop-shadow(1px 1px 0.5px rgba(0, 0, 0, 0.05));
+}
+
+/* Inactive State */
+.nav-pills .nav-link {
+  color: #555555 !important;
+  background-color: transparent; /* Ensures no background on inactive */
+}
+
+/* Hover State for Inactive */
+.nav-pills .nav-link:hover {
+  background-color: var(--bs-gray-200) !important;
+}
+
+/* Ensure the Active state still looks correct */
+.nav-pills .nav-link.active {
+  color: #ffffff !important;
+  background-color: var(--bs-primary) !important;
+}
+
+.dropdown-menu {
+  /* Changes the background color of the active item */
+  --bs-dropdown-link-active-bg: var(--primary-dark);
+
+  /* Changes the text color of the active item */
+  --bs-dropdown-link-active-color: var(--text);
+
+  /* Optional: Changes the hover color (before it is clicked) */
+  --bs-dropdown-link-hover-bg: var(--bs-gray-200);
+}
+
 .secondary-hover-btn {
   background-color: var(--secondary);
   border: none;
@@ -144,6 +266,28 @@ html, body {
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
+.join-hover-btn {
+  background-color: var(--accent-light);
+  border: none;
+  border-radius: 0.375rem;
+  color: var(--background);
+  padding: 0.6rem 1.25rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.6);
+}
+
+.join-hover-btn:hover {
+  background-color: var(--accent-dark);
+  border: var(--accent);
+  color: var(--text);
+  box-shadow: 0px 0px 16px 0 var(--accent-light);
+}
+
 .hollow-btn {
   border: 1px solid var(--accent);
   border-radius: 0.375rem;
@@ -154,6 +298,20 @@ html, body {
   display: inline-block;
   font-size: 1rem;
   cursor: default;
+}
+
+.profile-picture-navbar {
+    margin-top: 5px;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-picture-navbar:hover {
+  transition: all 0.3s;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .profile-picture {
@@ -190,7 +348,6 @@ html, body {
 
 .notification-button {
   anchor-name: --notif-anchor;
-  margin-right: 5px;
 }
 
 .notification-popup {
@@ -210,10 +367,10 @@ html, body {
 
 .notification-amount {
   position: absolute;
-  border: 1px white solid;
+  border: none;
   border-radius: 50%;
-  background-color: red;
-  color: white;
+  background-color: var(--accent);
+  color: var(--text);
   width: 20px;
   height: 20px;
   top: anchor(--notif-anchor bottom);
@@ -225,6 +382,7 @@ html, body {
 .notification-popup.hidden {
   display: none;
 }
+
 /* The host element itself */
 gmp-place-autocomplete {
   display: block;

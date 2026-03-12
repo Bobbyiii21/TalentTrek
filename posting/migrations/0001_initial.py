@@ -38,4 +38,15 @@ class Migration(migrations.Migration):
                 ('skills', models.ManyToManyField(blank=True, related_name='posts', to='skills.skill')),
             ],
         ),
+        migrations.CreateModel(
+            name='Query',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('education_level', models.CharField(choices=[('HIGHSCHOOL', 'High School'), ('CERTIFICATE', 'Certificate'), ('ASSOCIATES', "Associate's"), ('BACHELORS', "Bachelor's"), ('MASTERS', "Master's"), ('DOCTORATE', 'Doctorate')], max_length=15, blank=True)),
+                ('recruiter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounts.recruiter')),
+                ('posting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='posting.post')),
+                ('skills', models.ManyToManyField(blank=True, to='skills.skill')),
+                ('distance', models.IntegerField(blank=True)),
+            ]
+        )
     ]

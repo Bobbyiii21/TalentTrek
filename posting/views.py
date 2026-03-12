@@ -10,6 +10,7 @@ from .models import Post
 from .tables import ApplicationsTable
 from applications.models import Application
 from home.notifications import update_post_notifications
+from home.distance import longlatdistance
 import csv
 from django.http import HttpResponse
 
@@ -20,6 +21,7 @@ def index(request):
 
     search = request.GET.get('search', '').strip()
     location_search = request.GET.get('location', '').strip()
+    distance_between = request.GET.get('distance_between')
     job_type = request.GET.get('job_type')
     location_type = request.GET.get('location_type')
     visa = request.GET.get('visa')
@@ -46,6 +48,14 @@ def index(request):
             Q(state__icontains=location_search) |
             Q(country__icontains=location_search)
         )
+
+    if distance_between:
+        posting_list = []
+        for posting in postings:
+            if not request.user.is_anonymous and posting.latitude and posting.longitude:
+                if longlatdistance(request.user, posting) <= int(distance_between):
+                    posting_list.append(posting.id) 
+        postings = postings.filter(pk__in=posting_list)
 
     if job_type:
         postings = postings.filter(job_type=job_type)
@@ -80,6 +90,7 @@ def index(request):
         'other_postings': other_postings,
         'job_type_choices': Post.JOB_TYPE_CHOICES,
         'location_type_choices': Post.LOCATION_TYPE_CHOICES,
+        'distance_choices': [('10', '10 Miles'), ('30', '30 Miles'), ('50', '50 Miles'), ('100', '100 Miles'),],
         'filter_job_type': job_type,
         'filter_location_type': location_type,
         'filter_visa': visa,
@@ -130,7 +141,6 @@ def post(request, id):
             user = JobSeeker.objects.filter(user=request.user)[0]
             if (user.account_is_hidden or user.education_is_hidden or user.experience_is_hidden or user.links_is_hidden):
                 user_details_hidden = True
-    print(user_details_hidden)
 
     template_data = {
         'title': f"{post.company_name} - {post.job_title}",
@@ -140,11 +150,6 @@ def post(request, id):
         'user': user,
         'user_details_hidden': user_details_hidden,
     }
-    
-    print(template_data['user'].account_is_hidden)
-    print(template_data['user'].experience_is_hidden)
-    print(template_data['user'].education_is_hidden)
-    print(template_data['user'].links_is_hidden)
 
     # --
     template_data['skills'] = Skill.objects.all()

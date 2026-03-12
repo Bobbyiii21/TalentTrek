@@ -2,10 +2,17 @@
 
 <div class="p-3">
   <div class="container-fluid">
-    <div class="row mt-3" style="display:flex;">
+    <div class="row mt-3">
+      <!--div class="col mx-auto mb-3" style="color: var(--secondary)">
+        {% if template_data.is_recruiter %}
+          <a href="{% url 'posting.create' %}">Create a Job Posting</a>
+        {% endif %}
+      </div-->
+    </div>
+    <div class="row justify-content-center" style="display:flex;">
       <!--Filters -->
-      <div class="col-md-2 mb-3" style="flex:1;">
-        <h5>Filters</h5>
+      <div class="col-md-2 mb-3 mt-3" style="flex:1.5;">
+        <h4>Filters</h4>
         <form method="GET">
           <!--Search Filter-->
           <div class="mb-3">
@@ -20,12 +27,17 @@
           <!--Location Filter-->
           <div class="mb-3">
             <label class="form-label">Location:</label>
-            <input
-              type="text"
-              class="form-control"
-              name="location"
-              value="{{ request.GET.location }}"
-            />
+            <input type="text" class="form-control" name="location" value="{{ request.GET.location }}"/>
+          </div>
+          <!--Distance Filter-->
+          <div class="mb-3">
+            <label class="form-label">Distance from Me/Commute Radius:</label>
+            <select class="form-select" name="distance_between">
+              <option value="">Any</option>
+              {% for value, label in template_data.distance_choices %}
+                <option value="{{ value }}" {% if template_data.filter_distance_choices %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
           </div>
           <!--Job Type Filter-->
           <div class="mb-3">
@@ -147,16 +159,17 @@
       </div>
 
       <!--Job Postings-->
-  <div class="col-md-9" style="flex:4;">
+  <div class="col-md-8" style="flex:2.5;">
     {% if template_data.my_postings %}
-    <div style="display:flex;align-items:center;">
-        <h4>My Posts</h4>
+    <div style="display: flex; align-items: center;">
+        <h4 class="mt-1">My Posts</h4>
         {% if template_data.is_recruiter %}
-          <a href="{% url 'posting.create' %}" class="profile-hollow-btn" style="margin-left:20px;">&#10010</a>
+          <a href="{% url 'posting.create' %}" class="profile-hollow-btn ms-3">&#10010</a>
         {% endif %}
     </div>
     {% else %}
     {% endif %}
+      {% if template_data.is_recruiter %}
         {% for post in template_data.my_postings %}
         <div class="col-12 mb-3">
           <div class="card p-3 posting-card" data-post-id="{{ post.id }}">
@@ -243,9 +256,11 @@
             </div>
           </div>
         </div>
-        {% empty %}
-        <p>No postings found.</p>
+        {% if empty %}
+          <p>No postings found.</p>
+        {% endif %}
         {% endfor %}
+        {% endif %}
 
         <h4>Posts</h4>
         {% for post in template_data.postings %} 
@@ -343,8 +358,8 @@
       </div>
 
       <!--Map Column-->
-      <div class="col-md-4" style="flex:3;">
-        <div class="sticky-top" style="top: 1rem">
+      <div class="col-md-4" style="flex:2;">
+        <div class="sticky" style="top: 1rem">
           <h5>Job Locations</h5>
           <div
             id="job-map"
@@ -486,8 +501,8 @@
       const position = { lat: post.lat, lng: post.lng };
 
       const pin = new PinElement({
-        background: post.isMine ? "#ff6b35" : "#0d6efd",
-        borderColor: post.isMine ? "#cc4a1a" : "#0a4fb4",
+        background: post.isMine ? "#ff6b35" : "var(--accent-dark)", //#0d6efd
+        borderColor: post.isMine ? "#cc4a1a" : "var(--accent)", //#0a4fb4
         glyphColor: "#ffffff",
       });
 
@@ -501,11 +516,11 @@
       const infoContent = `
         <div style="max-width: 220px; font-family: inherit;">
           <strong style="font-size: 0.95rem;">
-            <a href="${post.url}" style="color: #0d6efd; text-decoration: none;">${post.title}</a>
+            <a href="${post.url}" style="color: var(--accent-dark); text-decoration: none;">${post.title}</a>
           </strong>
           <p style="margin: 4px 0 2px; font-size: 0.85rem; color: #555;">${post.company}</p>
           <p style="margin: 0 0 2px; font-size: 0.8rem; color: #888;">${post.location}</p>
-          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: #0d6efd;">${post.salary}</p>
+          <p style="margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--primary);">${post.salary}</p>
         </div>
       `;
 

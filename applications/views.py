@@ -7,6 +7,7 @@ from skills.models import Skill
 from .models import Application
 from accounts.models import Recruiter
 from .tables import ApplicationsTable
+from TalentTrek import settings
 
 
 @login_required
@@ -23,6 +24,9 @@ def index(request, view_mode=None):
             template_data['skills'] = Skill.objects.all()
             queryset = build_filter_queryset(request, request.user)
             template_data['applications'] = ApplicationsTable(queryset)
+            template_data['applicants'] = queryset
+            template_data['google_api_key'] = settings.GOOGLE_API_KEY
+
 
         recruiter_applications = Application.objects.filter(posting__recruiter__user=request.user).order_by('-date')
 
@@ -34,7 +38,7 @@ def index(request, view_mode=None):
              if application.posting.job_title not in template_data['job_titles']:
                  template_data['job_titles'].append(application.posting.job_title)
 
-        if view_mode is None or view_mode not in ('board', 'table'):
+        if view_mode is None or view_mode not in ('board', 'table', 'map'):
             template_data['view_mode'] = 'board'
         else:
             template_data['view_mode'] = view_mode

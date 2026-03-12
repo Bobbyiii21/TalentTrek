@@ -47,13 +47,14 @@
             <div class="main-header-spacer"></div>
             {% if template_data.other %}
             <h2>Conversation with {{ template_data.other.TTUser.first_name }} {{ template_data.other.TTUser.last_name }}</h2>
-            {% else %}
-            <h2>Conversation</h2>
-            {% endif %}
             <div class="main-header-actions">
                 <a href="{% url 'accounts.profiles' user_link=template_data.other.TTUser.slugify_name %}"><button type="button" class="main-header-btn" aria-label="View profile"><i class="fas fa-user"></i></button></a>
                 <!--<button type="button" class="main-delete-btn" aria-label="Delete conversation"><i class="fas fa-trash"></i></button>-->
             </div>
+            {% else %}
+            <h2>Conversation</h2>
+            {% endif %}
+
         </div>
         <div class="main-chat">
             <div class="message-list">
