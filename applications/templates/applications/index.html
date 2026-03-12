@@ -325,14 +325,10 @@
       map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
     }
 
-    /**const markers = locations.map((location) => {
-      return new google.maps.Marker({
-        position: location,
-        map: map
-      })                 
-    });*/
-
-    //new markerClusterer.MarkerClusterer({map, markers})
+    new markerClusterer.MarkerClusterer({ 
+      map, 
+      markers: Object.values(markers).map(m => m.marker),
+    });
 
     map.addListener("gmp-click", function () {
       if (activeInfoWindow) activeInfoWindow.close();
@@ -379,4 +375,6 @@
   async
   defer
 ></script>
+
+<script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
 {% endblock content %}
