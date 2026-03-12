@@ -60,8 +60,14 @@
                 </a>
                 {% if user.is_authenticated %}
                 <div style="margin-left: auto; display: flex; flex-direction: column; gap: 10px;">
-                    <a class="primary-hover-btn" href="{% url 'chat.create_room' participant_id=profile.id %}" style="margin-left: auto;"><i class="fas fa-message"></i></a>
-                    <a class="primary-hover-btn" href="mailto:{{ profile.email }}" style="margin-left: auto;"><i class="fas fa-envelope"></i></a>
+                    <a class="primary-hover-btn" href="{% url 'chat.create_room' participant_id=profile.id %}" style="margin-left: auto;">
+                        <span class="material-symbols-outlined mt-1">chat</span>
+                        <!--i class="fas fa-message"></i-->
+                    </a>
+                    <a class="primary-hover-btn" href="mailto:{{ profile.email }}" style="margin-left: auto;">
+                        <span class="material-symbols-outlined mt-1">mail</span>
+                        <!--i class="fas fa-envelope"></i-->
+                    </a>
                 </div>
                 {% endif %}
             </div>

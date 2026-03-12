@@ -9,16 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
   <body>
     <!-- Header -->
-    <nav class="p-1.5 navbar navbar-dark bg-dark navbar-expand-lg">
+    <nav class="p-1.5 navbar navbar-dark navbar-gradient navbar-expand-lg">
       <div class="container align-items-center">
-        <a class="navbar-brand" href="{% url 'home.index' %}">
-          <img src="{% static 'img/TTLogo.svg' %}" alt="logo" height="20" />
+        <a class="navbar-brand mt-2" href="{% url 'home.index' %}">
+          <img src="{% static 'img/TTLogo_white_outline.svg' %}" alt="logo" height="30" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
           aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,27 +39,21 @@
             <div class="vr bg-white mx-2 d-none d-lg-block"></div>
 
             {% if user.is_authenticated %}
-              <a class="navbar-brand" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">
-                {% if not user.pfp %}
-                  <img class="profile-picture" src="{% static 'img/default_pfp.png' %}" alt="Profile Picture"/>
-                {% else %}
-                  <img class="profile-picture" src="{{ user.pfp.url }}" alt="Profile Picture"/>
-                {% endif %}
-              </a>
               <a class="nav-link notification-button" href="{% url 'home.notifications' %}" onmouseover="notificationsHover()" onmouseout="notificationsHover()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>
+                <span class="material-symbols-outlined">notifications</span>
               </a>
-              <div class="btn-group align-items-center">
-                <a type="button" class="btn profile-btn" href="{% url 'accounts.profiles' user_link=user.slugify_name %}" onmouseover="this.style.color='white'">{{ user.first_name }}</a>
-                <button type="button" class="btn profile-btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" onmouseover="this.style.color='white'">
-                  <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
+              <a class="nav-link messages-button" href="{% url 'chat.index' %}">
+                <span class="material-symbols-outlined">chat</span>
+              </a>
+              <div class="dropdown">
+                <a class="navbar-brand ms-2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img class="profile-picture-navbar" {% if not user.pfp %} src="{% static 'img/default_pfp.png' %}"{% else %} src="{{ user.pfp.url }}" {% endif %}
+                       alt="Profile Picture"/>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
                   <li><a class="dropdown-item" href="{% url 'accounts.profiles' user_link=user.slugify_name %}">My Profile</a></li>
-                  <li><a class="dropdown-item" href="{% url 'applications.index' %}">My Applications</a></li>
-                  <li><a class="dropdown-item" href="{% url 'chat.index' %}">Messages</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="{% url 'accounts.logout' %}">Logout</a></li>
+                  <li><a class="dropdown-item" style="color: bs-danger" href="{% url 'accounts.logout' %}">Logout</a></li>
                 </ul>
               </div>
             {% else %}
@@ -115,7 +110,7 @@
           <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mb-4">
             <b>Talent Trek</b>
             <hr />
-            <p>Welcome to Talent Trek, the traillhead of your professional adventures!</p>
+            <p>Welcome to Talent Trek, the trailhead of your professional adventures!</p>
           </div>
           <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mb-4">
             <b>LINKS</b>
