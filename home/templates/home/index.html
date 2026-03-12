@@ -5,8 +5,8 @@
 {% if user.is_authenticated %}
   <header class="masthead homepage-banner-logged-in py-4">
     <div class="container d-flex align-items-center flex-column pt-2">
-      <h1>Welcome back, {{ user.first_name }}!</h1>
-      <p><em>You have <strong>{{ template_data.notifications.count }}</strong> unread notification{% if template_data.notifications.count != 1 %}s{% endif %}.</em></p>
+      <h1 style="filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));">Welcome back, {{ user.first_name }}!</h1>
+      <p style="filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));"><em>You have <strong>{{ template_data.notifications.count }}</strong> unread notification{% if template_data.notifications.count != 1 %}s{% endif %}.</em></p>
     </div>
   </header>
 {% else %}
