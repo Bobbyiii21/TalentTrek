@@ -255,6 +255,7 @@
       {% endif %}
     {% endfor %}
   ];
+  //console.log(applicants);
 
   let map;
   let markers = {};
@@ -269,7 +270,7 @@
     map = new Map(document.getElementById("job-map"), {
       zoom: 4,
       center: defaultCenter,
-      mapId: "job_postings_map",
+      mapId: "job-map",
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: true,
@@ -291,7 +292,7 @@
       const marker = new AdvancedMarkerElement({
         position,
         map,
-        name: seeker.name,
+        title: seeker.name,
         content: pin,
       });
 
