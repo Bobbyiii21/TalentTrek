@@ -393,6 +393,23 @@
             Click a marker to see job details. Hover over a job card to
             highlight it on the map.
           </p>
+          <div class="d-flex gap-3 mt-1">
+            <div class="d-flex gap-3 mt-1">
+            {% if template_data.is_recruiter %}
+            <div class="d-flex align-items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 14 14">
+                <circle cx="7" cy="7" r="6" fill="#ff6b35" stroke="#cc4a1a" stroke-width="1.5"/>
+              </svg>
+              <span class="text-muted small">My Postings</span>
+            </div>
+            {% endif %}
+            <div class="d-flex align-items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 14 14">
+                <circle cx="7" cy="7" r="6" fill="var(--accent-dark)" stroke="var(--accent)" stroke-width="1.5"/>
+              </svg>
+              <span class="text-muted small">Postings</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
