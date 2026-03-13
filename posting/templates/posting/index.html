@@ -280,7 +280,12 @@
         {% endfor %}
         {% endif %}
 
-        <h4>Posts</h4>
+        <div style="display:flex;align-items:center;">
+            <h4>Posts</h4>{% if template_data.is_recruiter %}
+          <a href="{% url 'posting.create' %}" class="profile-hollow-btn ms-3">&#10010</a>
+        {% endif %}
+        {% if user.is_authenticated and user.is_superuser %}<p style="margin-left:auto;"><a href="{% url 'posting.export_csv' %}" class="primary-hover-btn" download="JobPostingData.csv">Get Posting Data</a></p>{% endif %}
+        </div>
         {% for post in template_data.postings %} 
         {% if post not in template_data.my_postings %}
         <div class="col-12 mb-3">
@@ -393,6 +398,23 @@
             Click a marker to see job details. Hover over a job card to
             highlight it on the map.
           </p>
+          <div class="d-flex gap-3 mt-1">
+            <div class="d-flex gap-3 mt-1">
+            {% if template_data.is_recruiter %}
+            <div class="d-flex align-items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 14 14">
+                <circle cx="7" cy="7" r="6" fill="#ff6b35" stroke="#cc4a1a" stroke-width="1.5"/>
+              </svg>
+              <span class="text-muted small">My Postings</span>
+            </div>
+            {% endif %}
+            <div class="d-flex align-items-center gap-1">
+              <svg width="14" height="14" viewBox="0 0 14 14">
+                <circle cx="7" cy="7" r="6" fill="var(--accent-dark)" stroke="var(--accent)" stroke-width="1.5"/>
+              </svg>
+              <span class="text-muted small">Postings</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

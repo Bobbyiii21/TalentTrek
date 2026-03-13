@@ -264,7 +264,7 @@ def save_post(posting, request):
     update_post_notifications(posting)
 
 def export_csv(request):
-    data = [['ID', 'Recruiter Name', 'Company', 'Position Title', 'Country', 'Region', 'City', 'Postal Code', 'Date Posted', 'Salary Range', 'Job Type', 'Location Type', 'Visa Sponsorship', 'Skills Added', 'Applications Made']]
+    data = [['ID', 'Recruiter Name', 'Company', 'Position Title', 'City', 'Region', 'Country', 'Postal Code', 'Location', 'Date Posted', 'Salary Range', 'Job Type', 'Location Type', 'Visa Sponsorship', 'Skills Added', 'Applications Made']]
     all_posts = Post.objects.all()
     for post in all_posts:
         row = []
@@ -272,23 +272,27 @@ def export_csv(request):
         row.append(f"{post.recruiter.user.first_name} {post.recruiter.user.last_name}")
         row.append(post.company_name)
         row.append(post.job_title)
-        if post.country:
-            row.append(post.country)
+        if post.city:
+            row.append(post.city)
         else:
             row.append("")
         if post.state:
             row.append(post.state)
         else:
             row.append("")
-        if post.city:
-            row.append(post.city)
+        if post.country:
+            row.append(post.country)
         else:
             row.append("")
         if post.postal_code:
             row.append(post.postal_code)
         else:
             row.append("")
-        row.append("TBD")
+        if post.location:
+            row.append(post.location)
+        else:
+            row.append("")
+        row.append(post.date_posted)
         if post.salary_min:
             row.append(f"${post.salary_min}k - ${post.salary_max}k")
         else:

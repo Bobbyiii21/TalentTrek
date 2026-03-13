@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-
+from datetime import datetime, timedelta, time
 from .forms import CustomUserCreationForm, CustomErrorList
 from .models import JobSeeker, Recruiter, Education, Experience, TTUser
 from .tables import RecruiterViewTable
@@ -58,11 +58,12 @@ def login(request, just_registered=False):
         if user is None:
             template_data['error'] = 'The username or password is incorrect.'
             return render(request, 'accounts/login.html', {'template_data': template_data})
-        else:
-            auth_login(request, user)
-            home_notif.update_seeker_notifications(user)
-            home_notif.update_recruiter_notifications(user)
-            return redirect('home.index')
+        user.logins += 1
+        user.save()
+        auth_login(request, user)
+        home_notif.update_seeker_notifications(user)
+        home_notif.update_recruiter_notifications(user)
+        return redirect('home.index')
 
 def register(request):
     template_data = {}
@@ -393,7 +394,7 @@ def recruiter_view(request):
     return render(request, 'accounts/table.html', {'template_data': template_data})
 
 def export_csv(request):
-    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'Region', 'City', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
+    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'State', 'City', 'Postal Code', 'Location', 'Date Joined', 'Last Login', 'Logins', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
     all_users = TTUser.objects.all()
     for ttuser in all_users:
         row = []
@@ -407,16 +408,25 @@ def export_csv(request):
                 row.append(ttuser.country)
             else:
                 row.append("")
-            if ttuser.region:
-                row.append(ttuser.region)
+            if ttuser.state:
+                row.append(ttuser.state)
             else:
                 row.append("")
             if ttuser.city:
                 row.append(ttuser.city)
             else:
                 row.append("")
+            if ttuser.postal_code:
+                row.append(ttuser.postal_code)
+            else:
+                row.append("")
+            if ttuser.location:
+                row.append(ttuser.location)
+            else:
+                row.append("")
             row.append(ttuser.date_joined)
             row.append(ttuser.last_login)
+            row.append(ttuser.logins)
             row.append(bool(seeker.links))
             row.append(bool(ttuser.pfp))
             row.append(bool(ttuser.headline))
@@ -435,16 +445,25 @@ def export_csv(request):
                 row.append(ttuser.country)
             else:
                 row.append("")
-            if ttuser.region:
-                row.append(ttuser.region)
+            if ttuser.state:
+                row.append(ttuser.state)
             else:
                 row.append("")
             if ttuser.city:
                 row.append(ttuser.city)
             else:
                 row.append("")
+            if ttuser.postal_code:
+                row.append(ttuser.postal_code)
+            else:
+                row.append("")
+            if ttuser.location:
+                row.append(ttuser.location)
+            else:
+                row.append("")
             row.append(ttuser.date_joined)
             row.append(ttuser.last_login)
+            row.append(ttuser.logins) 
             row.append(bool(recruiter.links))
             row.append(bool(ttuser.pfp))
             row.append(bool(ttuser.headline))
@@ -470,8 +489,17 @@ def export_csv(request):
                 row.append(ttuser.city)
             else:
                 row.append("")
+            if ttuser.postal_code:
+                row.append(ttuser.postal_code)
+            else:
+                row.append("")
+            if ttuser.location:
+                row.append(ttuser.location)
+            else:
+                row.append("")
             row.append(ttuser.date_joined)
             row.append(ttuser.last_login)
+            row.append(ttuser.logins) 
             row.append(False) #Links
             row.append(bool(ttuser.pfp))
             row.append(bool(ttuser.headline))

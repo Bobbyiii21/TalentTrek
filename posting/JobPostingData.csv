@@ -1,5 +1,8 @@
-ID,Recruiter Name,Company,Position Title,Country,Region,City,Postal Code,Date Posted,Salary Range,Job Type,Location Type,Visa Sponsorship,Skills Added,Applications Made
-2,Mark Zuckerberg,Meta,Software Engineer,United States,CA,,,TBD,$110k - $250k,FT,HY,True,True,0
-3,Jeff Bezos,Amazon,Database Specialist,United States,GA,Atlanta,,TBD,$40k - $120k,FT,ON,False,True,0
-4,Clay Magouyrk,Oracle,Cloud Engineer,United States,IL,Chicago,,TBD,$89k - $171k,IN,RE,True,True,1
-5,Lebron James,Los Angeles Lakers,Mascot,,,,,TBD,$249k - $300k,FT,ON,True,True,0
+ID,Recruiter Name,Company,Position Title,City,Region,Country,Postal Code,Location,Date Posted,Salary Range,Job Type,Location Type,Visa Sponsorship,Skills Added,Applications Made
+2,Mark Zuckerberg,Meta,Software Engineer,,CA,United States,,"CA, United States",,$110k - $250k,FT,HY,True,True,0
+3,Jeff Bezos,Amazon,Database Specialist,Atlanta,GA,United States,,"Atlanta, GA",,$40k - $120k,FT,ON,False,True,0
+4,Clay Magouyrk,Oracle,Cloud Engineer,Chicago,IL,United States,,"Chicago, IL",,$89k - $171k,IN,RE,True,True,0
+5,Lebron James,Los Angeles Lakers,Mascot,,,,,No location specified,,$249k - $300k,FT,ON,True,True,0
+6,Test Recruiter,Talent Trek,Testing Job,,,,,No location specified,2026-03-03 20:48:38.998247+00:00,$140k - $169k,PT,RE,False,True,1
+11,Test Recruiter,Talent Trek,SQL Editor,,,,,No location specified,2026-03-11 07:15:12.076235+00:00,$40k - $120k,FT,ON,False,True,1
+12,Scrappy ,Kennesaw State University,Dining Hall Chef,Kennesaw,GEORGIA,United States,30144,"Kennesaw, Georgia",2026-03-12 12:12:36.791608+00:00,$30k - $45k,FT,ON,False,True,0

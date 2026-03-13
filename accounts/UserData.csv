@@ -1,11 +1,13 @@
-ID,Name,Email,User Type,Country,Region,City,Date Joined,Last Login,Links,Picture,Headline,Education,Experience,Resume,Skills,Applications Made,Company,Job Posts Made
-3,Mark Zuckerberg,meta@gmail.com,Recruiter,,,,2026-02-20 23:52:30.120993+00:00,2026-02-20 23:52:30.381178+00:00,True,True,True,False,False,False,False,0,Meta,1
-4,Jeff Bezos,amazon@gmail.com,Recruiter,,,,2026-02-21 00:09:14.038647+00:00,2026-02-21 00:09:14.297365+00:00,False,True,True,False,False,False,False,0,Amazon,1
-5,Clay Magouyrk,oracle@gmail.com,Recruiter,,,,2026-02-21 00:16:49.997026+00:00,2026-02-21 00:16:50.248770+00:00,False,True,True,False,False,False,False,0,Oracle,1
-6,Admin User,admin@talenttrek.com,Job Seeker,,,,2026-02-21 01:36:53+00:00,2026-03-03 00:46:25.140682+00:00,True,True,True,True,True,False,True,1,,0
-7,Buzz ,buzz@gt.com,Job Seeker,,,,2026-02-21 01:47:14.840196+00:00,2026-03-03 02:08:08.840462+00:00,True,True,True,True,True,False,True,0,,0
-8,Marcus Hawkins,matt@wii.com,Job Seeker,,,,2026-02-21 01:55:41.273950+00:00,2026-03-02 05:08:38.380959+00:00,True,True,True,True,True,False,True,0,,0
-9,The Hacker ,hacker@hacking.com,Job Seeker,,,,2026-02-21 01:59:58.739739+00:00,2026-02-21 01:59:59.604023+00:00,False,True,True,True,True,True,True,0,,0
-10,Test Seeker,testseeker@talenttrek.com,Job Seeker,,,,2026-02-26 20:22:45.760583+00:00,2026-02-26 20:22:49.393428+00:00,True,True,True,True,True,True,True,0,,0
-11,Lebron James,lebron@lakers.com,Recruiter,,,,2026-02-26 20:28:03.721647+00:00,2026-03-03 00:30:05.451915+00:00,True,True,True,False,False,False,False,0,Los Angeles Lakers,1
-12,Test Recruiter,testrecruiter@talenttrek.com,Recruiter,,,,2026-02-26 20:29:44+00:00,2026-03-03 00:44:07.561094+00:00,True,True,True,False,False,False,False,0,Talent Trek,0
+ID,Name,Email,User Type,Country,State,City,Postal Code,Location,Date Joined,Last Login,Logins,Links,Picture,Headline,Education,Experience,Resume,Skills,Applications Made,Company,Job Posts Made
+3,Mark Zuckerberg,meta@gmail.com,Recruiter,,,,,,2026-02-20 23:52:30.120993+00:00,2026-02-20 23:52:30.381178+00:00,0,True,True,True,False,False,False,False,0,Meta,1
+4,Jeff Bezos,amazon@gmail.com,Recruiter,,,,,,2026-02-21 00:09:14.038647+00:00,2026-02-21 00:09:14.297365+00:00,0,False,True,True,False,False,False,False,0,Amazon,1
+5,Clay Magouyrk,oracle@gmail.com,Recruiter,,,,,,2026-02-21 00:16:49.997026+00:00,2026-02-21 00:16:50.248770+00:00,0,False,True,True,False,False,False,False,0,Oracle,1
+6,Admin User,admin@talenttrek.com,Job Seeker,Antarctica,,,,Antarctica,2026-02-21 01:36:53+00:00,2026-03-13 00:38:45.669743+00:00,4,True,True,True,True,True,False,True,0,,0
+7,Buzz ,buzz@gt.com,Job Seeker,United States,GEORGIA,Atlanta,30332,"Atlanta, Georgia",2026-02-21 01:47:14.840196+00:00,2026-03-13 00:31:02.997771+00:00,0,True,True,True,True,True,False,True,1,,0
+8,Marcus Hawkins,matt@wii.com,Job Seeker,United States,GEORGIA,Marietta,,"Marietta, Georgia",2026-02-21 01:55:41.273950+00:00,2026-03-13 00:32:37.648971+00:00,0,True,True,True,True,True,False,True,1,,0
+9,The Hacker ,hacker@hacking.com,Job Seeker,,,,,,2026-02-21 01:59:58.739739+00:00,2026-02-21 01:59:59.604023+00:00,0,False,True,True,True,True,True,True,0,,0
+10,Test Seeker,testseeker@talenttrek.com,Job Seeker,Antarctica,,,,Antarctica,2026-02-26 20:22:45.760583+00:00,2026-03-12 13:33:01.559106+00:00,0,True,True,True,True,True,True,True,0,,0
+11,Lebron James,lebron@lakers.com,Recruiter,United States,CALIFORNIA,El Segundo,90245,"El Segundo, California",2026-02-26 20:28:03.721647+00:00,2026-03-12 12:02:41.430852+00:00,0,True,True,True,False,False,False,False,0,Los Angeles Lakers,1
+12,Test Recruiter,testrecruiter@talenttrek.com,Recruiter,Antarctica,,,,Antarctica,2026-02-26 20:29:44+00:00,2026-03-13 00:32:21.249446+00:00,0,True,True,True,False,False,False,False,0,Talent Trek,2
+13,Scrappy ,owl@ksu.com,Recruiter,United States,GEORGIA,Kennesaw,30144,"Kennesaw, Georgia",2026-03-12 12:07:33.470039+00:00,2026-03-13 00:31:47.057503+00:00,0,False,True,True,False,False,False,False,0,Kennesaw State University,1
+14,Dent Dent,dent@dent.com,Recruiter,,,,,,2026-03-13 00:33:23.755783+00:00,2026-03-13 00:33:43.693798+00:00,0,False,False,False,False,False,False,False,0,,0
