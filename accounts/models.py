@@ -3,6 +3,7 @@ from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseU
 from django.utils import timezone
 from django.utils.text import slugify
 from skills.models import Skill
+import datetime
 from django.utils.safestring import mark_safe
 import os
 
@@ -60,6 +61,9 @@ class TTUser(AbstractBaseUser, PermissionsMixin):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     date_joined = models.DateTimeField("date joined", default=timezone.now)
+    last_activity = models.DateTimeField("last activity", default=timezone.now)
+    average_time_online = models.DurationField(blank=True, null=True, default=datetime.timedelta(seconds=0))
+    logins = models.IntegerField(default=0)
     headline = models.TextField(max_length=1023, blank=True)
     is_seeker = models.BooleanField(default=False)
     is_recruiter = models.BooleanField(default=False)

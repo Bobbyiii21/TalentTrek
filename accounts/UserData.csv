@@ -1,4 +1,4 @@
-ID,Name,Email,User Type,Country,Region,City,Date Joined,Last Login,Links,Picture,Headline,Education,Experience,Resume,Skills,Applications Made,Company,Job Posts Made
+ID,Name,Email,User Type,Country,Region,City,Date Joined,Last Login,Average Time Online,Login Count,Links,Picture,Headline,Education,Experience,Resume,Skills,Applications Made,Company,Job Posts Made
 3,Mark Zuckerberg,meta@gmail.com,Recruiter,,,,2026-02-20 23:52:30.120993+00:00,2026-02-20 23:52:30.381178+00:00,True,True,True,False,False,False,False,0,Meta,1
 4,Jeff Bezos,amazon@gmail.com,Recruiter,,,,2026-02-21 00:09:14.038647+00:00,2026-02-21 00:09:14.297365+00:00,False,True,True,False,False,False,False,0,Amazon,1
 5,Clay Magouyrk,oracle@gmail.com,Recruiter,,,,2026-02-21 00:16:49.997026+00:00,2026-02-21 00:16:50.248770+00:00,False,True,True,False,False,False,False,0,Oracle,1
