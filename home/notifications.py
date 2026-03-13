@@ -103,6 +103,7 @@ def update_post_notifications(post: Post):
         # Won't check to notify if already applied or doesn't have any skills added
             if not calculate_fit(seeker.skills.all(), postingSkills, 0.5): continue
             notify(seeker.user, f'''Based on your profile, we recommend that you apply for the {post.job_title} position at {post.company_name}. <a href="VIEW_URL">Click here</a> to view details.''', link, post.image)
+            notify(post.recruiter.user, f'''Based on your job posting, <a href="VIEW_URL">{seeker.user.first_name} {seeker.user.last_name}</a> is a good fit for the {post.job_title} position.''', reverse('accounts.profiles', kwargs={'user_link': str(seeker.user)}), seeker.user.pfp)
     
 def calculate_fit(seekerSkills, postingSkills, threshold):
     seekerList = []
