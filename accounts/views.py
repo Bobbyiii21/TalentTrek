@@ -58,15 +58,6 @@ def login(request, just_registered=False):
         if user is None:
             template_data['error'] = 'The username or password is incorrect.'
             return render(request, 'accounts/login.html', {'template_data': template_data})
-        old_user_average_time = user.average_time_online
-        new_timeslice = user.last_activity - user.last_login
-        print(f"New timeslice {new_timeslice}")
-        if user.logins == 0: 
-            user.average_time_online = datetime.timedelta(seconds=0)
-        elif user.logins == 1:
-            user.average_time_online = new_timeslice
-        else:
-            user.average_time_online = (old_user_average_time * (user.logins - 1) + (new_timeslice)) / user.logins
         user.logins += 1
         user.save()
         auth_login(request, user)
@@ -403,7 +394,7 @@ def recruiter_view(request):
     return render(request, 'accounts/table.html', {'template_data': template_data})
 
 def export_csv(request):
-    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'State', 'City', 'Postal Code', 'Location', 'Date Joined', 'Last Login', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
+    data = [['ID', 'Name', 'Email', 'User Type', 'Country', 'State', 'City', 'Postal Code', 'Location', 'Date Joined', 'Last Login', 'Logins', 'Links', 'Picture', 'Headline', 'Education', 'Experience', 'Resume', 'Skills', 'Applications Made', 'Company', 'Job Posts Made']]
     all_users = TTUser.objects.all()
     for ttuser in all_users:
         row = []
@@ -435,7 +426,6 @@ def export_csv(request):
                 row.append("")
             row.append(ttuser.date_joined)
             row.append(ttuser.last_login)
-            row.append(ttuser.average_time_online)
             row.append(ttuser.logins)
             row.append(bool(seeker.links))
             row.append(bool(ttuser.pfp))
@@ -473,7 +463,6 @@ def export_csv(request):
                 row.append("")
             row.append(ttuser.date_joined)
             row.append(ttuser.last_login)
-            row.append(ttuser.average_time_online)
             row.append(ttuser.logins) 
             row.append(bool(recruiter.links))
             row.append(bool(ttuser.pfp))
@@ -510,7 +499,6 @@ def export_csv(request):
                 row.append("")
             row.append(ttuser.date_joined)
             row.append(ttuser.last_login)
-            row.append(ttuser.average_time_online)
             row.append(ttuser.logins) 
             row.append(False) #Links
             row.append(bool(ttuser.pfp))

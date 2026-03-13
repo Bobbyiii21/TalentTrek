@@ -280,7 +280,7 @@
         {% endfor %}
         {% endif %}
 
-        <h4>Posts</h4>
+        <div style="display:flex;"><h4>Posts</h4>{% if user.is_authenticated and user.is_superuser %}<p style="margin-left:auto;"><a href="{% url 'posting.export_csv' %}" class="primary-hover-btn" download="JobPostingData.csv">Get User Data</a></p>{% endif %}</div>
         {% for post in template_data.postings %} 
         {% if post not in template_data.my_postings %}
         <div class="col-12 mb-3">
